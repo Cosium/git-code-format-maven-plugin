@@ -28,8 +28,8 @@ import java.util.Set;
  *   <li>plugin structure
  * </ul>
  */
-@Mojo(name = "install-hook", defaultPhase = LifecyclePhase.INITIALIZE)
-public class InstallHookMojo extends AbstractMojo {
+@Mojo(name = "install-hooks", defaultPhase = LifecyclePhase.INITIALIZE)
+public class InstallHooksMojo extends AbstractMojo {
 
   private static final String SHIBANG = "#!/bin/bash";
   private static final String HOOKS_DIR = "hooks";
@@ -39,7 +39,7 @@ public class InstallHookMojo extends AbstractMojo {
 
   private static final String MAIN_PRE_COMMIT_HOOK = "pre-commit";
   private static final String MAIN_PRE_COMMIT_HOOK_CALL = "./" + PLUGIN_PRE_COMMIT_HOOK;
-  public static final String MAVEN_HOME_PROP = "maven.home";
+  private static final String MAVEN_HOME_PROP = "maven.home";
 
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
