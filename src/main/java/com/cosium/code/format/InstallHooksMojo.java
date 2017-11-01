@@ -1,13 +1,9 @@
 package com.cosium.code.format;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,8 +16,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Installs pre commit hook on each initialization. The hook is always overriden to update eventual
- * changes in:
+ * Installs git hooks on each initialization. Hooks are always overriden in case changes in:
  *
  * <ul>
  *   <li>maven installation
@@ -29,20 +24,17 @@ import java.util.Set;
  * </ul>
  */
 @Mojo(name = "install-hooks", defaultPhase = LifecyclePhase.INITIALIZE)
-public class InstallHooksMojo extends AbstractMojo {
+public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private static final String SHIBANG = "#!/bin/bash";
   private static final String HOOKS_DIR = "hooks";
 
-  private static final String PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.sh";
+  private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.sh";
   private static final String PLUGIN_PRE_COMMIT_COMMAND_ARGS = "gcf:on-pre-commit";
 
   private static final String MAIN_PRE_COMMIT_HOOK = "pre-commit";
-  private static final String MAIN_PRE_COMMIT_HOOK_CALL = "./" + PLUGIN_PRE_COMMIT_HOOK;
   private static final String MAVEN_HOME_PROP = "maven.home";
-
-  @Parameter(readonly = true, defaultValue = "${project}")
-  private MavenProject currentProject;
+  private static final String BIN_MVN = "bin/mvn";
 
   public void execute() throws MojoExecutionException {
     try {
@@ -59,13 +51,15 @@ public class InstallHooksMojo extends AbstractMojo {
     getLog().debug("Prepared git hook directory");
 
     getLog().debug("Writing plugin pre commit hook file");
-    Path pluginPreCommitHook = hooksDirectory.resolve(PLUGIN_PRE_COMMIT_HOOK);
+    Path pluginPreCommitHook = hooksDirectory.resolve(pluginPreCommitHook());
     getOrCreateExecutableFile(pluginPreCommitHook);
     Files.write(
         pluginPreCommitHook,
         Arrays.asList(
             SHIBANG,
-            getMavenExecutable().toAbsolutePath() + " " + PLUGIN_PRE_COMMIT_COMMAND_ARGS),
+            "cd " + baseDir().toAbsolutePath(),
+            getMavenExecutable().toAbsolutePath() + " " + PLUGIN_PRE_COMMIT_COMMAND_ARGS,
+            "cd -"),
         StandardOpenOption.TRUNCATE_EXISTING);
     getLog().debug("Written plugin pre commit hook file");
 
@@ -75,7 +69,7 @@ public class InstallHooksMojo extends AbstractMojo {
     boolean callExists =
         Files.readAllLines(mainPreCommitHook)
             .stream()
-            .anyMatch(s -> s.contains(MAIN_PRE_COMMIT_HOOK_CALL));
+            .anyMatch(s -> s.contains(mainPreCommitHookCall()));
     if (callExists) {
       getLog().debug("Call already exists in main pre commit hook");
     } else {
@@ -83,7 +77,7 @@ public class InstallHooksMojo extends AbstractMojo {
       getLog().debug("Appending the call.");
       Files.write(
           mainPreCommitHook,
-          Collections.singletonList(MAIN_PRE_COMMIT_HOOK_CALL),
+          Collections.singletonList(mainPreCommitHookCall()),
           StandardOpenOption.APPEND);
       getLog().debug("Appended the call.");
     }
@@ -91,7 +85,7 @@ public class InstallHooksMojo extends AbstractMojo {
 
   private Path getMavenExecutable() {
     Path mavenHome = Paths.get(System.getProperty(MAVEN_HOME_PROP));
-    Path executable = mavenHome.resolve("bin/mvn");
+    Path executable = mavenHome.resolve(BIN_MVN);
     if (!Files.exists(executable)) {
       throw new RuntimeException(
           "Could not find maven executable. " + executable + " does not exist.");
@@ -105,12 +99,7 @@ public class InstallHooksMojo extends AbstractMojo {
    * @return The git hooks directory
    */
   private Path getOrCreateHooksDirectory() {
-    Repository gitRepository;
-    try {
-      gitRepository = new FileRepositoryBuilder().findGitDir(currentProject.getBasedir()).build();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    Repository gitRepository = git().getRepository();
 
     Path hooksDirectory = gitRepository.getDirectory().toPath().resolve(HOOKS_DIR);
     if (!Files.exists(hooksDirectory)) {
@@ -147,6 +136,8 @@ public class InstallHooksMojo extends AbstractMojo {
     Set<PosixFilePermission> permissions;
     try {
       permissions = Files.getPosixFilePermissions(file);
+    } catch (UnsupportedOperationException ignored) {
+      return;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -157,8 +148,16 @@ public class InstallHooksMojo extends AbstractMojo {
 
     try {
       Files.setPosixFilePermissions(file, permissions);
-    } catch (IOException e) {
+    }  catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private String mainPreCommitHookCall() {
+    return "./" + pluginPreCommitHook();
+  }
+
+  private String pluginPreCommitHook() {
+    return artifactId() + "." + BASE_PLUGIN_PRE_COMMIT_HOOK;
   }
 }
