@@ -9,10 +9,10 @@ import org.apache.maven.project.MavenProject;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
@@ -39,6 +39,7 @@ public class InstallHookMojo extends AbstractMojo {
 
   private static final String MAIN_PRE_COMMIT_HOOK = "pre-commit";
   private static final String MAIN_PRE_COMMIT_HOOK_CALL = "./" + PLUGIN_PRE_COMMIT_HOOK;
+  public static final String MAVEN_HOME_PROP = "maven.home";
 
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
@@ -55,16 +56,20 @@ public class InstallHookMojo extends AbstractMojo {
     getLog().debug("Preparing git hook directory");
     Path hooksDirectory;
     hooksDirectory = getOrCreateHooksDirectory();
+    getLog().debug("Prepared git hook directory");
 
     getLog().debug("Writing plugin pre commit hook file");
     Path pluginPreCommitHook = hooksDirectory.resolve(PLUGIN_PRE_COMMIT_HOOK);
     getOrCreateExecutableFile(pluginPreCommitHook);
     Files.write(
         pluginPreCommitHook,
-        Arrays.asList(SHIBANG, "mvn " + PLUGIN_PRE_COMMIT_COMMAND_ARGS),
+        Arrays.asList(
+            SHIBANG,
+            getMavenExecutable().toAbsolutePath() + " " + PLUGIN_PRE_COMMIT_COMMAND_ARGS),
         StandardOpenOption.TRUNCATE_EXISTING);
+    getLog().debug("Written plugin pre commit hook file");
 
-    getLog().debug("Adding plugin pre commit hook file call to the main pre commit hook file");
+    getLog().debug("Checking plugin pre commit hook file call to the main pre commit hook file");
     Path mainPreCommitHook = hooksDirectory.resolve(MAIN_PRE_COMMIT_HOOK);
     getOrCreateExecutableFile(mainPreCommitHook);
     boolean callExists =
@@ -74,12 +79,24 @@ public class InstallHookMojo extends AbstractMojo {
     if (callExists) {
       getLog().debug("Call already exists in main pre commit hook");
     } else {
-      getLog().debug("No call found in the main pre commit hook. Appending the call.");
+      getLog().debug("No call found in the main pre commit hook.");
+      getLog().debug("Appending the call.");
       Files.write(
           mainPreCommitHook,
           Collections.singletonList(MAIN_PRE_COMMIT_HOOK_CALL),
           StandardOpenOption.APPEND);
+      getLog().debug("Appended the call.");
     }
+  }
+
+  private Path getMavenExecutable() {
+    Path mavenHome = Paths.get(System.getProperty(MAVEN_HOME_PROP));
+    Path executable = mavenHome.resolve("bin/mvn");
+    if (!Files.exists(executable)) {
+      throw new RuntimeException(
+          "Could not find maven executable. " + executable + " does not exist.");
+    }
+    return executable;
   }
 
   /**
@@ -88,10 +105,9 @@ public class InstallHookMojo extends AbstractMojo {
    * @return The git hooks directory
    */
   private Path getOrCreateHooksDirectory() {
-    File baseDir = currentProject.getBasedir();
     Repository gitRepository;
     try {
-      gitRepository = new FileRepositoryBuilder().findGitDir(baseDir).build();
+      gitRepository = new FileRepositoryBuilder().findGitDir(currentProject.getBasedir()).build();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
