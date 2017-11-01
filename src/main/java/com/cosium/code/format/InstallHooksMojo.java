@@ -53,7 +53,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     getLog().debug("Prepared git hook directory");
 
     getLog().debug("Writing plugin pre commit hook file");
-    Path pluginPreCommitHook = hooksDirectory.resolve(pluginPreCommitHook());
+    Path pluginPreCommitHook = hooksDirectory.resolve(pluginPreCommitHookFileName());
     getOrCreateExecutableFile(pluginPreCommitHook);
     Files.write(
         pluginPreCommitHook,
@@ -153,14 +153,13 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private String mainPreCommitHookCall() {
-    return "./" + pluginPreCommitHook();
+    return "./"
+        + getOrCreateHooksDirectory().relativize(baseDir())
+        + "/"
+        + pluginPreCommitHookFileName();
   }
 
-  private String pluginPreCommitHook() {
-    return baseDir().relativize(getOrCreateHooksDirectory())
-        + "/"
-        + artifactId()
-        + "."
-        + BASE_PLUGIN_PRE_COMMIT_HOOK;
+  private String pluginPreCommitHookFileName() {
+    return artifactId() + "." + BASE_PLUGIN_PRE_COMMIT_HOOK;
   }
 }
