@@ -30,7 +30,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private static final String HOOKS_DIR = "hooks";
 
   private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.sh";
-  private static final String PLUGIN_PRE_COMMIT_COMMAND_ARGS = "gcf:on-pre-commit";
+  private static final String PLUGIN_PRE_COMMIT_COMMAND_ARGS = "git-code-format:on-pre-commit";
 
   private static final String MAIN_PRE_COMMIT_HOOK = "pre-commit";
   private static final String MAVEN_HOME_PROP = "maven.home";
@@ -38,7 +38,9 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   public void execute() throws MojoExecutionException {
     try {
+      getLog().info("Installing git hooks");
       doExecute();
+      getLog().info("Installed git hooks");
     } catch (Exception e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }

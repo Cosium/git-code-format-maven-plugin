@@ -28,7 +28,9 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
 
   public void execute() throws MojoExecutionException {
     try {
+      getLog().info("Executing pre-commit hooks");
       doExecute();
+      getLog().info("Executing pre-commit hooks");
     } catch (Exception e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
@@ -45,7 +47,6 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
         .map(DiffEntry::getNewPath)
         .map(this::toPath)
         .filter(this::isFormattable)
-        .peek(diffPath -> getLog().info("Formatting '" + diffPath + "'"))
         .forEach(this::format);
   }
 
@@ -65,6 +66,7 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private void format(Path javaFile) {
+    getLog().info("Formatting '" + javaFile + "'");
     final String formattedContent;
     try (InputStream inputStream = Files.newInputStream(javaFile)) {
       formattedContent = new Formatter().formatSource(IOUtils.toString(inputStream));
@@ -77,5 +79,6 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    getLog().info("Formatted '" + javaFile + "'");
   }
 }
