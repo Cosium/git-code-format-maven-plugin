@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -30,10 +31,14 @@ import java.util.Set;
 @Mojo(name = "install-hook", defaultPhase = LifecyclePhase.INITIALIZE)
 public class InstallHookMojo extends AbstractMojo {
 
+  private static final String SHIBANG = "#!/bin/bash";
   private static final String HOOKS_DIR = "hooks";
+
   private static final String PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.sh";
-  private static final String PLUGIN_PRE_COMMIT_COMMAND = "./" + PLUGIN_PRE_COMMIT_HOOK;
+  private static final String PLUGIN_PRE_COMMIT_COMMAND_ARGS = "gcf:on-pre-commit";
+
   private static final String MAIN_PRE_COMMIT_HOOK = "pre-commit";
+  private static final String MAIN_PRE_COMMIT_HOOK_CALL = "./" + PLUGIN_PRE_COMMIT_HOOK;
 
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
@@ -56,12 +61,25 @@ public class InstallHookMojo extends AbstractMojo {
     getOrCreateExecutableFile(pluginPreCommitHook);
     Files.write(
         pluginPreCommitHook,
-        Arrays.asList("#!/bin/bash", "mvn com.cosium.code:maven-git-code-format:on-pre-commit"),
+        Arrays.asList(SHIBANG, "mvn " + PLUGIN_PRE_COMMIT_COMMAND_ARGS),
         StandardOpenOption.TRUNCATE_EXISTING);
 
     getLog().debug("Adding plugin pre commit hook file call to the main pre commit hook file");
     Path mainPreCommitHook = hooksDirectory.resolve(MAIN_PRE_COMMIT_HOOK);
     getOrCreateExecutableFile(mainPreCommitHook);
+    boolean callExists =
+        Files.readAllLines(mainPreCommitHook)
+            .stream()
+            .anyMatch(s -> s.contains(MAIN_PRE_COMMIT_HOOK_CALL));
+    if (callExists) {
+      getLog().debug("Call already exists in main pre commit hook");
+    } else {
+      getLog().debug("No call found in the main pre commit hook. Appending the call.");
+      Files.write(
+          mainPreCommitHook,
+          Collections.singletonList(MAIN_PRE_COMMIT_HOOK_CALL),
+          StandardOpenOption.APPEND);
+    }
   }
 
   /**
