@@ -158,7 +158,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private String pluginPreCommitHook() {
-    return getOrCreateHooksDirectory().relativize(baseDir())
+    return baseDir().relativize(getOrCreateHooksDirectory())
         + "/"
         + artifactId()
         + "."
