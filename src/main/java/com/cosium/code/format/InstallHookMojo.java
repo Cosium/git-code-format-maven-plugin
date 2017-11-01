@@ -1,0 +1,130 @@
+package com.cosium.code.format;
+
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Arrays;
+import java.util.Set;
+
+/**
+ * Installs pre commit hook on each initialization. The hook is always overriden to update eventual
+ * changes in:
+ *
+ * <ul>
+ *   <li>maven installation
+ *   <li>plugin structure
+ * </ul>
+ */
+@Mojo(name = "install-hook", defaultPhase = LifecyclePhase.INITIALIZE)
+public class InstallHookMojo extends AbstractMojo {
+
+  private static final String HOOKS_DIR = "hooks";
+  private static final String PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.sh";
+  private static final String PLUGIN_PRE_COMMIT_COMMAND = "./" + PLUGIN_PRE_COMMIT_HOOK;
+  private static final String MAIN_PRE_COMMIT_HOOK = "pre-commit";
+
+  @Parameter(readonly = true, defaultValue = "${project}")
+  private MavenProject currentProject;
+
+  public void execute() throws MojoExecutionException {
+    try {
+      doExecute();
+    } catch (Exception e) {
+      throw new MojoExecutionException(e.getMessage(), e);
+    }
+  }
+
+  private void doExecute() throws IOException {
+    getLog().debug("Preparing git hook directory");
+    Path hooksDirectory;
+    hooksDirectory = getOrCreateHooksDirectory();
+
+    getLog().debug("Writing plugin pre commit hook file");
+    Path pluginPreCommitHook = hooksDirectory.resolve(PLUGIN_PRE_COMMIT_HOOK);
+    getOrCreateExecutableFile(pluginPreCommitHook);
+    Files.write(
+        pluginPreCommitHook,
+        Arrays.asList("#!/bin/bash", "mvn com.cosium.code:maven-git-code-format:on-pre-commit"),
+        StandardOpenOption.TRUNCATE_EXISTING);
+
+    getLog().debug("Adding plugin pre commit hook file call to the main pre commit hook file");
+    Path mainPreCommitHook = hooksDirectory.resolve(MAIN_PRE_COMMIT_HOOK);
+    getOrCreateExecutableFile(mainPreCommitHook);
+  }
+
+  /**
+   * Get or creates the git hooks directory
+   *
+   * @return The git hooks directory
+   */
+  private Path getOrCreateHooksDirectory() {
+    File baseDir = currentProject.getBasedir();
+    Repository gitRepository;
+    try {
+      gitRepository = new FileRepositoryBuilder().findGitDir(baseDir).build();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    Path hooksDirectory = gitRepository.getDirectory().toPath().resolve(HOOKS_DIR);
+    if (!Files.exists(hooksDirectory)) {
+      getLog().debug("Creating directory " + hooksDirectory);
+      try {
+        Files.createDirectories(hooksDirectory);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      getLog().debug(hooksDirectory + "already exists");
+    }
+    return hooksDirectory;
+  }
+
+  /**
+   * Get or creates a file then mark it as executable.
+   *
+   * @param file The file
+   */
+  private void getOrCreateExecutableFile(Path file) {
+    if (!Files.exists(file)) {
+      getLog().debug("Creating " + file);
+      try {
+        Files.createFile(file);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      getLog().debug(file + " already exists");
+    }
+
+    getLog().debug("Marking '" + file + "' as executable");
+    Set<PosixFilePermission> permissions;
+    try {
+      permissions = Files.getPosixFilePermissions(file);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    permissions.add(PosixFilePermission.OWNER_EXECUTE);
+    permissions.add(PosixFilePermission.GROUP_EXECUTE);
+    permissions.add(PosixFilePermission.OTHERS_EXECUTE);
+
+    try {
+      Files.setPosixFilePermissions(file, permissions);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+}
