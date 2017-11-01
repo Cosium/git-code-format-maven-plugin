@@ -150,7 +150,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
     try {
       Files.setPosixFilePermissions(file, permissions);
-    }  catch (IOException e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }

@@ -15,30 +15,28 @@ import java.nio.file.Path;
  *
  * @author Reda.Housni-Alaoui
  */
-public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo{
+public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
-    @Parameter(readonly = true, defaultValue = "${project}")
-    private MavenProject currentProject;
+  @Parameter(readonly = true, defaultValue = "${project}")
+  private MavenProject currentProject;
 
-    /**
-     * @return The git api allowing to intereact with the current git repository
-     */
-    protected Git git(){
-        Repository gitRepository;
-        try {
-            gitRepository = new FileRepositoryBuilder().findGitDir(currentProject.getBasedir()).build();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not find the git repository. Run 'git init' if you did not.", e);
-        }
-        return Git.wrap(gitRepository);
+  /** @return The git api allowing to intereact with the current git repository */
+  protected Git git() {
+    Repository gitRepository;
+    try {
+      gitRepository = new FileRepositoryBuilder().findGitDir(currentProject.getBasedir()).build();
+    } catch (IOException e) {
+      throw new RuntimeException(
+          "Could not find the git repository. Run 'git init' if you did not.", e);
     }
+    return Git.wrap(gitRepository);
+  }
 
-    protected Path baseDir(){
-        return currentProject.getBasedir().toPath();
-    }
+  protected Path baseDir() {
+    return currentProject.getBasedir().toPath();
+  }
 
-    protected String artifactId(){
-        return currentProject.getArtifactId();
-    }
-
+  protected String artifactId() {
+    return currentProject.getArtifactId();
+  }
 }
