@@ -154,7 +154,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private String mainPreCommitHookCall() {
     return "./"
-        + getOrCreateHooksDirectory().relativize(baseDir())
+        + baseDir().relativize(getOrCreateHooksDirectory())
         + "/"
         + pluginPreCommitHookFileName();
   }

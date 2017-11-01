@@ -30,7 +30,7 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
     try {
       getLog().info("Executing pre-commit hooks");
       doExecute();
-      getLog().info("Executing pre-commit hooks");
+      getLog().info("Executed pre-commit hooks");
     } catch (Exception e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
@@ -56,10 +56,12 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private boolean isFormattable(Path file) {
-    if (!file.getFileName().endsWith(JAVA_EXTENSION)) {
+    if (!file.toString().endsWith(JAVA_EXTENSION)) {
+      getLog().debug(file + " is not a java file");
       return false;
     }
     if (!file.toAbsolutePath().toString().contains(baseDir().toAbsolutePath().toString())) {
+      getLog().debug(file + " does not belong to the current project");
       return false;
     }
     return true;
