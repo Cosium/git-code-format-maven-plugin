@@ -40,12 +40,13 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
     getLog().debug("Formatting source code");
     git()
         .diff()
+        .setCached(true)
         .setShowNameAndStatusOnly(true)
         .call()
         .stream()
         .map(DiffEntry::getNewPath)
         .map(this::toPath)
-        .filter(this::isFormattable)
+        .filter(this::isEligible)
         .forEach(this::format);
   }
 
@@ -54,7 +55,7 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
     return workTree.resolve(diffPath);
   }
 
-  private boolean isFormattable(Path file) {
+  private boolean isEligible(Path file) {
     if (!file.toString().endsWith(JAVA_EXTENSION)) {
       getLog().debug(file + " is not a java file");
       return false;
@@ -78,6 +79,11 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
         Files.newOutputStream(javaFile, StandardOpenOption.TRUNCATE_EXISTING)) {
       IOUtils.write(formattedContent, outputStream);
     } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    try {
+      git().add().addFilepattern(baseDir().relativize(javaFile).toString()).call();
+    } catch (GitAPIException e) {
       throw new RuntimeException(e);
     }
     getLog().info("Formatted '" + javaFile + "'");
