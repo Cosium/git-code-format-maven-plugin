@@ -13,7 +13,7 @@ Drop it in your maven build like that:
 <plugin>
   <groupId>com.cosium.code</groupId>
   <artifactId>maven-git-code-format</artifactId>
-  <version>1.0</version>
+  <version>1.1</version>
   <executions>
     <execution>
       <goals>
