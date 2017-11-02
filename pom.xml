@@ -3,7 +3,7 @@
 
     <groupId>com.cosium.code</groupId>
     <artifactId>maven-git-code-format</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <packaging>maven-plugin</packaging>
 
     <name>maven-git-code-format Maven Plugin</name>
@@ -213,7 +213,7 @@
         <connection>scm:git:https://github.com/Cosium/maven-git-code-format</connection>
         <developerConnection>scm:git:https://github.com/Cosium/maven-git-code-format</developerConnection>
         <url>https://github.com/Cosium/maven-git-code-format</url>
-        <tag>HEAD</tag>
+        <tag>maven-git-code-format-1.1</tag>
     </scm>
 
     <organization>
