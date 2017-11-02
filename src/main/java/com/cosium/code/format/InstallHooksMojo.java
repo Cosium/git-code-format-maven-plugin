@@ -54,7 +54,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
     getLog().debug("Writing plugin pre commit hook file");
     Path pluginPreCommitHook = hooksDirectory.resolve(pluginPreCommitHookFileName());
-    getOrCreateExecutableFile(pluginPreCommitHook);
+    getOrCreateExecutableScript(pluginPreCommitHook);
     Files.write(
         pluginPreCommitHook,
         Arrays.asList(
@@ -64,7 +64,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
     getLog().debug("Checking plugin pre commit hook file call to the main pre commit hook file");
     Path mainPreCommitHook = hooksDirectory.resolve(MAIN_PRE_COMMIT_HOOK);
-    getOrCreateExecutableFile(mainPreCommitHook);
+    getOrCreateExecutableScript(mainPreCommitHook);
     boolean callExists =
         Files.readAllLines(mainPreCommitHook)
             .stream()
@@ -119,11 +119,12 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
    *
    * @param file The file
    */
-  private void getOrCreateExecutableFile(Path file) {
+  private void getOrCreateExecutableScript(Path file) {
     if (!Files.exists(file)) {
       getLog().debug("Creating " + file);
       try {
         Files.createFile(file);
+        Files.write(file, Collections.singleton(SHIBANG), StandardOpenOption.TRUNCATE_EXISTING);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
