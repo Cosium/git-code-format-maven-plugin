@@ -40,7 +40,6 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
     getLog().debug("Formatting source code");
     git()
         .diff()
-        .setCached(true)
         .setShowNameAndStatusOnly(true)
         .call()
         .stream()
