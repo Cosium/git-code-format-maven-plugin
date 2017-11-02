@@ -56,7 +56,7 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private Path toPath(String diffPath) {
-    Path workTree = git().getRepository().getWorkTree().toPath();
+    Path workTree = gitRepository().getWorkTree().toPath();
     return workTree.resolve(diffPath);
   }
 
@@ -86,11 +86,6 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    //    try {
-    //      git().add().addFilepattern(baseDir().relativize(javaFile).toString()).call();
-    //    } catch (GitAPIException e) {
-    //      throw new RuntimeException(e);
-    //    }
     getLog().info("Formatted '" + javaFile + "'");
   }
 }

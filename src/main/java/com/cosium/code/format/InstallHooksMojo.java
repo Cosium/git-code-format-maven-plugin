@@ -101,7 +101,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
    * @return The git hooks directory
    */
   private Path getOrCreateHooksDirectory() {
-    Path hooksDirectory = git().getRepository().getDirectory().toPath().resolve(HOOKS_DIR);
+    Path hooksDirectory = gitRepository().getDirectory().toPath().resolve(HOOKS_DIR);
     if (!Files.exists(hooksDirectory)) {
       getLog().debug("Creating directory " + hooksDirectory);
       try {

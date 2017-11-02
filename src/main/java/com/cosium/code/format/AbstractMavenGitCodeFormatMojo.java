@@ -3,7 +3,6 @@ package com.cosium.code.format;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
@@ -20,8 +19,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
 
-  /** @return The git api allowing to intereact with the current git repository */
-  protected Git git() {
+  protected Repository gitRepository() {
     Repository gitRepository;
     try {
       gitRepository = new FileRepositoryBuilder().findGitDir(currentProject.getBasedir()).build();
@@ -29,7 +27,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
       throw new RuntimeException(
           "Could not find the git repository. Run 'git init' if you did not.", e);
     }
-    return Git.wrap(gitRepository);
+    return gitRepository;
   }
 
   protected Path baseDir() {
