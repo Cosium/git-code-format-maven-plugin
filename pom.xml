@@ -14,6 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <source.level>1.8</source.level>
         <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
+        <org.apache.commons.lang.version>3.4</org.apache.commons.lang.version>
     </properties>
 
     <dependencies>
@@ -21,6 +22,11 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${org.apache.commons.io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${org.apache.commons.lang.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.googlejavaformat</groupId>
