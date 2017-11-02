@@ -2,7 +2,8 @@
 
 # Maven Git Code Format
 
-A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook which will format staged java files.
+A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook. 
+The hook will format staged java files.
 
 ### How to use it
 
