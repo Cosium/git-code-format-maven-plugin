@@ -34,6 +34,11 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private final MavenUtils mavenUtils = new MavenUtils(this::getLog);
 
   public void execute() throws MojoExecutionException {
+    if (!isExecutionRoot()) {
+      getLog().debug("Not in execution root. Do not execute.");
+      return;
+    }
+
     try {
       getLog().info("Installing git hooks");
       doExecute();
@@ -78,9 +83,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     executableUtils.getOrCreateExecutableScript(pluginPreCommitHook);
     try (InputStream inputStream = getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK)) {
       String rawContent = IOUtils.toString(inputStream);
-      String content =
-          String.format(
-              rawContent, mavenUtils.getMavenExecutable().toAbsolutePath());
+      String content = String.format(rawContent, mavenUtils.getMavenExecutable().toAbsolutePath());
       Files.write(pluginPreCommitHook, content.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     }
 

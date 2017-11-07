@@ -46,4 +46,8 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   protected CodeFormatter codeFormatter(){
     return codeFormatter;
   }
+
+  protected boolean isExecutionRoot(){
+    return currentProject.isExecutionRoot();
+  }
 }
