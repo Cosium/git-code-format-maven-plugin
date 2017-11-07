@@ -28,7 +28,6 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.pre-commit.sh";
 
   private static final String MAIN_PRE_COMMIT_HOOK = "pre-commit";
-  private static final String MAVEN_EXECUTABLE_KEY = "maven.executable";
 
   private final ExecutableUtils executableUtils = new ExecutableUtils(this::getLog);
   private final MavenUtils mavenUtils = new MavenUtils(this::getLog);
