@@ -7,8 +7,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.regex.Pattern;
+import java.nio.file.Paths;
 
 /**
  * Created on 01/11/17.
@@ -18,11 +20,9 @@ import java.util.regex.Pattern;
 @Mojo(name = "on-pre-commit", defaultPhase = LifecyclePhase.NONE)
 public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
 
-  private static final String COMMA = ",";
-
-  /** The comma separated staged files list. i.e. "src/main/java/Foo.java,src/main/java/Bar.java" */
-  @Parameter(property = "stagedFiles", required = true)
-  private String stagedFiles;
+  /** The file containing the staged files list */
+  @Parameter(property = "stagedFilesFile", required = true)
+  private String stagedFilesFile;
 
   public void execute() throws MojoExecutionException {
     try {
@@ -34,11 +34,11 @@ public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
     }
   }
 
-  private void doExecute() throws GitAPIException {
-    getLog().debug("Staged files are '" + stagedFiles + "'");
+  private void doExecute() throws GitAPIException, IOException {
+    getLog().debug("Staged files file is '" + stagedFilesFile + "'");
 
-    Pattern.compile(COMMA)
-        .splitAsStream(stagedFiles)
+    Files.readAllLines(Paths.get(stagedFilesFile))
+        .stream()
         .map(StringUtils::trim)
         .filter(StringUtils::isNotBlank)
         .map(this::toPath)

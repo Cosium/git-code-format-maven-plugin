@@ -1,14 +1,12 @@
 #!/bin/bash
 # Retrieve staged files
-STAGED_FILES=$(git diff --cached --name-only)
-# Turn the staged files into a comma separated list
-STAGED_COMMA_SEPARATED_FILES=""
-for file in ${STAGED_FILES}; do
-    STAGED_COMMA_SEPARATED_FILES+="$file,"
-done
+STAGED_FILES_FILE=$(mktemp)
+git diff --cached --name-only > "${STAGED_FILES_FILE}"
 # Process the files
-%s git-code-format:on-pre-commit -DstagedFiles=${STAGED_COMMA_SEPARATED_FILES}
+%s git-code-format:on-pre-commit -DstagedFilesFile=${STAGED_FILES_FILE}
 # Add the files to staging again in case they were modified by the process
-for file in ${STAGED_FILES}; do
-    git add ${file}
-done
+while read file; do
+  git add ${file}
+done <${STAGED_FILES_FILE}
+
+rm ${STAGED_FILES_FILE}
