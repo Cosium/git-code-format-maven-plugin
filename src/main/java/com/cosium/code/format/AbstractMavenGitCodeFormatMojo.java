@@ -1,5 +1,8 @@
 package com.cosium.code.format;
 
+import com.cosium.code.format.formatter.CodeFormatter;
+import com.cosium.code.format.formatter.CompositeCodeFormatter;
+import com.cosium.code.format.formatter.JavaFormatter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -19,6 +22,8 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
 
+  private final CodeFormatter codeFormatter = new CompositeCodeFormatter(new JavaFormatter(this::getLog));
+
   protected Repository gitRepository() {
     Repository gitRepository;
     try {
@@ -36,5 +41,9 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
   protected String artifactId() {
     return currentProject.getArtifactId();
+  }
+
+  protected CodeFormatter codeFormatter(){
+    return codeFormatter;
   }
 }
