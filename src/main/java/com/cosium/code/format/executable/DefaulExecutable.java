@@ -101,10 +101,10 @@ class DefaulExecutable implements Executable {
     String result;
     if (o instanceof Path) {
       Path path = (Path) o;
-      result = path.toAbsolutePath().toString();
+      result = "\"" + path.toAbsolutePath().toString() + "\"";
     } else {
       result = String.valueOf(o);
     }
-    return "\"" + StringUtils.replace(result, "\\", "/") + "\"";
+    return StringUtils.replace(result, "\\", "/");
   }
 }
