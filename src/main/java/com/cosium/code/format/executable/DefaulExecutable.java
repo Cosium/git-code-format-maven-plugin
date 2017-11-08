@@ -70,6 +70,13 @@ class DefaulExecutable implements Executable {
   }
 
   @Override
+  public Executable truncate() throws IOException {
+    log.get().debug("Truncating '" + file + "'");
+    Files.write(file, StringUtils.EMPTY.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+    return this;
+  }
+
+  @Override
   public Executable truncateWithTemplate(Supplier<InputStream> template, Object... values)
       throws IOException {
     try (InputStream inputStream = template.get()) {
@@ -101,10 +108,15 @@ class DefaulExecutable implements Executable {
     String result;
     if (o instanceof Path) {
       Path path = (Path) o;
-      result = "\"" + path.toAbsolutePath().toString() + "\"";
+      result = path.toAbsolutePath().toString();
     } else {
       result = String.valueOf(o);
     }
-    return StringUtils.replace(result, "\\", "/");
+    return "\"" + StringUtils.replace(result, "\\", "/") + "\"";
+  }
+
+  @Override
+  public String toString() {
+    return file.toString();
   }
 }

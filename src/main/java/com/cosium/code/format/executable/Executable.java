@@ -11,14 +11,26 @@ import java.util.function.Supplier;
  */
 public interface Executable {
 
+  /**
+   * Erase the executable content
+   * @return The executable
+   */
+  Executable truncate() throws IOException;
+
+  /**
+   * @param template The template to truncate with
+   * @param values The values to use for the template interpolations
+   * @return The executable
+   * @throws IOException
+   */
   Executable truncateWithTemplate(Supplier<InputStream> template, Object... values)
       throws IOException;
 
   /**
    * Appends a command call to the executable
    *
-   * @param commandCall
-   * @return
+   * @param commandCall The command call to append to the executable
+   * @return The executable
    * @throws IOException
    */
   Executable appendCommandCall(String commandCall) throws IOException;
