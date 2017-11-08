@@ -7,13 +7,13 @@ The hook will format staged java files.
 
 ### How to use it
 
-Drop it in your maven build like that:
+Drop it in your maven build :
 
 ```xml
 <plugin>
   <groupId>com.cosium.code</groupId>
   <artifactId>maven-git-code-format</artifactId>
-  <version>1.11</version>
+  <version>1.12</version>
   <executions>
     <execution>
       <goals>
@@ -26,7 +26,7 @@ Drop it in your maven build like that:
 
 ### How it works
 
-On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this:
+On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this :
 ```bash
 #!/bin/bash
 /usr/share/apache-maven-3.5.0/bin/mvn git-code-format:on-pre-commit
