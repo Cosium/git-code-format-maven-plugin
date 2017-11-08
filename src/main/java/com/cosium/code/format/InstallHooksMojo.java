@@ -1,16 +1,13 @@
 package com.cosium.code.format;
 
-import org.apache.commons.io.IOUtils;
+import com.cosium.code.format.executable.ExecutableManager;
+import com.cosium.code.format.utils.MavenUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.Collections;
 
 /**
  * Installs git hooks on each initialization. Hooks are always overriden in case changes in:
@@ -23,13 +20,11 @@ import java.util.Collections;
 @Mojo(name = "install-hooks", defaultPhase = LifecyclePhase.INITIALIZE)
 public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
-  private static final String HOOKS_DIR = "hooks";
-
   private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.pre-commit.sh";
 
   private static final String MAIN_PRE_COMMIT_HOOK = "pre-commit";
 
-  private final ExecutableUtils executableUtils = new ExecutableUtils(this::getLog);
+  private final ExecutableManager executableManager = new ExecutableManager(this::getLog);
   private final MavenUtils mavenUtils = new MavenUtils(this::getLog);
 
   public void execute() throws MojoExecutionException {
@@ -57,35 +52,18 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private void configureMainPreCommitHook(Path hooksDirectory) throws IOException {
     getLog().debug("Checking plugin pre commit hook file call to the main pre commit hook file");
-    Path mainPreCommitHook = hooksDirectory.resolve(MAIN_PRE_COMMIT_HOOK);
-    executableUtils.getOrCreateExecutableScript(mainPreCommitHook);
-    boolean callExists =
-        Files.readAllLines(mainPreCommitHook)
-            .stream()
-            .anyMatch(s -> s.contains(mainPreCommitHookCall()));
-    if (callExists) {
-      getLog().debug("Call already exists in main pre commit hook");
-    } else {
-      getLog().debug("No call found in the main pre commit hook.");
-      getLog().debug("Appending the call.");
-      Files.write(
-          mainPreCommitHook,
-          Collections.singletonList(mainPreCommitHookCall()),
-          StandardOpenOption.APPEND);
-      getLog().debug("Appended the call.");
-    }
+    executableManager
+        .getOrCreateExecutableScript(hooksDirectory.resolve(MAIN_PRE_COMMIT_HOOK))
+        .appendCommandCall(mainPreCommitHookCall());
   }
 
   private void writePluginPreCommitHook(Path hooksDirectory) throws IOException {
     getLog().debug("Writing plugin pre commit hook file");
-    Path pluginPreCommitHook = hooksDirectory.resolve(pluginPreCommitHookFileName());
-    executableUtils.getOrCreateExecutableScript(pluginPreCommitHook);
-    try (InputStream inputStream = getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK)) {
-      String rawContent = IOUtils.toString(inputStream);
-      String content = String.format(rawContent, mavenUtils.getMavenExecutable().toAbsolutePath());
-      Files.write(pluginPreCommitHook, content.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
-    }
-
+    executableManager
+        .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
+        .truncateWithTemplate(
+            () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
+            mavenUtils.getMavenExecutable().toAbsolutePath());
     getLog().debug("Written plugin pre commit hook file");
   }
 
@@ -94,26 +72,6 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     Path hooksDirectory;
     hooksDirectory = getOrCreateHooksDirectory();
     getLog().debug("Prepared git hook directory");
-    return hooksDirectory;
-  }
-
-  /**
-   * Get or creates the git hooks directory
-   *
-   * @return The git hooks directory
-   */
-  private Path getOrCreateHooksDirectory() {
-    Path hooksDirectory = gitRepository().getDirectory().toPath().resolve(HOOKS_DIR);
-    if (!Files.exists(hooksDirectory)) {
-      getLog().debug("Creating directory " + hooksDirectory);
-      try {
-        Files.createDirectories(hooksDirectory);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    } else {
-      getLog().debug(hooksDirectory + "already exists");
-    }
     return hooksDirectory;
   }
 

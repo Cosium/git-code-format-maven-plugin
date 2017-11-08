@@ -10,6 +10,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -19,10 +20,11 @@ import java.nio.file.Path;
  */
 public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
+  private static final String HOOKS_DIR = "hooks";
+  private final CodeFormatter codeFormatter =
+      new CompositeCodeFormatter(new JavaFormatter(this::getLog));
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
-
-  private final CodeFormatter codeFormatter = new CompositeCodeFormatter(new JavaFormatter(this::getLog));
 
   protected Repository gitRepository() {
     Repository gitRepository;
@@ -43,11 +45,31 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
     return currentProject.getArtifactId();
   }
 
-  protected CodeFormatter codeFormatter(){
+  protected CodeFormatter codeFormatter() {
     return codeFormatter;
   }
 
-  protected boolean isExecutionRoot(){
+  protected boolean isExecutionRoot() {
     return currentProject.isExecutionRoot();
+  }
+
+  /**
+   * Get or creates the git hooks directory
+   *
+   * @return The git hooks directory
+   */
+  protected Path getOrCreateHooksDirectory() {
+    Path hooksDirectory = gitRepository().getDirectory().toPath().resolve(HOOKS_DIR);
+    if (!Files.exists(hooksDirectory)) {
+      getLog().debug("Creating directory " + hooksDirectory);
+      try {
+        Files.createDirectories(hooksDirectory);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      getLog().debug(hooksDirectory + "already exists");
+    }
+    return hooksDirectory;
   }
 }

@@ -1,0 +1,32 @@
+package com.cosium.code.format.executable;
+
+import org.apache.maven.plugin.logging.Log;
+
+import java.nio.file.Path;
+import java.util.function.Supplier;
+
+import static java.util.Objects.requireNonNull;
+
+/**
+ * Created on 02/11/17.
+ *
+ * @author Reda.Housni-Alaoui
+ */
+public class ExecutableManager {
+
+  private final Supplier<Log> log;
+
+  public ExecutableManager(Supplier<Log> log) {
+    requireNonNull(log);
+    this.log = log;
+  }
+
+  /**
+   * Get or creates a file then mark it as executable.
+   *
+   * @param file The file
+   */
+  public Executable getOrCreateExecutableScript(Path file) {
+    return new DefaulExecutable(log, file);
+  }
+}
