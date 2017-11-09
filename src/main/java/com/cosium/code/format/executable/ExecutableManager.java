@@ -2,6 +2,7 @@ package com.cosium.code.format.executable;
 
 import org.apache.maven.plugin.logging.Log;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
@@ -26,7 +27,7 @@ public class ExecutableManager {
    *
    * @param file The file
    */
-  public Executable getOrCreateExecutableScript(Path file) {
+  public Executable getOrCreateExecutableScript(Path file) throws IOException {
     return new DefaulExecutable(log, file);
   }
 }

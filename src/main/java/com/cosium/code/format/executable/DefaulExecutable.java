@@ -29,7 +29,7 @@ class DefaulExecutable implements Executable {
   private final Supplier<Log> log;
   private final Path file;
 
-  DefaulExecutable(Supplier<Log> log, Path file) {
+  DefaulExecutable(Supplier<Log> log, Path file) throws IOException {
     requireNonNull(log);
     requireNonNull(file);
     this.log = log;
@@ -38,12 +38,8 @@ class DefaulExecutable implements Executable {
 
     if (!Files.exists(file)) {
       this.log.get().debug("Creating " + file);
-      try {
-        Files.createFile(file);
-        Files.write(file, Collections.singleton(SHIBANG), StandardOpenOption.TRUNCATE_EXISTING);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      Files.createFile(file);
+      truncate();
     } else {
       this.log.get().debug(file + " already exists");
     }
@@ -54,25 +50,19 @@ class DefaulExecutable implements Executable {
       permissions = Files.getPosixFilePermissions(file);
     } catch (UnsupportedOperationException ignored) {
       return;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
 
     permissions.add(PosixFilePermission.OWNER_EXECUTE);
     permissions.add(PosixFilePermission.GROUP_EXECUTE);
     permissions.add(PosixFilePermission.OTHERS_EXECUTE);
 
-    try {
-      Files.setPosixFilePermissions(file, permissions);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    Files.setPosixFilePermissions(file, permissions);
   }
 
   @Override
   public Executable truncate() throws IOException {
     log.get().debug("Truncating '" + file + "'");
-    Files.write(file, StringUtils.EMPTY.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+    Files.write(file, Collections.singleton(SHIBANG), StandardOpenOption.TRUNCATE_EXISTING);
     return this;
   }
 
