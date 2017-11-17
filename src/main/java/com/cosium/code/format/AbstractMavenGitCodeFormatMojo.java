@@ -4,6 +4,8 @@ import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CompositeCodeFormatter;
 import com.cosium.code.format.formatter.JavaFormatter;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.jgit.lib.Repository;
@@ -12,6 +14,9 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created on 01/11/17.
@@ -23,10 +28,11 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   private static final String HOOKS_DIR = "hooks";
   private final CodeFormatter codeFormatter =
       new CompositeCodeFormatter(new JavaFormatter(this::getLog));
+
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
 
-  protected Repository gitRepository() {
+  protected final Repository gitRepository() {
     Repository gitRepository;
     try {
       gitRepository = new FileRepositoryBuilder().findGitDir(currentProject.getBasedir()).build();
@@ -37,19 +43,19 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
     return gitRepository;
   }
 
-  protected Path baseDir() {
+  protected final Path baseDir() {
     return currentProject.getBasedir().toPath();
   }
 
-  protected String artifactId() {
+  protected final String artifactId() {
     return currentProject.getArtifactId();
   }
 
-  protected CodeFormatter codeFormatter() {
+  protected final CodeFormatter codeFormatter() {
     return codeFormatter;
   }
 
-  protected boolean isExecutionRoot() {
+  protected final boolean isExecutionRoot(){
     return currentProject.isExecutionRoot();
   }
 
@@ -58,7 +64,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
    *
    * @return The git hooks directory
    */
-  protected Path getOrCreateHooksDirectory() {
+  protected final Path getOrCreateHooksDirectory() {
     Path hooksDirectory = gitRepository().getDirectory().toPath().resolve(HOOKS_DIR);
     if (!Files.exists(hooksDirectory)) {
       getLog().debug("Creating directory " + hooksDirectory);
@@ -68,7 +74,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
         throw new RuntimeException(e);
       }
     } else {
-      getLog().debug(hooksDirectory + "already exists");
+      getLog().debug(hooksDirectory + " already exists");
     }
     return hooksDirectory;
   }

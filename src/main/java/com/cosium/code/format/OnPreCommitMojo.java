@@ -18,23 +18,23 @@ import java.nio.file.Paths;
  * @author Reda.Housni-Alaoui
  */
 @Mojo(name = "on-pre-commit", defaultPhase = LifecyclePhase.NONE)
-public class OnPreCommitMojo extends AbstractMavenGitCodeFormatMojo {
+public class OnPreCommitMojo extends AbstractModulMavenGitCodeFormatMojo {
 
   /** The file containing the staged files list */
   @Parameter(property = "stagedFilesFile", required = true)
   private String stagedFilesFile;
 
-  public void execute() throws MojoExecutionException {
+  protected void doExecute() throws MojoExecutionException {
     try {
       getLog().info("Executing pre-commit hooks");
-      doExecute();
+      onPreCommit();
       getLog().info("Executed pre-commit hooks");
     } catch (Exception e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
   }
 
-  private void doExecute() throws GitAPIException, IOException {
+  private void onPreCommit() throws GitAPIException, IOException {
     getLog().debug("Staged files file is '" + stagedFilesFile + "'");
 
     Files.readAllLines(Paths.get(stagedFilesFile))

@@ -16,13 +16,13 @@ import java.nio.file.attribute.BasicFileAttributes;
  * @author Reda.Housni-Alaoui
  */
 @Mojo(name = "format-code", defaultPhase = LifecyclePhase.NONE)
-public class FormatCodeMojo extends AbstractMavenGitCodeFormatMojo {
+public class FormatCodeMojo extends AbstractModulMavenGitCodeFormatMojo {
 
   @Parameter(property = "globPattern", required = true)
   private String globPattern;
 
   @Override
-  public void execute() throws MojoExecutionException, MojoFailureException {
+  protected void doExecute() throws MojoExecutionException, MojoFailureException {
     String pattern = "glob:" + globPattern;
     getLog().debug("Using pattern '" + pattern + "'");
     PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + globPattern);
