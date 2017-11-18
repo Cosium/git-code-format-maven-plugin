@@ -15,7 +15,7 @@ import java.nio.file.attribute.BasicFileAttributes;
  *
  * @author Reda.Housni-Alaoui
  */
-@Mojo(name = "format-code", defaultPhase = LifecyclePhase.NONE)
+@Mojo(name = "format-code", defaultPhase = LifecyclePhase.NONE, threadSafe = true)
 public class FormatCodeMojo extends AbstractModulMavenGitCodeFormatMojo {
 
   @Parameter(property = "globPattern", required = true)

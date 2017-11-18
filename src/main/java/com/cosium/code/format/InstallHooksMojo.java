@@ -19,7 +19,7 @@ import java.nio.file.Path;
  *   <li>plugin structure
  * </ul>
  */
-@Mojo(name = "install-hooks", defaultPhase = LifecyclePhase.INITIALIZE)
+@Mojo(name = "install-hooks", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true)
 public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.pre-commit.sh";

@@ -17,7 +17,7 @@ import java.nio.file.Paths;
  *
  * @author Reda.Housni-Alaoui
  */
-@Mojo(name = "on-pre-commit", defaultPhase = LifecyclePhase.NONE)
+@Mojo(name = "on-pre-commit", defaultPhase = LifecyclePhase.NONE, threadSafe = true)
 public class OnPreCommitMojo extends AbstractModulMavenGitCodeFormatMojo {
 
   /** The file containing the staged files list */
