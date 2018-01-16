@@ -10,6 +10,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Installs git hooks on each initialization. Hooks are always overriden in case changes in:
@@ -26,7 +31,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private static final String PRE_COMMIT_HOOK_BASE_SCRIPT = "pre-commit";
 
   private final ExecutableManager executableManager = new ExecutableManager(this::getLog);
-  private final MavenUtils mavenUtils = new MavenUtils(this::getLog);
+  private final MavenUtils mavenUtils = new MavenUtils();
 
   /**
    * True to truncate hooks base scripts before each install. <br>
@@ -34,6 +39,10 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
    */
   @Parameter(property = "truncateHooksBaseScripts", defaultValue = "false")
   private boolean truncateHooksBaseScripts;
+
+  /** The list of properties to propagate to the hooks */
+  @Parameter(property = "propertiesToPropagate")
+  private String[] propertiesToPropagate;
 
   public void execute() throws MojoExecutionException {
     if (!isExecutionRoot()) {
@@ -60,7 +69,8 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private void configurePreCommitHookBaseScript(Path hooksDirectory) throws IOException {
     Executable basePreCommitHook =
-        executableManager.getOrCreateExecutableScript(hooksDirectory.resolve(PRE_COMMIT_HOOK_BASE_SCRIPT));
+        executableManager.getOrCreateExecutableScript(
+            hooksDirectory.resolve(PRE_COMMIT_HOOK_BASE_SCRIPT));
     getLog().debug("Configuring '" + basePreCommitHook + "'");
     if (truncateHooksBaseScripts) {
       basePreCommitHook.truncate();
@@ -74,8 +84,21 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
         .truncateWithTemplate(
             () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
-            mavenUtils.getMavenExecutable().toAbsolutePath());
+            mavenUtils.getMavenExecutable().toAbsolutePath(),
+            mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
+  }
+
+  private String mavenCliArguments() {
+
+
+    return ofNullable(propertiesToPropagate)
+        .map(Arrays::asList)
+        .orElse(Collections.emptyList())
+        .stream()
+        .filter(prop -> System.getProperty(prop) != null)
+        .map(prop -> "-D" + prop + "=" + System.getProperty(prop))
+        .collect(Collectors.joining(" "));
   }
 
   private Path prepareHooksDirectory() {

@@ -5,12 +5,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * Created on 01/11/17.
@@ -34,10 +34,13 @@ public class OnPreCommitMojo extends AbstractModulMavenGitCodeFormatMojo {
     }
   }
 
-  private void onPreCommit() throws GitAPIException, IOException {
+  private void onPreCommit() throws IOException {
     getLog().debug("Staged files file is '" + stagedFilesFile + "'");
 
-    Files.readAllLines(Paths.get(stagedFilesFile))
+    List<String> content = Files.readAllLines(Paths.get(stagedFilesFile));
+    getLog().debug("Staged files content: " + content.toString());
+
+    content
         .stream()
         .map(StringUtils::trim)
         .filter(StringUtils::isNotBlank)

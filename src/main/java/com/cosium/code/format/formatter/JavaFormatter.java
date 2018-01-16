@@ -28,9 +28,13 @@ public class JavaFormatter implements CodeFormatter {
     this.log = log;
   }
 
+  private boolean isJavaFile(Path file) {
+    return file.toString().endsWith(JAVA_EXTENSION);
+  }
+
   @Override
   public void format(Path file) {
-    if (!file.toString().endsWith(JAVA_EXTENSION)) {
+    if (!isJavaFile(file)) {
       log.get().debug(file + " is not a java file");
       return;
     }
@@ -49,5 +53,22 @@ public class JavaFormatter implements CodeFormatter {
       throw new RuntimeException(e);
     }
     log.get().info("Formatted '" + file + "'");
+  }
+
+  @Override
+  public boolean validate(Path file) {
+    if (!isJavaFile(file)) {
+      log.get().debug(file + " is not a java file");
+      return true;
+    }
+
+    log.get().info("Validating '" + file + "'");
+    try (InputStream inputStream = Files.newInputStream(file)) {
+      String unformatterContent = IOUtils.toString(inputStream);
+      String formattedContent = new Formatter().formatSource(unformatterContent);
+      return unformatterContent.equals(formattedContent);
+    } catch (IOException | FormatterException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

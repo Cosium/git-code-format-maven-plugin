@@ -22,4 +22,14 @@ public class CompositeCodeFormatter implements CodeFormatter {
   public void format(Path file) {
     formatters.forEach(formatter -> formatter.format(file));
   }
+
+  @Override
+  public boolean validate(Path file) {
+    return formatters
+        .stream()
+        .map(codeFormatter -> codeFormatter.validate(file))
+        .filter(valid -> !valid)
+        .findFirst()
+        .orElse(true);
+  }
 }

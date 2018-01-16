@@ -10,4 +10,6 @@ import java.nio.file.Path;
 public interface CodeFormatter {
 
   void format(Path file);
+
+  boolean validate(Path file);
 }

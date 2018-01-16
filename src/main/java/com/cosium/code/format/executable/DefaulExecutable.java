@@ -80,7 +80,7 @@ class DefaulExecutable implements Executable {
 
   @Override
   public Executable appendCommandCall(String commandCall) throws IOException {
-    String unixCommandCall = unixifyPath(commandCall);
+    String unixCommandCall = unixifyPath(commandCall, true);
     boolean callExists =
         Files.readAllLines(file).stream().anyMatch(s -> s.contains(unixCommandCall));
     if (callExists) {
@@ -95,6 +95,14 @@ class DefaulExecutable implements Executable {
   }
 
   private String unixifyPath(Object o) {
+    return unixifyPath(o, false);
+  }
+
+  private String unixifyPath(Object o, boolean force) {
+    if (!force && !(o instanceof Path)) {
+      return String.valueOf(o);
+    }
+
     String result;
     if (o instanceof Path) {
       Path path = (Path) o;
