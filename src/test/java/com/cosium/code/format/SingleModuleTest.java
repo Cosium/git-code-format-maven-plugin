@@ -55,26 +55,4 @@ public class SingleModuleTest extends AbstractTest {
         .execute()
         .assertErrorFreeLog();
   }
-
-  @Test(expected = AssertionError.class)
-  public void GIVEN_bad_formatted_file_WHEN_committing_it_THEN_it_should_have_correct_format()
-      throws Exception {
-    buildMavenExecution()
-        .withCliOptions(
-            GROUP_ID + ":" + ARTIFACT_ID + ":validate-code-format", "-DglobPattern=**/*")
-        .execute()
-        .assertLogText("[ERROR]");
-
-    buildMavenExecution().execute("initialize").assertErrorFreeLog();
-
-    touch(Paths.get("src/main/java").resolve("BadFormat.java"));
-
-    getGit().commit().setAll(true).setMessage("Trying to commit badly formatted file").call();
-
-    buildMavenExecution()
-        .withCliOptions(
-            GROUP_ID + ":" + ARTIFACT_ID + ":validate-code-format", "-DglobPattern=**/*")
-        .execute()
-        .assertErrorFreeLog();
-  }
 }
