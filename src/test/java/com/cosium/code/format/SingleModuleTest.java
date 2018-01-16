@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.nio.file.Paths;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class SingleModuleTest extends AbstractTest {
 
   public SingleModuleTest(MavenRuntime.MavenRuntimeBuilder mavenBuilder) throws Exception {
@@ -34,7 +36,7 @@ public class SingleModuleTest extends AbstractTest {
 
   @Test
   public void
-      GIVEN_bad_formatted_file_WHEN_adding_then_committing_it_THEN_it_should_have_correct_format()
+      GIVEN_bad_formatted_file_WHEN_adding_and_committing_it_THEN_it_should_have_correct_format()
           throws Exception {
     buildMavenExecution()
         .withCliOptions(
@@ -55,4 +57,5 @@ public class SingleModuleTest extends AbstractTest {
         .execute()
         .assertErrorFreeLog();
   }
+
 }

@@ -30,6 +30,9 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.pre-commit.sh";
   private static final String PRE_COMMIT_HOOK_BASE_SCRIPT = "pre-commit";
 
+  private static final String BASE_PLUGIN_POST_COMMIT_HOOK = "maven-git-code-format.post-commit.sh";
+  private static final String POST_COMMIT_HOOK_BASE_SCRIPT = "post-commit";
+
   private final ExecutableManager executableManager = new ExecutableManager(this::getLog);
   private final MavenUtils mavenUtils = new MavenUtils();
 
@@ -62,23 +65,12 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private void doExecute() throws IOException {
     Path hooksDirectory = prepareHooksDirectory();
 
-    writePluginPreCommitHook(hooksDirectory);
+    writePluginHooks(hooksDirectory);
 
-    configurePreCommitHookBaseScript(hooksDirectory);
+    configureHookBaseScripts(hooksDirectory);
   }
 
-  private void configurePreCommitHookBaseScript(Path hooksDirectory) throws IOException {
-    Executable basePreCommitHook =
-        executableManager.getOrCreateExecutableScript(
-            hooksDirectory.resolve(PRE_COMMIT_HOOK_BASE_SCRIPT));
-    getLog().debug("Configuring '" + basePreCommitHook + "'");
-    if (truncateHooksBaseScripts) {
-      basePreCommitHook.truncate();
-    }
-    basePreCommitHook.appendCommandCall(preCommitHookBaseScriptCall());
-  }
-
-  private void writePluginPreCommitHook(Path hooksDirectory) throws IOException {
+  private void writePluginHooks(Path hooksDirectory) throws IOException {
     getLog().debug("Writing plugin pre commit hook file");
     executableManager
         .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
@@ -87,10 +79,35 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
             mavenUtils.getMavenExecutable().toAbsolutePath(),
             mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
+
+    getLog().debug("Writing plugin post commit hook file");
+    executableManager
+        .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPostCommitHookFileName()))
+        .truncateWithTemplate(() -> getClass().getResourceAsStream(BASE_PLUGIN_POST_COMMIT_HOOK));
+    getLog().debug("Written plugin post commit hook file");
+  }
+
+  private void configureHookBaseScripts(Path hooksDirectory) throws IOException {
+    Executable basePreCommitHook =
+        executableManager.getOrCreateExecutableScript(
+            hooksDirectory.resolve(PRE_COMMIT_HOOK_BASE_SCRIPT));
+    getLog().debug("Configuring '" + basePreCommitHook + "'");
+    if (truncateHooksBaseScripts) {
+      basePreCommitHook.truncate();
+    }
+    basePreCommitHook.appendCommandCall(preCommitHookBaseScriptCall());
+
+    Executable basePostCommitHook =
+            executableManager.getOrCreateExecutableScript(
+                    hooksDirectory.resolve(POST_COMMIT_HOOK_BASE_SCRIPT));
+    getLog().debug("Configuring '" + basePostCommitHook + "'");
+    if (truncateHooksBaseScripts) {
+      basePostCommitHook.truncate();
+    }
+    basePostCommitHook.appendCommandCall(postCommitHookBaseScriptCall());
   }
 
   private String mavenCliArguments() {
-
 
     return ofNullable(propertiesToPropagate)
         .map(Arrays::asList)
@@ -116,7 +133,18 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         + pluginPreCommitHookFileName();
   }
 
+  private String postCommitHookBaseScriptCall() {
+    return "./"
+            + baseDir().relativize(getOrCreateHooksDirectory())
+            + "/"
+            + pluginPostCommitHookFileName();
+  }
+
   private String pluginPreCommitHookFileName() {
     return artifactId() + "." + BASE_PLUGIN_PRE_COMMIT_HOOK;
+  }
+
+  private String pluginPostCommitHookFileName(){
+    return artifactId() + "." + BASE_PLUGIN_POST_COMMIT_HOOK;
   }
 }
