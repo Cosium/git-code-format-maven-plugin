@@ -47,13 +47,13 @@ public class JavaFormatter implements CodeFormatter {
     log.get().info("Formatting '" + file + "'");
     final String formattedContent;
     try (InputStream inputStream = Files.newInputStream(file)) {
-      formattedContent = new Formatter().formatSource(IOUtils.toString(inputStream));
+      formattedContent = new Formatter().formatSource(IOUtils.toString(inputStream, "UTF-8"));
     } catch (IOException | FormatterException e) {
       throw new RuntimeException(e);
     }
     try (OutputStream outputStream =
         Files.newOutputStream(file, StandardOpenOption.TRUNCATE_EXISTING)) {
-      IOUtils.write(formattedContent, outputStream);
+      IOUtils.write(formattedContent, outputStream, "UTF-8");
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
