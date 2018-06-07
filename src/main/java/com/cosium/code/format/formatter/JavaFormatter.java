@@ -39,6 +39,11 @@ public class JavaFormatter implements CodeFormatter {
       return;
     }
 
+    if (!Files.exists(file)) {
+      log.get().debug(file + " doesn't exist");
+      return;
+    }
+
     log.get().info("Formatting '" + file + "'");
     final String formattedContent;
     try (InputStream inputStream = Files.newInputStream(file)) {
