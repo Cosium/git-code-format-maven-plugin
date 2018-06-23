@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Retrieve staged files
 STAGED_FILES_FILE=$(mktemp)
 git diff --cached --name-only > "${STAGED_FILES_FILE}"
