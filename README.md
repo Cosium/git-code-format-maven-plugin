@@ -5,26 +5,42 @@
 A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook.  
 The hook will format staged java files.
 
-### How to use it
+### Automic code format activation
 
-Drop it in your maven build :
+Add this in your maven project **root** pom.xml :
 
 ```xml
-<plugin>
-  <groupId>com.cosium.code</groupId>
-  <artifactId>maven-git-code-format</artifactId>
-  <version>${maven-git-code-format.version}</version>
-  <executions>
-    <execution>
-      <goals>
-        <goal>install-hooks</goal>
-      </goals>
-    </execution>
-  </executions>
-</plugin>
+<build>
+  <plugins>
+    <plugin>
+      <groupId>com.cosium.code</groupId>
+      <artifactId>maven-git-code-format</artifactId>
+      <version>${maven-git-code-format.version}</version>
+      <executions>
+        <execution>
+          <goals>
+            <goal>install-hooks</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+  </plugins>
+</build>
 ```
 
-### How it works
+### Manual code formatting
+
+```console
+mvn git-code-format:format-code -DglobPattern=**/*
+```
+
+### Manual code format validation
+
+```console
+mvn git-code-format:validate-code-format -DglobPattern=**/*
+```
+
+### How the hook works
 
 On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this :
 ```bash
