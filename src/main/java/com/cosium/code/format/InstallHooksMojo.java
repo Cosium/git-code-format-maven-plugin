@@ -1,11 +1,5 @@
 package com.cosium.code.format;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.stream.Collectors;
-
 import com.cosium.code.format.executable.Executable;
 import com.cosium.code.format.executable.ExecutableManager;
 import com.cosium.code.format.utils.MavenUtils;
@@ -13,6 +7,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
@@ -128,14 +128,14 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private String preCommitHookBaseScriptCall() {
     return "./"
-        + gitBaseDir().relativize(getOrCreateHooksDirectory())
+        + baseDir().relativize(getOrCreateHooksDirectory())
         + "/"
         + pluginPreCommitHookFileName();
   }
 
   private String postCommitHookBaseScriptCall() {
     return "./"
-            + gitBaseDir().relativize(getOrCreateHooksDirectory())
+            + baseDir().relativize(getOrCreateHooksDirectory())
             + "/"
             + pluginPostCommitHookFileName();
   }

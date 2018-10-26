@@ -1,5 +1,10 @@
 package com.cosium.code.format.formatter;
 
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
+import org.apache.commons.io.IOUtils;
+import org.apache.maven.plugin.logging.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,11 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.function.Supplier;
-
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.logging.Log;
 
 /**
  * Created on 07/11/17.
@@ -47,7 +47,7 @@ public class JavaFormatter implements CodeFormatter {
     log.get().info("Formatting '" + file + "'");
     final String formattedContent;
     try (InputStream inputStream = Files.newInputStream(file)) {
-      formattedContent = new Formatter().formatSourceAndFixImports(IOUtils.toString(inputStream, "UTF-8"));
+      formattedContent = new Formatter().formatSource(IOUtils.toString(inputStream, "UTF-8"));
     } catch (IOException | FormatterException e) {
       throw new RuntimeException(e);
     }
@@ -70,7 +70,7 @@ public class JavaFormatter implements CodeFormatter {
     log.get().info("Validating '" + file + "'");
     try (InputStream inputStream = Files.newInputStream(file)) {
       String unformatterContent = IOUtils.toString(inputStream);
-      String formattedContent = new Formatter().formatSourceAndFixImports(unformatterContent);
+      String formattedContent = new Formatter().formatSource(unformatterContent);
       return unformatterContent.equals(formattedContent);
     } catch (IOException | FormatterException e) {
       throw new RuntimeException(e);
