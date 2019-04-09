@@ -1,4 +1,5 @@
 [![Maven Central Latest](https://img.shields.io/maven-central/v/com.cosium.code/maven-git-code-format.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cosium.code%22%20AND%20a%3A%22maven-git-code-format%22)
+[![Build Status](https://travis-ci.org/Cosium/maven-git-code-format.svg?branch=master)](https://travis-ci.org/Cosium/maven-git-code-format)
 
 # Maven Git Code Format
 
