@@ -5,7 +5,12 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 /**
@@ -24,6 +29,8 @@ public abstract class AbstractFormatMojo extends AbstractModulMavenGitCodeFormat
     getLog().debug("Using pattern '" + pattern + "'");
     PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + globPattern);
 
+    Path targetDir = targetDir();
+
     try {
       Files.walkFileTree(
           baseDir(),
@@ -31,12 +38,16 @@ public abstract class AbstractFormatMojo extends AbstractModulMavenGitCodeFormat
 
             @Override
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
-              if (pathMatcher.matches(path)) {
-                try {
-                  process(path);
-                } catch (MojoExecutionException | MojoFailureException e) {
-                  throw new RuntimeException(e);
-                }
+              if (path.startsWith(targetDir)) {
+                return FileVisitResult.CONTINUE;
+              }
+              if (!pathMatcher.matches(path)) {
+                return FileVisitResult.CONTINUE;
+              }
+              try {
+                process(path);
+              } catch (MojoExecutionException | MojoFailureException e) {
+                throw new RuntimeException(e);
               }
               return FileVisitResult.CONTINUE;
             }

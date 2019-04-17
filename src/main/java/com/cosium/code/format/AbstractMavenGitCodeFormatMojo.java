@@ -1,9 +1,5 @@
 package com.cosium.code.format;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CompositeCodeFormatter;
 import com.cosium.code.format.formatter.JavaFormatter;
@@ -12,6 +8,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created on 01/11/17.
@@ -42,6 +43,10 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
     return currentProject.getBasedir().toPath();
   }
 
+  protected final Path targetDir() {
+    return Paths.get(currentProject.getBuild().getDirectory());
+  }
+
   protected final String artifactId() {
     return currentProject.getArtifactId();
   }
@@ -50,7 +55,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
     return codeFormatter;
   }
 
-  protected final boolean isExecutionRoot(){
+  protected final boolean isExecutionRoot() {
     return currentProject.isExecutionRoot();
   }
 

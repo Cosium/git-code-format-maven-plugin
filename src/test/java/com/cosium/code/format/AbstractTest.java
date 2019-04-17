@@ -87,7 +87,7 @@ public abstract class AbstractTest {
   }
 
   protected void touch(Path sourceName) throws IOException {
-    Path sourceFile = projectSource.resolve(sourceName);
+    Path sourceFile = resolveRelativelyToProjectRoot(sourceName);
     String content;
     try (InputStream inputStream = Files.newInputStream(sourceFile)) {
       content = IOUtils.toString(inputStream) + "\n//Hello world";
@@ -95,6 +95,10 @@ public abstract class AbstractTest {
     try (OutputStream outputStream = Files.newOutputStream(sourceFile)) {
       IOUtils.write(content, outputStream);
     }
+  }
+
+  protected Path resolveRelativelyToProjectRoot(Path sourceName) {
+    return projectSource.resolve(sourceName);
   }
 
   @After

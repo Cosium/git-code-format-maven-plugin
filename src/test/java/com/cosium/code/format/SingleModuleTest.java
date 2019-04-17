@@ -1,8 +1,12 @@
 package com.cosium.code.format;
 
 import io.takari.maven.testing.executor.MavenRuntime;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,4 +62,27 @@ public class SingleModuleTest extends AbstractTest {
         .assertErrorFreeLog();
   }
 
+  @Test
+  public void
+      GIVEN_bad_formatted_generated_file_WHEN_formatting_THEN_generated_file_should_be_skipped()
+          throws Exception {
+    Path generatedSourceFile =
+        resolveRelativelyToProjectRoot(
+            Paths.get("target/generated-sources").resolve("GeneratedBadFormat.java"));
+    String oldChecksum;
+    try (InputStream inputStream = Files.newInputStream(generatedSourceFile)) {
+      oldChecksum = DigestUtils.md5Hex(inputStream);
+    }
+
+    buildMavenExecution()
+        .withCliOptions(GROUP_ID + ":" + ARTIFACT_ID + ":format-code", "-DglobPattern=**/*")
+        .execute();
+
+    String newChecksum;
+    try (InputStream inputStream = Files.newInputStream(generatedSourceFile)) {
+      newChecksum = DigestUtils.md5Hex(inputStream);
+    }
+
+    assertThat(newChecksum).isEqualTo(oldChecksum);
+  }
 }
