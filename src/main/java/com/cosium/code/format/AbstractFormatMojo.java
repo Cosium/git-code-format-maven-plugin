@@ -29,11 +29,17 @@ public abstract class AbstractFormatMojo extends AbstractModulMavenGitCodeFormat
     getLog().debug("Using pattern '" + pattern + "'");
     PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + globPattern);
 
-    Path targetDir = targetDir();
+    for (Path sourceDir : sourceDirs()) {
+      walk(sourceDir, pathMatcher);
+    }
+  }
 
+  private void walk(Path directoryToWalk, PathMatcher pathMatcher)
+      throws MojoExecutionException, MojoFailureException {
+    Path targetDir = targetDir();
     try {
       Files.walkFileTree(
-          baseDir(),
+          directoryToWalk,
           new SimpleFileVisitor<Path>() {
 
             @Override

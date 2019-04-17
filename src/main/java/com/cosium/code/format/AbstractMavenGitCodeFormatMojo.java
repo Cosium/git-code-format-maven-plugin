@@ -13,6 +13,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created on 01/11/17.
@@ -41,6 +45,14 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
   protected final Path baseDir() {
     return currentProject.getBasedir().toPath();
+  }
+
+  protected final List<Path> sourceDirs() {
+    return Stream.of(
+            currentProject.getCompileSourceRoots(), currentProject.getTestCompileSourceRoots())
+        .flatMap(Collection::stream)
+        .map(Paths::get)
+        .collect(Collectors.toList());
   }
 
   protected final Path targetDir() {
