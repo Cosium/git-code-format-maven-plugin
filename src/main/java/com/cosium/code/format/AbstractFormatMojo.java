@@ -20,7 +20,7 @@ import java.nio.file.attribute.BasicFileAttributes;
  */
 public abstract class AbstractFormatMojo extends AbstractModulMavenGitCodeFormatMojo {
 
-  @Parameter(property = "globPattern", required = true)
+  @Parameter(property = "globPattern", required = true, defaultValue = "**/*")
   private String globPattern;
 
   @Override
