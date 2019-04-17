@@ -11,7 +11,7 @@ import java.nio.file.Path;
  *
  * @author Reda.Housni-Alaoui
  */
-@Mojo(name = "validate-code-format", defaultPhase = LifecyclePhase.NONE, threadSafe = true)
+@Mojo(name = "validate-code-format", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
 public class ValidateCodeFormat extends AbstractFormatMojo {
   @Override
   protected void process(Path path) throws MojoFailureException {
