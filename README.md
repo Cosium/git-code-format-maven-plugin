@@ -6,7 +6,7 @@
 A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook.  
 On commit, the hook will automatically format staged java files.
 
-### Automatic code format activation
+### Automatic code format and validation activation
 
 Add this to your maven project **root** pom.xml :
 
@@ -18,9 +18,19 @@ Add this to your maven project **root** pom.xml :
       <artifactId>maven-git-code-format</artifactId>
       <version>${maven-git-code-format.version}</version>
       <executions>
+        <!-- On commit, format the modified java files -->
         <execution>
+          <id>install-formatter-hook</id>
           <goals>
             <goal>install-hooks</goal>
+          </goals>
+        </execution>
+        <!-- On Maven verify phase, fail if any file 
+        (including unmodified) is badly formatted -->
+        <execution>
+          <id>validate-code-format</id>
+          <goals>
+            <goal>validate-code-format</goal>
           </goals>
         </execution>
       </executions>
