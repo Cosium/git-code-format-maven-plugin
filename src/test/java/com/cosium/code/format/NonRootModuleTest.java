@@ -12,10 +12,10 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SingleModuleTest extends AbstractTest {
-
-  public SingleModuleTest(MavenRuntime.MavenRuntimeBuilder mavenBuilder) throws Exception {
-    super(mavenBuilder, "single-module");
+/** @author Réda Housni Alaoui */
+public class NonRootModuleTest extends AbstractTest {
+  public NonRootModuleTest(MavenRuntime.MavenRuntimeBuilder mavenBuilder) throws Exception {
+    super(mavenBuilder, "non-root-module");
   }
 
   @Test
@@ -51,7 +51,7 @@ public class SingleModuleTest extends AbstractTest {
 
     mavenExecution().execute("initialize").assertErrorFreeLog();
 
-    touch(Paths.get("src/main/java").resolve("BadFormat.java"));
+    touch(Paths.get("module/src/main/java").resolve("BadFormat.java"));
 
     getGit().add().addFilepattern(".").call();
     getGit().commit().setMessage("Trying to commit badly formatted file").call();
@@ -69,7 +69,7 @@ public class SingleModuleTest extends AbstractTest {
           throws Exception {
     Path generatedSourceFile =
         resolveRelativelyToProjectRoot(
-            Paths.get("target/generated-sources").resolve("GeneratedBadFormat.java"));
+            Paths.get("module/target/generated-sources").resolve("GeneratedBadFormat.java"));
     String oldChecksum;
     try (InputStream inputStream = Files.newInputStream(generatedSourceFile)) {
       oldChecksum = DigestUtils.md5Hex(inputStream);
@@ -88,6 +88,6 @@ public class SingleModuleTest extends AbstractTest {
   }
 
   private MavenExecution mavenExecution() {
-    return buildMavenExecution(projectRoot());
+    return buildMavenExecution(resolveRelativelyToProjectRoot(Paths.get("module")));
   }
 }

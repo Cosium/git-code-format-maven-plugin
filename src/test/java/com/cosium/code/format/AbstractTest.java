@@ -34,32 +34,32 @@ public abstract class AbstractTest {
   @Rule public final TestResources resources;
 
   private final MavenRuntime maven;
-  private final String projectName;
+  private final String projectRootDirectoryName;
   private Path projectDestination;
-  private Path projectSource;
+  private Path projectRoot;
   private Git git;
 
-  public AbstractTest(MavenRuntime.MavenRuntimeBuilder mavenBuilder, String projectName)
+  public AbstractTest(MavenRuntime.MavenRuntimeBuilder mavenBuilder, String projectRootDirectoryName)
       throws Exception {
     this.resources =
         new TestResources(
             "src/test/projects",
             Files.createTempDirectory("maven-git-code-format-test").toString());
     this.maven = mavenBuilder.withCliOptions("-B", "-U").build();
-    this.projectName = projectName;
+    this.projectRootDirectoryName = projectRootDirectoryName;
   }
 
   @Before
   public final void before() throws Exception {
-    projectSource = resources.getBasedir(projectName).toPath();
+    projectRoot = resources.getBasedir(projectRootDirectoryName).toPath();
 
-    git = Git.init().setDirectory(projectSource.toFile()).call();
+    git = Git.init().setDirectory(projectRoot.toFile()).call();
     git.add().addFilepattern(".").call();
     git.commit().setAll(true).setMessage("First commit").call();
 
     projectDestination =
         Files.createDirectories(Paths.get("target/test-projects"))
-            .resolve(projectSource.getParent().relativize(projectSource));
+            .resolve(projectRoot.getParent().relativize(projectRoot));
 
     if (Files.notExists(projectDestination)) {
       return;
@@ -78,8 +78,8 @@ public abstract class AbstractTest {
     Files.deleteIfExists(projectDestination);
   }
 
-  protected final MavenExecution buildMavenExecution() {
-    return maven.forProject(projectSource.toFile());
+  protected final MavenExecution buildMavenExecution(Path mavenProjectPath) {
+    return maven.forProject(mavenProjectPath.toFile());
   }
 
   protected final Git getGit() {
@@ -98,11 +98,15 @@ public abstract class AbstractTest {
   }
 
   protected Path resolveRelativelyToProjectRoot(Path sourceName) {
-    return projectSource.resolve(sourceName);
+    return projectRoot.resolve(sourceName);
   }
-
+  
+  protected Path projectRoot(){
+    return projectRoot;
+  }
+  
   @After
   public final void moveFiles() throws Exception {
-    Files.move(projectSource, projectDestination);
+    Files.move(projectRoot, projectDestination);
   }
 }

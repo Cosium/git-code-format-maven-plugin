@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.cosium.code.format.test</groupId>
+    <artifactId>module</artifactId>
+    <version>1.00-SNAPSHOT</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.cosium.code</groupId>
+                <artifactId>maven-git-code-format</artifactId>
+                <version>${it-project.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>install-hooks</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <propertiesToPropagate>
+                        <prop>maven.repo.local</prop>
+                        <prop>it-project.version</prop>
+                        <prop>m2e.workspace.state</prop>
+                        <prop>workspaceResolver</prop>
+                        <prop>workspaceStateProperties</prop>
+                        <prop>maven.ext.class.path</prop>
+                        <prop>classworlds.conf</prop>
+                    </propertiesToPropagate>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -46,6 +46,10 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   protected final Path baseDir() {
     return currentProject.getBasedir().toPath();
   }
+  
+  protected final Path pomFile(){
+    return currentProject.getFile().toPath();
+  }
 
   protected final List<Path> sourceDirs() {
     return Stream.of(

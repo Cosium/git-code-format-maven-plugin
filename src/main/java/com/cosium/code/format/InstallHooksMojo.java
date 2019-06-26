@@ -1,11 +1,5 @@
 package com.cosium.code.format;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.stream.Collectors;
-
 import com.cosium.code.format.executable.Executable;
 import com.cosium.code.format.executable.ExecutableManager;
 import com.cosium.code.format.utils.MavenUtils;
@@ -13,6 +7,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 
@@ -77,6 +77,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         .truncateWithTemplate(
             () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
             mavenUtils.getMavenExecutable().toAbsolutePath(),
+            pomFile().toAbsolutePath(),
             mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
 
@@ -98,8 +99,8 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     basePreCommitHook.appendCommandCall(preCommitHookBaseScriptCall());
 
     Executable basePostCommitHook =
-            executableManager.getOrCreateExecutableScript(
-                    hooksDirectory.resolve(POST_COMMIT_HOOK_BASE_SCRIPT));
+        executableManager.getOrCreateExecutableScript(
+            hooksDirectory.resolve(POST_COMMIT_HOOK_BASE_SCRIPT));
     getLog().debug("Configuring '" + basePostCommitHook + "'");
     if (truncateHooksBaseScripts) {
       basePostCommitHook.truncate();
@@ -109,9 +110,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private String mavenCliArguments() {
 
-    return ofNullable(propertiesToPropagate)
-        .map(Arrays::asList)
-        .orElse(Collections.emptyList())
+    return ofNullable(propertiesToPropagate).map(Arrays::asList).orElse(Collections.emptyList())
         .stream()
         .filter(prop -> System.getProperty(prop) != null)
         .map(prop -> "-D" + prop + "=" + System.getProperty(prop))
@@ -135,16 +134,16 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private String postCommitHookBaseScriptCall() {
     return "./"
-            + gitBaseDir().relativize(getOrCreateHooksDirectory())
-            + "/"
-            + pluginPostCommitHookFileName();
+        + gitBaseDir().relativize(getOrCreateHooksDirectory())
+        + "/"
+        + pluginPostCommitHookFileName();
   }
 
   private String pluginPreCommitHookFileName() {
     return artifactId() + "." + BASE_PLUGIN_PRE_COMMIT_HOOK;
   }
 
-  private String pluginPostCommitHookFileName(){
+  private String pluginPostCommitHookFileName() {
     return artifactId() + "." + BASE_PLUGIN_POST_COMMIT_HOOK;
   }
 }
