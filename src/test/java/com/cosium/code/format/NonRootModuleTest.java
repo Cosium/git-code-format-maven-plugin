@@ -1,16 +1,15 @@
 package com.cosium.code.format;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.takari.maven.testing.executor.MavenExecution;
 import io.takari.maven.testing.executor.MavenRuntime;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.junit.Test;
-
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Test;
 
 /** @author Réda Housni Alaoui */
 public class NonRootModuleTest extends AbstractTest {

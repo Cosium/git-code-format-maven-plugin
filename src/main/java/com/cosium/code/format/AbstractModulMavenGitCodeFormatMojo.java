@@ -1,12 +1,11 @@
 package com.cosium.code.format;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Parameter;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Created on 17/11/17.
@@ -37,8 +36,7 @@ public abstract class AbstractModulMavenGitCodeFormatMojo extends AbstractMavenG
       return false;
     }
 
-    if ((!includedModules.isEmpty() || !excludedModules.isEmpty())
-        && isExecutionRoot()) {
+    if ((!includedModules.isEmpty() || !excludedModules.isEmpty()) && isExecutionRoot()) {
       getLog()
           .info(
               "Explicit included or excluded modules defined and the current module the execution root. Goal disabled.");

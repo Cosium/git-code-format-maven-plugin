@@ -13,6 +13,7 @@ public interface Executable {
 
   /**
    * Erase the executable content
+   *
    * @return The executable
    */
   Executable truncate() throws IOException;

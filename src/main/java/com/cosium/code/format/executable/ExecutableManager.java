@@ -1,12 +1,11 @@
 package com.cosium.code.format.executable;
 
-import org.apache.maven.plugin.logging.Log;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Supplier;
-
-import static java.util.Objects.requireNonNull;
+import org.apache.maven.plugin.logging.Log;
 
 /**
  * Created on 02/11/17.

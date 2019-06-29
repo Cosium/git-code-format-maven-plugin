@@ -1,16 +1,15 @@
 package com.cosium.code.format;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Created on 01/11/17.
@@ -40,8 +39,7 @@ public class OnPreCommitMojo extends AbstractModulMavenGitCodeFormatMojo {
     List<String> content = Files.readAllLines(Paths.get(stagedFilesFile));
     getLog().debug("Staged files content: " + content.toString());
 
-    content
-        .stream()
+    content.stream()
         .map(StringUtils::trim)
         .filter(StringUtils::isNotBlank)
         .map(this::toPath)

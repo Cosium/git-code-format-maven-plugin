@@ -3,12 +3,6 @@ package com.cosium.code.format;
 import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CompositeCodeFormatter;
 import com.cosium.code.format.formatter.JavaFormatter;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +11,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 /**
  * Created on 01/11/17.
@@ -46,8 +45,8 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   protected final Path baseDir() {
     return currentProject.getBasedir().toPath();
   }
-  
-  protected final Path pomFile(){
+
+  protected final Path pomFile() {
     return currentProject.getFile().toPath();
   }
 

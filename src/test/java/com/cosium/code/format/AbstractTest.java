@@ -5,13 +5,6 @@ import io.takari.maven.testing.executor.MavenExecution;
 import io.takari.maven.testing.executor.MavenRuntime;
 import io.takari.maven.testing.executor.MavenVersions;
 import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
-import org.apache.commons.io.IOUtils;
-import org.eclipse.jgit.api.Git;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,6 +13,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.Git;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.runner.RunWith;
 
 /**
  * Created on 16/01/18.
@@ -39,7 +38,8 @@ public abstract class AbstractTest {
   private Path projectRoot;
   private Git git;
 
-  public AbstractTest(MavenRuntime.MavenRuntimeBuilder mavenBuilder, String projectRootDirectoryName)
+  public AbstractTest(
+      MavenRuntime.MavenRuntimeBuilder mavenBuilder, String projectRootDirectoryName)
       throws Exception {
     this.resources =
         new TestResources(
@@ -100,11 +100,11 @@ public abstract class AbstractTest {
   protected Path resolveRelativelyToProjectRoot(Path sourceName) {
     return projectRoot.resolve(sourceName);
   }
-  
-  protected Path projectRoot(){
+
+  protected Path projectRoot() {
     return projectRoot;
   }
-  
+
   @After
   public final void moveFiles() throws Exception {
     Files.move(projectRoot, projectDestination);

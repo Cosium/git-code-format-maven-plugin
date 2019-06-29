@@ -1,9 +1,8 @@
 package com.cosium.code.format;
 
+import java.nio.file.Path;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-
-import java.nio.file.Path;
 
 /**
  * Created on 07/11/17.

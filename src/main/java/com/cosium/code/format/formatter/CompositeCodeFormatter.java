@@ -25,8 +25,7 @@ public class CompositeCodeFormatter implements CodeFormatter {
 
   @Override
   public boolean validate(Path file) {
-    return formatters
-        .stream()
+    return formatters.stream()
         .map(codeFormatter -> codeFormatter.validate(file))
         .filter(valid -> !valid)
         .findFirst()
