@@ -78,6 +78,19 @@ The plugin allows you to tweak Google Java Format options :
 </build>
 ```
 
+Documentation from the google-java-format CLI tool :
+
+```
+--aosp, -aosp, -a
+  Use AOSP style instead of Google Style (4-space indentation).
+--fix-imports-only
+  Fix import order and remove any unused imports, but do no other formatting.
+--skip-sorting-imports
+  Do not fix the import order. Unused imports will still be removed.
+--skip-removing-unused-imports
+  Do not remove unused imports. Imports will still be sorted.
+```
+
 ### How the hook works
 
 On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this :
