@@ -99,6 +99,25 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>com.cosium.code</groupId>
+        <artifactId>maven-git-code-format</artifactId>
+        <version>${maven-git-code-format.version}</version>
+        <executions>
+          <execution>
+            <id>install-formatter-hook</id>
+            <goals>
+              <goal>install-hooks</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>validate-code-format</id>
+            <goals>
+              <goal>validate-code-format</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
@@ -223,36 +242,6 @@
     </plugins>
   </build>
   <profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <!-- Moved the formatter here to avoid clash with the maven release plugin -->
-          <plugin>
-            <groupId>com.cosium.code</groupId>
-            <artifactId>maven-git-code-format</artifactId>
-            <version>${maven-git-code-format.version}</version>
-            <executions>
-              <execution>
-                <id>install-formatter-hook</id>
-                <goals>
-                  <goal>install-hooks</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>validate-code-format</id>
-                <goals>
-                  <goal>validate-code-format</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <id>release-sign-artifacts</id>
       <activation>
