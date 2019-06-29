@@ -86,6 +86,31 @@ public class SingleModuleTest extends AbstractTest {
     assertThat(newChecksum).isEqualTo(oldChecksum);
   }
 
+  @Test
+  public void
+      GIVEN_bad_formatted_files_WHEN_format_code_with_aosp_enabled_THEN_all_files_should_be_formatted_according_to_aosp()
+          throws Exception {
+    mavenExecution()
+        .withCliOptions(GROUP_ID + ":" + ARTIFACT_ID + ":validate-code-format", "-Daosp=true")
+        .execute()
+        .assertLogText("[ERROR]");
+
+    mavenExecution()
+        .withCliOptions(GROUP_ID + ":" + ARTIFACT_ID + ":format-code", "-Daosp=true")
+        .execute()
+        .assertErrorFreeLog();
+
+    mavenExecution()
+        .withCliOptions(GROUP_ID + ":" + ARTIFACT_ID + ":validate-code-format", "-Daosp=true")
+        .execute()
+        .assertErrorFreeLog();
+
+    mavenExecution()
+        .withCliOptions(GROUP_ID + ":" + ARTIFACT_ID + ":validate-code-format")
+        .execute()
+        .assertLogText("is not correctly formatted");
+  }
+
   private MavenExecution mavenExecution() {
     return buildMavenExecution(projectRoot());
   }

@@ -5,6 +5,13 @@
     <groupId>com.cosium.code.format.test</groupId>
     <artifactId>single-module</artifactId>
     <version>1.00-SNAPSHOT</version>
+    
+    <properties>
+        <aosp>false</aosp>
+        <fixImportsOnly>false</fixImportsOnly>
+        <skipSortingImports>false</skipSortingImports>
+        <skipRemovingUnusedImports>false</skipRemovingUnusedImports>
+    </properties>
 
     <build>
         <plugins>
@@ -29,6 +36,12 @@
                         <prop>maven.ext.class.path</prop>
                         <prop>classworlds.conf</prop>
                     </propertiesToPropagate>
+                    <googleJavaFormatOptions>
+                        <aosp>${aosp}</aosp>
+                        <fixImportsOnly>${fixImportsOnly}</fixImportsOnly>
+                        <skipSortingImports>${skipSortingImports}</skipSortingImports>
+                        <skipRemovingUnusedImports>${skipRemovingUnusedImports}</skipRemovingUnusedImports>
+                    </googleJavaFormatOptions>
                 </configuration>
             </plugin>
         </plugins>

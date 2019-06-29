@@ -51,6 +51,33 @@ mvn git-code-format:format-code -DglobPattern=**/*
 mvn git-code-format:validate-code-format -DglobPattern=**/*
 ```
 
+### Google Java Format options
+
+The plugin allows you to tweak Google Java Format options :
+
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>com.cosium.code</groupId>
+      <artifactId>maven-git-code-format</artifactId>
+      <version>${maven-git-code-format.version}</version>
+      <executions>
+        <!-- ... -->
+      </executions>
+      <configuration>
+        <googleJavaFormatOptions>
+          <aosp>false</aosp>
+          <fixImportsOnly>false</fixImportsOnly>
+          <skipSortingImports>false</skipSortingImports>
+          <skipRemovingUnusedImports>false</skipRemovingUnusedImports>
+        </googleJavaFormatOptions>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+```
+
 ### How the hook works
 
 On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this :

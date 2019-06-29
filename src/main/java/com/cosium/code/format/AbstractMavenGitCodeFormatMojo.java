@@ -1,14 +1,17 @@
 package com.cosium.code.format;
 
+import static java.util.Optional.ofNullable;
+
 import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CompositeCodeFormatter;
-import com.cosium.code.format.formatter.JavaFormatter;
+import com.cosium.code.format.formatter.GoogleJavaFormatter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.maven.plugin.AbstractMojo;
@@ -25,11 +28,24 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
   private static final String HOOKS_DIR = "hooks";
-  private final CodeFormatter codeFormatter =
-      new CompositeCodeFormatter(new JavaFormatter(this::getLog));
+
+  private final Supplier<CodeFormatter> codeFormatter;
 
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
+
+  @Parameter private MavenGoogleJavaFormatOptions googleJavaFormatOptions;
+
+  public AbstractMavenGitCodeFormatMojo() {
+    codeFormatter =
+        () ->
+            new CompositeCodeFormatter(
+                new GoogleJavaFormatter(
+                    getLog(),
+                    ofNullable(googleJavaFormatOptions)
+                        .orElseGet(MavenGoogleJavaFormatOptions::new)
+                        .toFormatterOptions()));
+  }
 
   protected final Repository gitRepository() {
     Repository gitRepository;
@@ -67,7 +83,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   }
 
   protected final CodeFormatter codeFormatter() {
-    return codeFormatter;
+    return codeFormatter.get();
   }
 
   protected final boolean isExecutionRoot() {
