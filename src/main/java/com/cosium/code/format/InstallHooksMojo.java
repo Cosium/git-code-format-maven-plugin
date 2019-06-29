@@ -29,9 +29,6 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.pre-commit.sh";
   private static final String PRE_COMMIT_HOOK_BASE_SCRIPT = "pre-commit";
 
-  private static final String BASE_PLUGIN_POST_COMMIT_HOOK = "maven-git-code-format.post-commit.sh";
-  private static final String POST_COMMIT_HOOK_BASE_SCRIPT = "post-commit";
-
   private final ExecutableManager executableManager = new ExecutableManager(this::getLog);
   private final MavenUtils mavenUtils = new MavenUtils();
 
@@ -79,12 +76,6 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
             pomFile().toAbsolutePath(),
             mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
-
-    getLog().debug("Writing plugin post commit hook file");
-    executableManager
-        .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPostCommitHookFileName()))
-        .truncateWithTemplate(() -> getClass().getResourceAsStream(BASE_PLUGIN_POST_COMMIT_HOOK));
-    getLog().debug("Written plugin post commit hook file");
   }
 
   private void configureHookBaseScripts(Path hooksDirectory) throws IOException {
@@ -96,15 +87,6 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
       basePreCommitHook.truncate();
     }
     basePreCommitHook.appendCommandCall(preCommitHookBaseScriptCall());
-
-    Executable basePostCommitHook =
-        executableManager.getOrCreateExecutableScript(
-            hooksDirectory.resolve(POST_COMMIT_HOOK_BASE_SCRIPT));
-    getLog().debug("Configuring '" + basePostCommitHook + "'");
-    if (truncateHooksBaseScripts) {
-      basePostCommitHook.truncate();
-    }
-    basePostCommitHook.appendCommandCall(postCommitHookBaseScriptCall());
   }
 
   private String mavenCliArguments() {
@@ -131,18 +113,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         + pluginPreCommitHookFileName();
   }
 
-  private String postCommitHookBaseScriptCall() {
-    return "./"
-        + gitBaseDir().relativize(getOrCreateHooksDirectory())
-        + "/"
-        + pluginPostCommitHookFileName();
-  }
-
   private String pluginPreCommitHookFileName() {
     return artifactId() + "." + BASE_PLUGIN_PRE_COMMIT_HOOK;
-  }
-
-  private String pluginPostCommitHookFileName() {
-    return artifactId() + "." + BASE_PLUGIN_POST_COMMIT_HOOK;
   }
 }
