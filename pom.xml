@@ -18,7 +18,7 @@
     <source.level>1.8</source.level>
     <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
     <org.apache.commons.lang.version>3.4</org.apache.commons.lang.version>
-    <maven-git-code-format.version>1.25</maven-git-code-format.version>
+    <formatter.version>1.25</formatter.version>
   </properties>
 
   <dependencies>
@@ -101,7 +101,7 @@
       <plugin>
         <groupId>com.cosium.code</groupId>
         <artifactId>maven-git-code-format</artifactId>
-        <version>${maven-git-code-format.version}</version>
+        <version>${formatter.version}</version>
         <executions>
           <execution>
             <id>install-formatter-hook</id>
