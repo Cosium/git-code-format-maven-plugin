@@ -1,6 +1,8 @@
 package com.cosium.code.format.formatter;
 
-import java.nio.file.Path;
+import com.cosium.code.format.FileExtension;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Created on 07/11/17.
@@ -9,7 +11,9 @@ import java.nio.file.Path;
  */
 public interface CodeFormatter {
 
-  void format(Path file);
+  FileExtension fileExtension();
 
-  boolean validate(Path file);
+  void format(InputStream content, LineRanges lineRanges, OutputStream formattedContent);
+
+  boolean validate(InputStream content);
 }

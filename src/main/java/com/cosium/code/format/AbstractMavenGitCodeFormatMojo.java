@@ -3,13 +3,14 @@ package com.cosium.code.format;
 import static java.util.Optional.ofNullable;
 
 import com.cosium.code.format.formatter.CodeFormatter;
-import com.cosium.code.format.formatter.CompositeCodeFormatter;
+import com.cosium.code.format.formatter.CodeFormatters;
 import com.cosium.code.format.formatter.GoogleJavaFormatter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
   private static final String HOOKS_DIR = "hooks";
 
-  private final Supplier<CodeFormatter> codeFormatter;
+  private final Supplier<List<CodeFormatter>> codeFormatters;
 
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
@@ -37,11 +38,10 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   @Parameter private MavenGoogleJavaFormatOptions googleJavaFormatOptions;
 
   public AbstractMavenGitCodeFormatMojo() {
-    codeFormatter =
+    codeFormatters =
         () ->
-            new CompositeCodeFormatter(
+            Collections.singletonList(
                 new GoogleJavaFormatter(
-                    getLog(),
                     ofNullable(googleJavaFormatOptions)
                         .orElseGet(MavenGoogleJavaFormatOptions::new)
                         .toFormatterOptions()));
@@ -52,7 +52,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
     try {
       gitRepository = new FileRepositoryBuilder().findGitDir(currentProject.getBasedir()).build();
     } catch (IOException e) {
-      throw new RuntimeException(
+      throw new MavenGitCodeFormatException(
           "Could not find the git repository. Run 'git init' if you did not.", e);
     }
     return gitRepository;
@@ -82,8 +82,8 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
     return currentProject.getArtifactId();
   }
 
-  protected final CodeFormatter codeFormatter() {
-    return codeFormatter.get();
+  protected final CodeFormatters codeFormatters() {
+    return new CodeFormatters(codeFormatters.get());
   }
 
   protected final boolean isExecutionRoot() {
@@ -102,7 +102,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
       try {
         Files.createDirectories(hooksDirectory);
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new MavenGitCodeFormatException(e);
       }
     } else {
       getLog().debug(hooksDirectory + " already exists");

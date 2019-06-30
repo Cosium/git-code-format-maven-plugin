@@ -2,6 +2,9 @@ package com.cosium.code.format.formatter;
 
 import static java.util.Objects.requireNonNull;
 
+import com.cosium.code.format.FileExtension;
+import com.cosium.code.format.MavenGitCodeFormatException;
+import com.google.common.collect.RangeSet;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
 import com.google.googlejavaformat.java.ImportOrderer;
@@ -9,11 +12,7 @@ import com.google.googlejavaformat.java.RemoveUnusedImports;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.logging.Log;
 
 /**
  * Created on 07/11/17.
@@ -22,70 +21,62 @@ import org.apache.maven.plugin.logging.Log;
  */
 public class GoogleJavaFormatter implements CodeFormatter {
 
-  private static final String JAVA_EXTENSION = ".java";
-
-  private final Log log;
   private final GoogleJavaFormatterOptions options;
   private final Formatter formatter;
 
-  public GoogleJavaFormatter(Log log, GoogleJavaFormatterOptions options) {
-    this.log = requireNonNull(log);
+  public GoogleJavaFormatter(GoogleJavaFormatterOptions options) {
     this.options = requireNonNull(options);
     this.formatter = new Formatter(options.javaFormatterOptions());
   }
 
   @Override
-  public void format(Path file) {
-    if (!isJavaFile(file)) {
-      log.debug(file + " is not a java file");
-      return;
-    }
-
-    if (!Files.exists(file)) {
-      log.debug(file + " doesn't exist");
-      return;
-    }
-
-    log.info("Formatting '" + file + "'");
-
-    final String formattedContent;
-    try (InputStream inputStream = Files.newInputStream(file)) {
-      String unformattedContent = IOUtils.toString(inputStream, "UTF-8");
-      formattedContent = doFormat(unformattedContent);
-    } catch (IOException | FormatterException e) {
-      throw new RuntimeException(e);
-    }
-    try (OutputStream outputStream =
-        Files.newOutputStream(file, StandardOpenOption.TRUNCATE_EXISTING)) {
-      IOUtils.write(formattedContent, outputStream, "UTF-8");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    log.info("Formatted '" + file + "'");
+  public FileExtension fileExtension() {
+    return FileExtension.of("java");
   }
 
   @Override
-  public boolean validate(Path file) {
-    if (!isJavaFile(file)) {
-      log.debug(file + " is not a java file");
-      return true;
+  public void format(InputStream content, LineRanges lineRanges, OutputStream formattedContent) {
+    final String formattedContentToWrite;
+    try {
+      String unformattedContent = IOUtils.toString(content, "UTF-8");
+      formattedContentToWrite = doFormat(unformattedContent, lineRanges);
+    } catch (IOException | FormatterException e) {
+      throw new MavenGitCodeFormatException(e);
     }
 
-    log.info("Validating '" + file + "'");
-    try (InputStream inputStream = Files.newInputStream(file)) {
-      String unformattedContent = IOUtils.toString(inputStream);
-      String formattedContent = doFormat(unformattedContent);
-      return unformattedContent.equals(formattedContent);
-    } catch (IOException | FormatterException e) {
-      throw new RuntimeException(e);
+    try {
+      IOUtils.write(formattedContentToWrite, formattedContent);
+    } catch (IOException e) {
+      throw new MavenGitCodeFormatException(e);
     }
   }
 
-  private String doFormat(String unformattedContent) throws FormatterException {
+  @Override
+  public boolean validate(InputStream content) {
+    try {
+      String unformattedContent = IOUtils.toString(content);
+      String formattedContent = doFormat(unformattedContent, LineRanges.all());
+      return unformattedContent.equals(formattedContent);
+    } catch (IOException | FormatterException e) {
+      throw new MavenGitCodeFormatException(e);
+    }
+  }
+
+  private String doFormat(String unformattedContent, LineRanges lineRanges)
+      throws FormatterException {
     if (options.isFixImportsOnly()) {
+      if (!lineRanges.isAll()) {
+        return unformattedContent;
+      }
       return fixImports(unformattedContent);
     }
-    return fixImports(formatter.formatSource(unformattedContent));
+    if (lineRanges.isAll()) {
+      return fixImports(formatter.formatSource(unformattedContent));
+    }
+
+    RangeSet<Integer> charRangeSet =
+        Formatter.lineRangesToCharRanges(unformattedContent, lineRanges.rangeSet());
+    return formatter.formatSource(unformattedContent, charRangeSet.asRanges());
   }
 
   private String fixImports(final String unformattedContent) throws FormatterException {
@@ -97,9 +88,5 @@ public class GoogleJavaFormatter implements CodeFormatter {
       formattedContent = ImportOrderer.reorderImports(formattedContent);
     }
     return formattedContent;
-  }
-
-  private boolean isJavaFile(Path file) {
-    return file.toString().endsWith(JAVA_EXTENSION);
   }
 }

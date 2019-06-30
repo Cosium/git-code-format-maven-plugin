@@ -52,7 +52,7 @@ public abstract class AbstractFormatMojo extends AbstractModulMavenGitCodeFormat
               try {
                 process(path);
               } catch (MojoExecutionException | MojoFailureException e) {
-                throw new RuntimeException(e);
+                throw new MavenGitCodeFormatException(e);
               }
               return FileVisitResult.CONTINUE;
             }
