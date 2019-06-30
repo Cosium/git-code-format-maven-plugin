@@ -8,8 +8,8 @@ git add pom.xml
 RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 git commit -m "Release $RELEASE_VERSION" 
-git tag ${RELEASE_VERSION}
 mvn clean deploy -DperformRelease=true
+git tag ${RELEASE_VERSION}
 
 mvn versions:set -DnextSnapshot=true
 mvn versions:commit 
