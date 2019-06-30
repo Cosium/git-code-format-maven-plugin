@@ -76,12 +76,7 @@ public class GitIndexEntry {
       if (lineRanges.isAll()) {
         log.info("Formatting '" + dirCacheEntry.getPathString() + "'");
       } else {
-        log.info(
-            "Partially formatting lines "
-                + lineRanges
-                + " of '"
-                + dirCacheEntry.getPathString()
-                + "'");
+        log.info("Formatting lines " + lineRanges + " of '" + dirCacheEntry.getPathString() + "'");
       }
 
       try (TemporaryFile temporaryFormattedFile = TemporaryFile.create()) {
@@ -112,12 +107,7 @@ public class GitIndexEntry {
       if (lineRanges.isAll()) {
         log.info("Formatted '" + dirCacheEntry.getPathString() + "'");
       } else {
-        log.info(
-            "Partially formatted lines "
-                + lineRanges
-                + " of '"
-                + dirCacheEntry.getPathString()
-                + "'");
+        log.info("Formatted lines " + lineRanges + " of '" + dirCacheEntry.getPathString() + "'");
       }
     }
 
