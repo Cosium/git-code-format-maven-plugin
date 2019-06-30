@@ -110,7 +110,7 @@ public class GitIndexEntry {
       }
 
       if (lineRanges.isAll()) {
-        log.info("Formatted'" + dirCacheEntry.getPathString() + "'");
+        log.info("Formatted '" + dirCacheEntry.getPathString() + "'");
       } else {
         log.info(
             "Partially formatted lines "
