@@ -10,7 +10,6 @@ import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CodeFormatters;
 import com.cosium.code.format.formatter.LineRanges;
 import com.google.common.collect.Range;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -136,12 +135,9 @@ public class GitIndexEntry {
         return LineRanges.all();
       }
 
-      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
       try {
-        return git.diff().setOutputStream(outputStream)
-            .setPathFilter(PathFilter.create(dirCacheEntry.getPathString())).setCached(true).call()
-            .stream()
+        return git.diff().setPathFilter(PathFilter.create(dirCacheEntry.getPathString()))
+            .setCached(true).call().stream()
             .map(this::computeLineRanges)
             .reduce(LineRanges::concat)
             .orElse(LineRanges.all());
