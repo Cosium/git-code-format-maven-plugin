@@ -90,14 +90,16 @@ public class GitIndexEntry {
           formatter.format(content, lineRanges, formattedContent);
         }
 
+        long formattedSize = temporaryFormattedFile.size();
         ObjectId formattedObjectId;
         try (InputStream formattedContent = temporaryFormattedFile.newInputStream();
             ObjectInserter objectInserter = objectDatabase.newInserter()) {
-          formattedObjectId =
-              objectInserter.insert(OBJ_BLOB, temporaryFormattedFile.size(), formattedContent);
+          formattedObjectId = objectInserter.insert(OBJ_BLOB, formattedSize, formattedContent);
           objectInserter.flush();
         }
 
+        log.debug("Formatted size is " + formattedSize);
+        dirCacheEntry.setLength(formattedSize);
         log.debug("Formatted object id is '" + formattedObjectId + "'");
         dirCacheEntry.setObjectId(formattedObjectId);
       } catch (IOException e) {
