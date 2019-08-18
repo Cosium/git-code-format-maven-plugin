@@ -97,10 +97,10 @@ Documentation from the google-java-format CLI tool :
 You only need to put the plugin in your root project pom.xml. By default all submodules will be handled.
 
 #### Do I need to run mvn initialize or is that a stage that happens automatically when I run mvn compile or mvn test?
-initialize is the first phase of the Maven lifecycle. Any goal that you perform (e.g. compile or test) will automatically trigger initialize and thus trigger the git pre-commit hook installation.
+`initialize` is the first phase of the Maven lifecycle. Any goal that you perform (e.g. `compile` or `test`) will automatically trigger `initialize` and thus trigger the git pre-commit hook installation.
 
 #### I'm not noticing anything happening.
-If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your .git directory. To trigger the automatic formatting, you have to perform a commit of a modified java file.
+If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your .git directory. To trigger the automatic formatting, you have to perform a commit of a modified java file.  
 You can also [format](#manual-code-formatting) or [validate](#manual-code-format-validation) any file.
 
 ### How the hook works
