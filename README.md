@@ -101,7 +101,7 @@ You only need to put the plugin in your *root* project pom.xml. By default all s
 
 #### I'm not noticing anything happening.
 If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your `.git/hooks` directory. To trigger the automatic formatting, you have to perform a commit of a modified java file.  
-You can also [format](#manual-code-formatting) or [validate](#manual-code-format-validation) any file.
+You can also manually [format](#manual-code-formatting) or [validate](#manual-code-format-validation) any file.
 
 ### How the hook works
 
