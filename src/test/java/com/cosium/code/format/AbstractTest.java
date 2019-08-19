@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
  *
  * @author Reda.Housni-Alaoui
  */
-@MavenVersions({"3.3.9", "3.5.0"})
+@MavenVersions({"3.5.0"})
 @RunWith(MavenJUnitTestRunner.class)
 public abstract class AbstractTest {
   private static final String GROUP_ID = "com.cosium.code";
