@@ -16,8 +16,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <source.level>1.8</source.level>
-    <org.apache.commons.io.version>2.4</org.apache.commons.io.version>
-    <org.apache.commons.lang.version>3.4</org.apache.commons.lang.version>
+    <org.apache.commons.io.version>2.6</org.apache.commons.io.version>
+    <org.apache.commons.lang.version>3.9</org.apache.commons.lang.version>
     <maven-git-code-format.version>1.25</maven-git-code-format.version>
   </properties>
 
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
-      <version>4.9.0.201710071750-r</version>
+      <version>5.4.0.201906121030-r</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -61,7 +61,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.1.0</version>
+      <version>3.2.1</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -92,6 +92,12 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.2.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.13</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -129,7 +135,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -142,7 +148,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.1</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -164,7 +170,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.0</version>
+        <version>2.22.2</version>
         <configuration>
           <trimStackTrace>false</trimStackTrace>
         </configuration>
@@ -195,7 +201,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.2</version>
+        <version>0.8.4</version>
         <executions>
           <execution>
             <goals>
@@ -214,7 +220,7 @@
       <plugin>
         <groupId>io.takari.maven.plugins</groupId>
         <artifactId>takari-lifecycle-plugin</artifactId>
-        <version>1.13.3</version>
+        <version>1.13.9</version>
         <extensions>true</extensions>
         <executions>
           <execution>
