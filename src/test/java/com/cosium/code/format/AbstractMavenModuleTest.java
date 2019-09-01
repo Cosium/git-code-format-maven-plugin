@@ -39,7 +39,7 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
         .execute()
         .assertErrorFreeLog();
 
-    assertMatchExpected(badFormatJava);
+    assertThat(sha1(badFormatJava)).isEqualTo("4e738304fcfeb9556ca1fc32a7f8b6635abc4308");
   }
 
   @Test
@@ -63,7 +63,7 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
         .execute()
         .assertErrorFreeLog();
 
-    assertMatchExpected(badFormatJava);
+    assertThat(sha1(badFormatJava)).isEqualTo("61e42fa93de3211762a4b2d93a906dac44494849");
   }
 
   @Test

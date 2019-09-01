@@ -1,7 +1,5 @@
 package com.cosium.code.format;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.takari.maven.testing.TestResources;
 import io.takari.maven.testing.executor.MavenExecution;
 import io.takari.maven.testing.executor.MavenRuntime;
@@ -10,7 +8,6 @@ import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -94,7 +91,7 @@ public abstract class AbstractTest {
     Path sourceFile = resolveRelativelyToProjectRoot(sourceName);
     String content;
     try (InputStream inputStream = Files.newInputStream(sourceFile)) {
-      content = IOUtils.toString(inputStream) + "\n";
+      content = IOUtils.toString(inputStream) + "\n//Hello world";
     }
     try (OutputStream outputStream = Files.newOutputStream(sourceFile)) {
       IOUtils.write(content, outputStream);
@@ -109,18 +106,6 @@ public abstract class AbstractTest {
     try (InputStream inputStream =
         Files.newInputStream(resolveRelativelyToProjectRoot(sourceName))) {
       return DigestUtils.shaHex(inputStream);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  protected void assertMatchExpected(String sourceName) {
-    try (InputStream actual = Files.newInputStream(resolveRelativelyToProjectRoot(sourceName));
-        InputStream expected =
-            getClass()
-                .getResourceAsStream("/expected/" + projectRootDirectoryName + "/" + sourceName)) {
-      assertThat(IOUtils.toString(actual, StandardCharsets.UTF_8))
-          .isEqualTo(IOUtils.toString(expected, StandardCharsets.UTF_8));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
