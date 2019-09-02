@@ -105,25 +105,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>com.cosium.code</groupId>
-        <artifactId>maven-git-code-format</artifactId>
-        <version>${maven-git-code-format.version}</version>
-        <executions>
-          <execution>
-            <id>install-formatter-hook</id>
-            <goals>
-              <goal>install-hooks</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>validate-code-format</id>
-            <goals>
-              <goal>validate-code-format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
