@@ -66,10 +66,10 @@ class DefaulExecutable implements Executable {
   }
 
   @Override
-  public Executable truncateWithTemplate(Supplier<InputStream> template, Object... values)
-      throws IOException {
+  public Executable truncateWithTemplate(
+      Supplier<InputStream> template, String sourceEncoding, Object... values) throws IOException {
     try (InputStream inputStream = template.get()) {
-      String rawContent = IOUtils.toString(inputStream);
+      String rawContent = IOUtils.toString(inputStream, sourceEncoding);
       Object[] refinedValues = Stream.of(values).map(this::unixifyPath).toArray();
       String content = String.format(rawContent, refinedValues);
       Files.write(file, content.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);

@@ -37,6 +37,9 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
   @Parameter private MavenGoogleJavaFormatOptions googleJavaFormatOptions;
 
+  @Parameter(defaultValue = "${project.build.sourceEncoding}")
+  private String sourceEncoding;
+
   public AbstractMavenGitCodeFormatMojo() {
     codeFormatters =
         () ->
@@ -44,7 +47,8 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
                 new GoogleJavaFormatter(
                     ofNullable(googleJavaFormatOptions)
                         .orElseGet(MavenGoogleJavaFormatOptions::new)
-                        .toFormatterOptions()));
+                        .toFormatterOptions(),
+                    sourceEncoding));
   }
 
   protected final Repository gitRepository() {

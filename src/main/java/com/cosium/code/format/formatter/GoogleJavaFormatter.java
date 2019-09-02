@@ -23,10 +23,12 @@ public class GoogleJavaFormatter implements CodeFormatter {
 
   private final GoogleJavaFormatterOptions options;
   private final Formatter formatter;
+  private final String sourceEncoding;
 
-  public GoogleJavaFormatter(GoogleJavaFormatterOptions options) {
+  public GoogleJavaFormatter(GoogleJavaFormatterOptions options, String sourceEncoding) {
     this.options = requireNonNull(options);
     this.formatter = new Formatter(options.javaFormatterOptions());
+    this.sourceEncoding = sourceEncoding;
   }
 
   @Override
@@ -38,14 +40,14 @@ public class GoogleJavaFormatter implements CodeFormatter {
   public void format(InputStream content, LineRanges lineRanges, OutputStream formattedContent) {
     final String formattedContentToWrite;
     try {
-      String unformattedContent = IOUtils.toString(content, "UTF-8");
+      String unformattedContent = IOUtils.toString(content, sourceEncoding);
       formattedContentToWrite = doFormat(unformattedContent, lineRanges);
     } catch (IOException | FormatterException e) {
       throw new MavenGitCodeFormatException(e);
     }
 
     try {
-      IOUtils.write(formattedContentToWrite, formattedContent);
+      IOUtils.write(formattedContentToWrite, formattedContent, sourceEncoding);
     } catch (IOException e) {
       throw new MavenGitCodeFormatException(e);
     }
@@ -54,7 +56,7 @@ public class GoogleJavaFormatter implements CodeFormatter {
   @Override
   public boolean validate(InputStream content) {
     try {
-      String unformattedContent = IOUtils.toString(content);
+      String unformattedContent = IOUtils.toString(content, sourceEncoding);
       String formattedContent = doFormat(unformattedContent, LineRanges.all());
       return unformattedContent.equals(formattedContent);
     } catch (IOException | FormatterException e) {

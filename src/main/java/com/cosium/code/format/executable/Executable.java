@@ -20,12 +20,13 @@ public interface Executable {
 
   /**
    * @param template The template to truncate with
+   * @param sourceEncoding The source encoding
    * @param values The values to use for the template interpolations
    * @return The executable
    * @throws IOException
    */
-  Executable truncateWithTemplate(Supplier<InputStream> template, Object... values)
-      throws IOException;
+  Executable truncateWithTemplate(
+      Supplier<InputStream> template, String sourceEncoding, Object... values) throws IOException;
 
   /**
    * Appends a command call to the executable

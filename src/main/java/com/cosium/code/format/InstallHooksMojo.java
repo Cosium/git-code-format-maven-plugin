@@ -6,6 +6,7 @@ import com.cosium.code.format.executable.Executable;
 import com.cosium.code.format.executable.ExecutableManager;
 import com.cosium.code.format.utils.MavenUtils;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,6 +73,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
         .truncateWithTemplate(
             () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
+            StandardCharsets.UTF_8.toString(),
             mavenUtils.getMavenExecutable().toAbsolutePath(),
             pomFile().toAbsolutePath(),
             mavenCliArguments());

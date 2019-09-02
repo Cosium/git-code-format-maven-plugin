@@ -34,19 +34,19 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
 /** @author Réda Housni Alaoui */
-public class GitIndexEntry {
+class GitIndexEntry {
 
   private final Log log;
   private final Repository repository;
   private final String path;
 
-  public GitIndexEntry(Log log, Repository repository, String path) {
+  GitIndexEntry(Log log, Repository repository, String path) {
     this.log = requireNonNull(log);
     this.repository = requireNonNull(repository);
     this.path = requireNonNull(path);
   }
 
-  public PathEdit entryFormatter(CodeFormatters formatters) {
+  PathEdit entryFormatter(CodeFormatters formatters) {
     return new EntryFormatter(log, repository, formatters, path);
   }
 
@@ -56,8 +56,7 @@ public class GitIndexEntry {
     private final Repository repository;
     private final CodeFormatters formatters;
 
-    public EntryFormatter(
-        Log log, Repository repository, CodeFormatters formatters, String entryPath) {
+    EntryFormatter(Log log, Repository repository, CodeFormatters formatters, String entryPath) {
       super(entryPath);
       this.log = log;
       this.repository = requireNonNull(repository);
