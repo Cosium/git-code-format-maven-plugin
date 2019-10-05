@@ -2,14 +2,15 @@ package com.cosium.code.format;
 
 import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.LineRanges;
+import org.apache.commons.io.IOUtils;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * Created on 07/11/17.
@@ -29,7 +30,8 @@ public class FormatCodeMojo extends AbstractFormatMojo {
   private void format(Path path, CodeFormatter formatter) {
     getLog().info("Formatting '" + gitBaseDir().relativize(path) + "'");
 
-    try (TemporaryFile temporaryFormattedFile = TemporaryFile.create()) {
+    try (TemporaryFile temporaryFormattedFile =
+        TemporaryFile.create(getLog(), path + ".formatted")) {
       try (InputStream content = Files.newInputStream(path);
           OutputStream formattedContent = temporaryFormattedFile.newOutputStream()) {
         formatter.format(content, LineRanges.all(), formattedContent);

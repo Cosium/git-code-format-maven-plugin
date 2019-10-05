@@ -1,5 +1,7 @@
 package com.cosium.code.format;
 
+import org.apache.maven.plugin.logging.Log;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,19 +11,22 @@ import java.nio.file.Path;
 
 /** @author Réda Housni Alaoui */
 public class TemporaryFile implements Closeable {
+  private final Log log;
 
   private final Path file;
 
-  private TemporaryFile() {
+  private TemporaryFile(Log log, String virtualName) {
+    this.log = log;
     try {
       this.file = Files.createTempFile(null, null);
     } catch (IOException e) {
       throw new MavenGitCodeFormatException(e);
     }
+    log.debug("Temporary file virtually named '" + virtualName + "' is viewable at '" + file + "'");
   }
 
-  public static TemporaryFile create() {
-    return new TemporaryFile();
+  public static TemporaryFile create(Log log, String virtualName) {
+    return new TemporaryFile(log, virtualName);
   }
 
   public OutputStream newOutputStream() throws IOException {
@@ -38,6 +43,9 @@ public class TemporaryFile implements Closeable {
 
   @Override
   public void close() throws IOException {
+    if (log.isDebugEnabled()) {
+      return;
+    }
     Files.delete(file);
   }
 }

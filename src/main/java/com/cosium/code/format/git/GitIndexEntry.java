@@ -1,8 +1,5 @@
 package com.cosium.code.format.git;
 
-import static java.util.Objects.requireNonNull;
-import static org.eclipse.jgit.lib.Constants.OBJ_BLOB;
-
 import com.cosium.code.format.FileExtension;
 import com.cosium.code.format.MavenGitCodeFormatException;
 import com.cosium.code.format.TemporaryFile;
@@ -10,12 +7,6 @@ import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CodeFormatters;
 import com.cosium.code.format.formatter.LineRanges;
 import com.google.common.collect.Range;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.maven.plugin.logging.Log;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -32,6 +23,16 @@ import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
+import static org.eclipse.jgit.lib.Constants.OBJ_BLOB;
 
 /** @author Réda Housni Alaoui */
 class GitIndexEntry {
@@ -78,7 +79,8 @@ class GitIndexEntry {
         log.info("Formatting lines " + lineRanges + " of '" + dirCacheEntry.getPathString() + "'");
       }
 
-      try (TemporaryFile temporaryFormattedFile = TemporaryFile.create()) {
+      try (TemporaryFile temporaryFormattedFile =
+          TemporaryFile.create(log, dirCacheEntry.getPathString() + ".formatted")) {
         ObjectId unformattedObjectId = dirCacheEntry.getObjectId();
         log.debug("Unformatted object id is '" + unformattedObjectId + "'");
         ObjectDatabase objectDatabase = repository.getObjectDatabase();
