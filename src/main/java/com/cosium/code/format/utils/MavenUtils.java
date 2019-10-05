@@ -1,6 +1,7 @@
 package com.cosium.code.format.utils;
 
 import com.cosium.code.format.MavenGitCodeFormatException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,11 +14,16 @@ import java.nio.file.Paths;
 public class MavenUtils {
 
   private static final String MAVEN_HOME_PROP = "maven.home";
-  private static final String BIN_MVN = "bin/mvn";
 
-  public Path getMavenExecutable() {
+  public Path getMavenExecutable(boolean debug) {
     Path mavenHome = Paths.get(System.getProperty(MAVEN_HOME_PROP));
-    Path executable = mavenHome.resolve(BIN_MVN);
+    Path bin = mavenHome.resolve("bin");
+    Path executable;
+    if (!debug) {
+      executable = bin.resolve("mvn");
+    } else {
+      executable = bin.resolve("mvnDebug");
+    }
     if (!Files.exists(executable)) {
       throw new MavenGitCodeFormatException(
           "Could not find maven executable. " + executable + " does not exist.");

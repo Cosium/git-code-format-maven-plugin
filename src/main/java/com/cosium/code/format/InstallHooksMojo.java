@@ -50,6 +50,9 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   @Parameter(property = "propertiesToAdd")
   private String[] propertiesToAdd;
 
+  @Parameter(property = "debug", defaultValue = "false")
+  private boolean debug;
+
   public void execute() throws MojoExecutionException {
     if (!isExecutionRoot()) {
       getLog().debug("Not in execution root. Do not execute.");
@@ -80,7 +83,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         .truncateWithTemplate(
             () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
             StandardCharsets.UTF_8.toString(),
-            mavenUtils.getMavenExecutable().toAbsolutePath(),
+            mavenUtils.getMavenExecutable(debug).toAbsolutePath(),
             pomFile().toAbsolutePath(),
             mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
