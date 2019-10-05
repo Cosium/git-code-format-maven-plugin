@@ -7,6 +7,7 @@ import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CodeFormatters;
 import com.cosium.code.format.formatter.LineRanges;
 import com.google.common.collect.Range;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -86,6 +87,8 @@ class GitIndexEntry {
         ObjectDatabase objectDatabase = repository.getObjectDatabase();
         ObjectLoader objectLoader = objectDatabase.open(unformattedObjectId);
 
+        logObjectContent(objectLoader, dirCacheEntry.getPathString() + ".unformatted");
+
         try (InputStream content = objectLoader.openStream();
             OutputStream formattedContent = temporaryFormattedFile.newOutputStream()) {
           formatter.format(content, lineRanges, formattedContent);
@@ -111,6 +114,18 @@ class GitIndexEntry {
         log.info("Formatted '" + dirCacheEntry.getPathString() + "'");
       } else {
         log.info("Formatted lines " + lineRanges + " of '" + dirCacheEntry.getPathString() + "'");
+      }
+    }
+
+    private void logObjectContent(ObjectLoader objectLoader, String virtualName)
+        throws IOException {
+      if (!log.isDebugEnabled()) {
+        return;
+      }
+
+      try (InputStream input = objectLoader.openStream();
+          OutputStream output = TemporaryFile.create(log, virtualName).newOutputStream()) {
+        IOUtils.copy(input, output);
       }
     }
 
