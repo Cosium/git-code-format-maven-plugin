@@ -1,20 +1,22 @@
 package com.cosium.code.format;
 
-import static java.util.Optional.ofNullable;
-
 import com.cosium.code.format.executable.Executable;
 import com.cosium.code.format.executable.ExecutableManager;
 import com.cosium.code.format.utils.MavenUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
+import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Installs git hooks on each initialization. Hooks are always overriden in case changes in:
@@ -43,6 +45,9 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   /** The list of properties to propagate to the hooks */
   @Parameter(property = "propertiesToPropagate")
   private String[] propertiesToPropagate;
+
+  @Parameter(property = "debug", defaultValue = "false")
+  private boolean debug;
 
   public void execute() throws MojoExecutionException {
     if (!isExecutionRoot()) {
@@ -92,12 +97,15 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private String mavenCliArguments() {
+    Stream<String> propagatedProperties =
+        ofNullable(propertiesToPropagate).map(Arrays::asList).orElse(Collections.emptyList())
+            .stream()
+            .filter(prop -> System.getProperty(prop) != null)
+            .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
 
-    return ofNullable(propertiesToPropagate).map(Arrays::asList).orElse(Collections.emptyList())
-        .stream()
-        .filter(prop -> System.getProperty(prop) != null)
-        .map(prop -> "-D" + prop + "=" + System.getProperty(prop))
-        .collect(Collectors.joining(" "));
+    Stream<String> debugProperty = Stream.of("-X").filter(s -> this.debug);
+
+    return Stream.concat(propagatedProperties, debugProperty).collect(Collectors.joining(" "));
   }
 
   private Path prepareHooksDirectory() {
