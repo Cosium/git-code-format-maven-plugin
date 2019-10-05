@@ -46,8 +46,9 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   @Parameter(property = "propertiesToPropagate")
   private String[] propertiesToPropagate;
 
-  @Parameter(property = "debug", defaultValue = "false")
-  private boolean debug;
+  /** The list of properties to add to the hooks */
+  @Parameter(property = "propertiesToAdd")
+  private String[] propertiesToAdd;
 
   public void execute() throws MojoExecutionException {
     if (!isExecutionRoot()) {
@@ -103,9 +104,8 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
             .filter(prop -> System.getProperty(prop) != null)
             .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
 
-    Stream<String> debugProperty = Stream.of("-X").filter(s -> this.debug);
-
-    return Stream.concat(propagatedProperties, debugProperty).collect(Collectors.joining(" "));
+    return Stream.concat(propagatedProperties, Stream.of(propertiesToAdd))
+        .collect(Collectors.joining(" "));
   }
 
   private Path prepareHooksDirectory() {

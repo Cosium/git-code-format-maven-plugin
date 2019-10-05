@@ -27,7 +27,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <debug>true</debug>
+                    <propertiesToAdd>
+                        <prop>-X</prop>
+                    </propertiesToAdd>
                     <propertiesToPropagate>
                         <prop>maven.repo.local</prop>
                         <prop>it-project.version</prop>
