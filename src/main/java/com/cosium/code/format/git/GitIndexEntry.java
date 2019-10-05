@@ -7,7 +7,6 @@ import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CodeFormatters;
 import com.cosium.code.format.formatter.LineRanges;
 import com.google.common.collect.Range;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -15,7 +14,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.dircache.DirCacheEditor.PathEdit;
 import org.eclipse.jgit.dircache.DirCacheEntry;
-import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
 import org.eclipse.jgit.lib.ObjectDatabase;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectInserter;
@@ -24,7 +22,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.eclipse.jgit.util.io.EolStreamTypeUtil;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
 import java.io.IOException;
@@ -42,18 +39,16 @@ class GitIndexEntry {
 
   private final Log log;
   private final Repository repository;
-  private final EolStreamType eolStreamType;
   private final String path;
 
-  GitIndexEntry(Log log, Repository repository, EolStreamType eolStreamType, String path) {
+  GitIndexEntry(Log log, Repository repository, String path) {
     this.log = requireNonNull(log);
     this.repository = requireNonNull(repository);
-    this.eolStreamType = requireNonNull(eolStreamType);
     this.path = requireNonNull(path);
   }
 
   PathEdit entryFormatter(CodeFormatters formatters) {
-    return new EntryFormatter(log, repository, formatters, path, eolStreamType);
+    return new EntryFormatter(log, repository, formatters, path);
   }
 
   private static class EntryFormatter extends PathEdit {
@@ -61,19 +56,12 @@ class GitIndexEntry {
     private final Log log;
     private final Repository repository;
     private final CodeFormatters formatters;
-    private final EolStreamType eolStreamType;
 
-    EntryFormatter(
-        Log log,
-        Repository repository,
-        CodeFormatters formatters,
-        String entryPath,
-        EolStreamType eolStreamType) {
+    EntryFormatter(Log log, Repository repository, CodeFormatters formatters, String entryPath) {
       super(entryPath);
       this.log = log;
       this.repository = requireNonNull(repository);
       this.formatters = requireNonNull(formatters);
-      this.eolStreamType = requireNonNull(eolStreamType);
     }
 
     @Override
@@ -98,10 +86,7 @@ class GitIndexEntry {
         ObjectDatabase objectDatabase = repository.getObjectDatabase();
         ObjectLoader objectLoader = objectDatabase.open(unformattedObjectId);
 
-        logObjectContent(objectLoader, dirCacheEntry.getPathString() + ".unformatted");
-
-        try (InputStream content =
-                EolStreamTypeUtil.wrapInputStream(objectLoader.openStream(), eolStreamType);
+        try (InputStream content = objectLoader.openStream();
             OutputStream formattedContent = temporaryFormattedFile.newOutputStream()) {
           formatter.format(content, lineRanges, formattedContent);
         }
@@ -126,19 +111,6 @@ class GitIndexEntry {
         log.info("Formatted '" + dirCacheEntry.getPathString() + "'");
       } else {
         log.info("Formatted lines " + lineRanges + " of '" + dirCacheEntry.getPathString() + "'");
-      }
-    }
-
-    private void logObjectContent(ObjectLoader objectLoader, String virtualName)
-        throws IOException {
-      if (!log.isDebugEnabled()) {
-        return;
-      }
-
-      try (InputStream input =
-              EolStreamTypeUtil.wrapInputStream(objectLoader.openStream(), eolStreamType);
-          OutputStream output = TemporaryFile.create(log, virtualName).newOutputStream()) {
-        IOUtils.copy(input, output);
       }
     }
 

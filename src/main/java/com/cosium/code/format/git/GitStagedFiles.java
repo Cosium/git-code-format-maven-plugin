@@ -10,11 +10,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEditor;
 import org.eclipse.jgit.dircache.DirCacheIterator;
-import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
-import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
-import org.eclipse.jgit.treewalk.WorkingTreeOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,20 +31,11 @@ public class GitStagedFiles {
   private final Log log;
   private final Repository repository;
   private final Set<String> filePaths;
-  private final EolStreamType eolStreamType;
 
   private GitStagedFiles(Log log, Repository repository, Set<String> filePaths) {
     this.log = requireNonNull(log);
     this.repository = requireNonNull(repository);
     this.filePaths = Collections.unmodifiableSet(filePaths);
-
-    WorkingTreeOptions workingTreeOptions = repository.getConfig().get(WorkingTreeOptions.KEY);
-    if (workingTreeOptions.getAutoCRLF() == AutoCRLF.TRUE) {
-      eolStreamType = EolStreamType.AUTO_CRLF;
-    } else {
-      eolStreamType = EolStreamType.DIRECT;
-    }
-    log.debug("eolStreamType is '" + eolStreamType + "'");
   }
 
   public static GitStagedFiles read(Log log, Repository repository, Predicate<Path> fileFilter)
@@ -69,7 +57,7 @@ public class GitStagedFiles {
         TemporaryFile.create(log, "diff-between-unformatted-and-formatted-files")) {
       DirCacheEditor dirCacheEditor = dirCache.editor();
       filePaths.stream()
-          .map(path -> new GitIndexEntry(log, repository, eolStreamType, path))
+          .map(path -> new GitIndexEntry(log, repository, path))
           .map(indexEntry -> indexEntry.entryFormatter(formatters))
           .forEach(dirCacheEditor::add);
       dirCacheEditor.finish();
