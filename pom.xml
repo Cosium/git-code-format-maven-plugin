@@ -4,7 +4,7 @@
 
   <groupId>com.cosium.code</groupId>
   <artifactId>maven-git-code-format</artifactId>
-  <version>1.33</version>
+  <version>1.34-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>maven-git-code-format Maven Plugin</name>
