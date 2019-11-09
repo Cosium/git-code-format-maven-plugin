@@ -10,7 +10,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEditor;
 import org.eclipse.jgit.dircache.DirCacheIterator;
-import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
 import org.eclipse.jgit.lib.Repository;
@@ -65,7 +64,7 @@ public class GitStagedFiles {
 
   public void format(CodeFormatters formatters) throws IOException {
     Git git = new Git(repository);
-    DirCache dirCache = lockDirCache();
+    DirCache dirCache = repository.lockDirCache();
     try (TemporaryFile temporaryDiffFile =
         TemporaryFile.create(log, "diff-between-unformatted-and-formatted-files")) {
       DirCacheEditor dirCacheEditor = dirCache.editor();
@@ -97,32 +96,6 @@ public class GitStagedFiles {
       throw new MavenGitCodeFormatException(e);
     } finally {
       dirCache.unlock();
-    }
-  }
-
-  private DirCache lockDirCache() throws IOException {
-    return lockDirCache(0);
-  }
-
-  private DirCache lockDirCache(int numberOfFailedAttemps) throws IOException {
-    try {
-      return repository.lockDirCache();
-    } catch (LockFailedException lockFailedException) {
-      numberOfFailedAttemps++;
-      if (numberOfFailedAttemps > 10) {
-        throw new MavenGitCodeFormatException(
-            "Could not lock index after " + numberOfFailedAttemps + " failed attempts. Giving up.",
-            lockFailedException);
-      }
-      long delayInMs = 1000;
-      log.debug("Could not lock index. Retrying in " + delayInMs + " ms");
-      try {
-        Thread.sleep(delayInMs);
-      } catch (InterruptedException interruptedException) {
-        Thread.currentThread().interrupt();
-        throw new MavenGitCodeFormatException(interruptedException);
-      }
-      return lockDirCache(numberOfFailedAttemps);
     }
   }
 
