@@ -1,7 +1,6 @@
 package com.cosium.code.format.git;
 
 import com.cosium.code.format.MavenGitCodeFormatException;
-import org.apache.maven.plugin.logging.Log;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEditor;
 import org.eclipse.jgit.dircache.DirCacheIterator;
@@ -14,11 +13,9 @@ import java.io.IOException;
 /** @author Réda Housni Alaoui */
 public class Index implements AutoCloseable {
 
-  private final Log log;
   private final DirCache dirCache;
 
-  private Index(Log log, Repository repository) throws IOException {
-    this.log = log;
+  private Index(Repository repository) throws IOException {
     try {
       dirCache = repository.lockDirCache();
     } catch (LockFailedException e) {
@@ -30,8 +27,8 @@ public class Index implements AutoCloseable {
     }
   }
 
-  public static Index lock(Log log, Repository repository) throws IOException {
-    return new Index(log, repository);
+  public static Index lock(Repository repository) throws IOException {
+    return new Index(repository);
   }
 
   public DirCacheEditor editor() {

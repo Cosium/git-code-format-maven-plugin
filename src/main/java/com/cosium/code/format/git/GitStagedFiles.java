@@ -65,7 +65,7 @@ public class GitStagedFiles {
   public void format(CodeFormatters formatters) throws IOException {
     Git git = new Git(repository);
 
-    try (Index index = Index.lock(log, repository);
+    try (Index index = Index.lock(repository);
         TemporaryFile temporaryDiffFile =
             TemporaryFile.create(log, "diff-between-unformatted-and-formatted-files")) {
       DirCacheEditor dirCacheEditor = index.editor();
