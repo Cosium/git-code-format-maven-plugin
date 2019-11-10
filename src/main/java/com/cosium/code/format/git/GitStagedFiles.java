@@ -64,17 +64,18 @@ public class GitStagedFiles {
 
   public void format(CodeFormatters formatters) throws IOException {
     Git git = new Git(repository);
-    DirCache dirCache = repository.lockDirCache();
-    try (TemporaryFile temporaryDiffFile =
-        TemporaryFile.create(log, "diff-between-unformatted-and-formatted-files")) {
-      DirCacheEditor dirCacheEditor = dirCache.editor();
+
+    try (Index index = Index.lock(log, repository);
+        TemporaryFile temporaryDiffFile =
+            TemporaryFile.create(log, "diff-between-unformatted-and-formatted-files")) {
+      DirCacheEditor dirCacheEditor = index.editor();
       filePaths.stream()
           .map(path -> new GitIndexEntry(log, repository, path))
           .map(indexEntry -> indexEntry.entryFormatter(formatters))
           .forEach(dirCacheEditor::add);
       dirCacheEditor.finish();
 
-      dirCache.write();
+      index.write();
 
       try (Repository autoCRLFRepository =
               new AutoCRLFRepository(git.getRepository().getDirectory(), eolStreamType);
@@ -83,7 +84,7 @@ public class GitStagedFiles {
             .diff()
             .setOutputStream(diffOutput)
             .setOldTree(treeIterator(repository.readDirCache()))
-            .setNewTree(treeIterator(dirCache))
+            .setNewTree(index.treeIterator())
             .call();
       }
 
@@ -91,11 +92,9 @@ public class GitStagedFiles {
         git.apply().setPatch(diffInput).call();
       }
 
-      dirCache.commit();
+      index.commit();
     } catch (GitAPIException e) {
       throw new MavenGitCodeFormatException(e);
-    } finally {
-      dirCache.unlock();
     }
   }
 

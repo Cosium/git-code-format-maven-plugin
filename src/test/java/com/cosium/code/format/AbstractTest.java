@@ -1,12 +1,18 @@
 package com.cosium.code.format;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.takari.maven.testing.TestResources;
 import io.takari.maven.testing.executor.MavenExecution;
 import io.takari.maven.testing.executor.MavenRuntime;
 import io.takari.maven.testing.executor.MavenVersions;
 import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.Git;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.runner.RunWith;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,13 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
-import org.eclipse.jgit.api.Git;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created on 16/01/18.
@@ -40,7 +41,8 @@ public abstract class AbstractTest {
   private final String projectRootDirectoryName;
   private Path projectDestination;
   private Path projectRoot;
-  private Git git;
+  private Git jGit;
+  private GitCLI gitCLI;
 
   public AbstractTest(
       MavenRuntime.MavenRuntimeBuilder mavenBuilder, String projectRootDirectoryName)
@@ -57,9 +59,11 @@ public abstract class AbstractTest {
   public final void before() throws Exception {
     projectRoot = resources.getBasedir(projectRootDirectoryName).toPath();
 
-    git = Git.init().setDirectory(projectRoot.toFile()).call();
-    git.add().addFilepattern(".").call();
-    git.commit().setAll(true).setMessage("First commit").call();
+    gitCLI = new GitCLI(projectRoot);
+
+    jGit = Git.init().setDirectory(projectRoot.toFile()).call();
+    jGit.add().addFilepattern(".").call();
+    jGit.commit().setAll(true).setMessage("First commit").call();
 
     projectDestination =
         Files.createDirectories(Paths.get("target/test-projects"))
@@ -86,8 +90,12 @@ public abstract class AbstractTest {
     return maven.forProject(mavenProjectPath.toFile());
   }
 
-  protected final Git getGit() {
-    return git;
+  protected final Git jGit() {
+    return jGit;
+  }
+
+  protected final GitCLI gitCLI() {
+    return gitCLI;
   }
 
   protected void touch(String sourceName) throws IOException {
