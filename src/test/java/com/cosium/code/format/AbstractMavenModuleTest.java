@@ -111,7 +111,7 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
 
   @Test
   public void
-      GIVEN_bad_formatted_file_WHEN_committing_all_THEN_it_should_faile_with_message_advising_addandcommit_instead_of_commitall()
+      GIVEN_bad_formatted_file_WHEN_committing_all_THEN_it_should_have_correct_format()
           throws Exception {
     mavenExecution()
         .withCliOptions(goalCliOption("validate-code-format"))
@@ -122,9 +122,14 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
 
     touch(badFormatJava);
 
-    assertThatThrownBy(() -> gitCLI().commit(true, "Trying to commit badly formatted file"))
-        .hasMessageContaining("git add . && git commit -m")
-        .hasMessageContaining("https://github.com/Cosium/maven-git-code-format/issues/22");
+    gitCLI().commit(true, "Trying to commit badly formatted file");
+
+    mavenExecution()
+            .withCliOptions(goalCliOption("validate-code-format"))
+            .execute()
+            .assertErrorFreeLog();
+
+    assertMatchExpected(badFormatJava);
   }
 
   private MavenExecution mavenExecution() {

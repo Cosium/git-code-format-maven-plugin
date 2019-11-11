@@ -1,10 +1,8 @@
 package com.cosium.code.format.git;
 
-import com.cosium.code.format.MavenGitCodeFormatException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEditor;
 import org.eclipse.jgit.dircache.DirCacheIterator;
-import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 
@@ -16,15 +14,7 @@ public class Index implements AutoCloseable {
   private final DirCache dirCache;
 
   private Index(Repository repository) throws IOException {
-    try {
-      dirCache = repository.lockDirCache();
-    } catch (LockFailedException e) {
-      throw new MavenGitCodeFormatException(
-          "Could not lock .git/index.\n"
-              + "Make sure to use 'git add . && git commit -m \"Commit message\"' instead of 'git commit -am \"Commit message\"'.\n"
-              + "Take a look at https://github.com/Cosium/maven-git-code-format/issues/22#issuecomment-552183050 for more information.",
-          e);
-    }
+    dirCache = repository.lockDirCache();
   }
 
   public static Index lock(Repository repository) throws IOException {
