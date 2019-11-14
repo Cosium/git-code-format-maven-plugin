@@ -1,5 +1,6 @@
 package com.cosium.code.format;
 
+import com.cosium.code.format.executable.DefaultCommandRunner;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.nio.file.Path;
@@ -12,11 +13,11 @@ import static java.util.Objects.requireNonNull;
 public class GitCLI {
 
   private final Path repositoryDirectory;
-  private final CommandRunner commandRunner;
+  private final DefaultCommandRunner commandRunner;
 
   GitCLI(Path repositoryDirectory) {
     this.repositoryDirectory = requireNonNull(repositoryDirectory);
-    this.commandRunner = new CommandRunner();
+    this.commandRunner = new DefaultCommandRunner(TestingLog::new);
   }
 
   public String commit(boolean all, String message) {

@@ -1,4 +1,4 @@
-package com.cosium.code.format;
+package com.cosium.code.format.executable;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,7 +11,7 @@ public class CommandRunException extends RuntimeException {
 
   private final int exitCode;
 
-  CommandRunException(int exitCode, String output, String... command) {
+  public CommandRunException(int exitCode, String output, String... command) {
     super(
         String.format(
             "'%s' failed with code %s: \n\n %s",

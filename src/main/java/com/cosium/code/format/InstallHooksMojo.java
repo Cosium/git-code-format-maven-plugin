@@ -2,7 +2,7 @@ package com.cosium.code.format;
 
 import com.cosium.code.format.executable.Executable;
 import com.cosium.code.format.executable.ExecutableManager;
-import com.cosium.code.format.utils.MavenUtils;
+import com.cosium.code.format.maven.MavenEnvironment;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -33,7 +33,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private static final String PRE_COMMIT_HOOK_BASE_SCRIPT = "pre-commit";
 
   private final ExecutableManager executableManager = new ExecutableManager(this::getLog);
-  private final MavenUtils mavenUtils = new MavenUtils();
+  private final MavenEnvironment mavenEnvironment = new MavenEnvironment(this::getLog);
 
   /**
    * True to truncate hooks base scripts before each install. <br>
@@ -83,7 +83,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         .truncateWithTemplate(
             () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
             StandardCharsets.UTF_8.toString(),
-            mavenUtils.getMavenExecutable(debug).toAbsolutePath(),
+            mavenEnvironment.getMavenExecutable(debug).toAbsolutePath(),
             pomFile().toAbsolutePath(),
             mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
