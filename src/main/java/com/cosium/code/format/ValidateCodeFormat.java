@@ -33,7 +33,7 @@ public class ValidateCodeFormat extends AbstractFormatMojo {
   }
 
   private boolean doValidate(Path path, CodeFormatter formatter) {
-    getLog().info("Validating '" + gitBaseDir().relativize(path) + "'");
+    getLog().debug("Validating '" + gitBaseDir().relativize(path) + "'");
     try (InputStream content = Files.newInputStream(path)) {
       return formatter.validate(content);
     } catch (IOException e) {

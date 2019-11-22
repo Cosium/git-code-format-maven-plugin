@@ -28,7 +28,7 @@ public class FormatCodeMojo extends AbstractFormatMojo {
   }
 
   private void format(Path path, CodeFormatter formatter) {
-    getLog().info("Formatting '" + gitBaseDir().relativize(path) + "'");
+    getLog().debug("Formatting '" + gitBaseDir().relativize(path) + "'");
 
     try (TemporaryFile temporaryFormattedFile =
         TemporaryFile.create(getLog(), path + ".formatted")) {
@@ -45,6 +45,6 @@ public class FormatCodeMojo extends AbstractFormatMojo {
       throw new MavenGitCodeFormatException(e);
     }
 
-    getLog().info("Formatted '" + gitBaseDir().relativize(path) + "'");
+    getLog().debug("Formatted '" + gitBaseDir().relativize(path) + "'");
   }
 }
