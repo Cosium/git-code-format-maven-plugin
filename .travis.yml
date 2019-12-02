@@ -4,4 +4,3 @@ jdk:
 os:
   - linux
   - osx
-  - windows
