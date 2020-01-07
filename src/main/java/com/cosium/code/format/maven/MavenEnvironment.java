@@ -5,6 +5,7 @@ import com.cosium.code.format.executable.CommandRunException;
 import com.cosium.code.format.executable.CommandRunner;
 import com.cosium.code.format.executable.DefaultCommandRunner;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.commons.exec.OS;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +18,7 @@ import static java.util.Objects.requireNonNull;
  * Created on 02/11/17.
  *
  * @author Reda.Housni-Alaoui
+ * @author Matt.Ruel
  */
 public class MavenEnvironment {
 
@@ -42,10 +44,11 @@ public class MavenEnvironment {
     log.get().debug("maven.home=" + mavenHome);
     Path bin = mavenHome.resolve("bin");
     Path executable;
+    String extension = OS.isFamilyWindows() ? ".cmd" : "";
     if (!debug) {
-      executable = bin.resolve("mvn");
+      executable = bin.resolve("mvn" + extension);
     } else {
-      executable = bin.resolve("mvnDebug");
+      executable = bin.resolve("mvnDebug" + extension);
     }
 
     try {
@@ -57,9 +60,9 @@ public class MavenEnvironment {
 
     Path fallbackExecutable;
     if (!debug) {
-      fallbackExecutable = Paths.get("mvn");
+      fallbackExecutable = Paths.get("mvn" + extension);
     } else {
-      fallbackExecutable = Paths.get("mvnDebug");
+      fallbackExecutable = Paths.get("mvnDebug" + extension);
     }
 
     log.get()
