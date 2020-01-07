@@ -40,6 +40,11 @@ cmake-build-debug/
 # IntelliJ
 out/
 
+# Eclipse
+.classpath
+.project
+.settings/
+
 # JIRA plugin
 atlassian-ide-plugin.xml
 
