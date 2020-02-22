@@ -18,13 +18,6 @@ Add this to your maven project **root** pom.xml :
       <artifactId>maven-git-code-format</artifactId>
       <version>${maven-git-code-format.version}</version>
       <executions>
-        <!-- On commit, format the modified java files -->
-        <execution>
-          <id>install-formatter-hook</id>
-          <goals>
-            <goal>install-hooks</goal>
-          </goals>
-        </execution>
         <!-- On Maven verify phase, fail if any file 
         (including unmodified) is badly formatted -->
         <execution>
@@ -37,6 +30,34 @@ Add this to your maven project **root** pom.xml :
     </plugin>
   </plugins>
 </build>
+
+<profiles>
+  <profile>
+    <!-- Install pre-commit hook if missing-->
+    <id>install-pre-commit-hook</id>
+    <activation>
+      <file>
+        <missing>.git/hooks/pre-commit</missing>
+      </file>
+    </activation>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>com.cosium.code</groupId>
+          <artifactId>maven-git-code-format</artifactId>
+          <executions>
+            <execution>
+              <id>install-hook</id>
+              <goals>
+                <goal>install-hooks</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
+</profiles>
 ```
 
 ### Manual code formatting
@@ -108,7 +129,13 @@ You can also manually [format](#manual-code-formatting) or [validate](#manual-co
 On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this :
 ```bash
 #!/bin/bash
-/usr/share/apache-maven-3.5.0/bin/mvn git-code-format:on-pre-commit
+"./.git/hooks/${project.artifactId}.maven-git-code-format.pre-commit.sh"
+```
+and `.git/hooks/${project.artifactId}.maven-git-code-format.pre-commit.sh` has the following content:
+```bash
+#!/bin/bash
+set -e
+"${env.M2_HOME} /bin/mvn" -f "${project.basedir}/pom.xml" git-code-format:on-pre-commit
 ```
 
 On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified java files using `google-java-format`. 
