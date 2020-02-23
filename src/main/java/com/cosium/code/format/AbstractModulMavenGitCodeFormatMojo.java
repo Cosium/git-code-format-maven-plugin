@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
@@ -13,6 +14,10 @@ import org.apache.maven.plugins.annotations.Parameter;
  * @author Reda.Housni-Alaoui
  */
 public abstract class AbstractModulMavenGitCodeFormatMojo extends AbstractMavenGitCodeFormatMojo {
+
+  /** Skip execution of this goal */
+  @Parameter(property = "fmt.skip", defaultValue = "false")
+  private boolean skip;
 
   @Parameter(property = "includedModules")
   private List<String> includedModules;
@@ -49,6 +54,12 @@ public abstract class AbstractModulMavenGitCodeFormatMojo extends AbstractMavenG
 
   @Override
   public final void execute() throws MojoExecutionException, MojoFailureException {
+    if (skip) {
+      Log log = getLog();
+      if (log.isInfoEnabled()) {
+        log.info("skipped");
+      }
+    }
     if (!isEnabled()) {
       return;
     }

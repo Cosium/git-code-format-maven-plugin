@@ -103,6 +103,10 @@ You only need to put the plugin in your *root* project pom.xml. By default all s
 If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your `.git/hooks` directory. To trigger the automatic formatting, you have to perform a commit of a modified java file.
 You can also manually [format](#manual-code-formatting) or [validate](#manual-code-format-validation) any file.
 
+#### I'd like to skip code formatting in one module
+I inherit a parent project with formatting plugin specified and I need to turn off formatting for this project.
+Either use add a ```<skip>true</skip>``` configuration in the project or set the ```fmt.skip``` property to true.
+
 ### How the hook works
 
 On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this :
