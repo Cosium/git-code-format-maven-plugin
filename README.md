@@ -91,55 +91,6 @@ Documentation from the google-java-format CLI tool :
   Do not remove unused imports. Imports will still be sorted.
 ```
 
-### Advanced profile
-If you wish to install the pre-commit hook only if it is missing, you can use the following profile :
-```xml
-<profiles>
-  <profile>
-    <!-- Install pre-commit hook if missing-->
-    <id>install-pre-commit-hook</id>
-    <activation>
-      <file>
-        <missing>.git/hooks/pre-commit</missing>
-      </file>
-    </activation>
-    <build>
-      <plugins>
-        <plugin>
-          <groupId>com.cosium.code</groupId>
-          <artifactId>maven-git-code-format</artifactId>
-          <executions>
-            <execution>
-              <id>install-hook</id>
-              <goals>
-                <goal>install-hooks</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </build>
-  </profile>
-</profiles>
-```
-
-### Advanced pre-commit pipeline hook
-If you wish to modify the output of the pre-commit hook, you can set the `preCommitHookPipeline` configuration.
-
-To completely ignore the hook output, you could use the following configuration:
-```xml
-      <configuration>
-        <preCommitHookPipeline>&gt;/dev/null</preCommitHookPipeline>
-      </configuration>
-```
-
-To display error lines from the maven output and fail build with any errors, you could use the following configuration:
-```xml
-      <configuration>
-        <preCommitHookPipeline>| grep -F '[ERROR]' || exit 0 &amp;&amp; exit 1</preCommitHookPipeline>
-      </configuration>
-```
-
 ### Frequently asked questions
 
 #### If I have a multi-module project, do I need to install anything in the sub-projects?
@@ -167,3 +118,20 @@ set -e
 ```
 
 On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified java files using `google-java-format`.
+
+### Advanced pre-commit pipeline hook
+If you wish to modify the output of the pre-commit hook, you can set the `preCommitHookPipeline` configuration.
+
+To completely ignore the hook output, you could use the following configuration:
+```xml
+      <configuration>
+        <preCommitHookPipeline>&gt;/dev/null</preCommitHookPipeline>
+      </configuration>
+```
+
+To display error lines from the maven output and fail build with any errors, you could use the following configuration:
+```xml
+      <configuration>
+        <preCommitHookPipeline>| grep -F '[ERROR]' || exit 0 &amp;&amp; exit 1</preCommitHookPipeline>
+      </configuration>
+```

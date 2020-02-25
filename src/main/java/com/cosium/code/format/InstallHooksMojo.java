@@ -52,7 +52,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   @Parameter(property = "debug", defaultValue = "false")
   private boolean debug;
 
-  /** Make the pre-commit hook quiet */
+  /** Add pipeline to process the results of the pre-commit hook.  Exit non-zero to prevent the commit */
   @Parameter(property = "preCommitHookPipeline", defaultValue = "")
   private String preCommitHookPipeline;
 
