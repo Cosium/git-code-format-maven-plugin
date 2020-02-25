@@ -1,13 +1,10 @@
 package com.cosium.code.format;
 
+import static java.util.Optional.ofNullable;
+
 import com.cosium.code.format.executable.Executable;
 import com.cosium.code.format.executable.ExecutableManager;
 import com.cosium.code.format.maven.MavenEnvironment;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -15,8 +12,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.Optional.ofNullable;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Installs git hooks on each initialization. Hooks are always overriden in case changes in:
@@ -52,6 +51,10 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   @Parameter(property = "debug", defaultValue = "false")
   private boolean debug;
+
+  /** Add pipeline to process the results of the pre-commit hook.  Exit non-zero to prevent the commit */
+  @Parameter(property = "preCommitHookPipeline", defaultValue = "")
+  private String preCommitHookPipeline;
 
   public void execute() throws MojoExecutionException {
     if (!isExecutionRoot()) {
@@ -107,8 +110,11 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
             .filter(prop -> System.getProperty(prop) != null)
             .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
 
-    return Stream.concat(propagatedProperties, Stream.of(propertiesToAdd))
-        .collect(Collectors.joining(" "));
+    Stream<String> properties = Stream.concat(propagatedProperties, Stream.of(propertiesToAdd));
+    if (preCommitHookPipeline != null && !preCommitHookPipeline.isEmpty()) {
+      properties = Stream.concat(properties, Stream.of(preCommitHookPipeline));
+    }
+    return properties.collect(Collectors.joining(" "));
   }
 
   private Path prepareHooksDirectory() {

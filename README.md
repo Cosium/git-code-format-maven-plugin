@@ -3,7 +3,7 @@
 
 # Maven Git Code Format
 
-A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook.  
+A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook.
 On commit, the hook will automatically format staged java files.
 
 ### Automatic code format and validation activation
@@ -25,7 +25,7 @@ Add this to your maven project **root** pom.xml :
             <goal>install-hooks</goal>
           </goals>
         </execution>
-        <!-- On Maven verify phase, fail if any file 
+        <!-- On Maven verify phase, fail if any file
         (including unmodified) is badly formatted -->
         <execution>
           <id>validate-code-format</id>
@@ -100,7 +100,7 @@ You only need to put the plugin in your *root* project pom.xml. By default all s
 `initialize` is the first phase of the Maven lifecycle. Any goal that you perform (e.g. `compile` or `test`) will automatically trigger `initialize` and thus trigger the git pre-commit hook installation.
 
 #### I'm not noticing anything happening.
-If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your `.git/hooks` directory. To trigger the automatic formatting, you have to perform a commit of a modified java file.  
+If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your `.git/hooks` directory. To trigger the automatic formatting, you have to perform a commit of a modified java file.
 You can also manually [format](#manual-code-formatting) or [validate](#manual-code-format-validation) any file.
 
 ### How the hook works
@@ -108,7 +108,30 @@ You can also manually [format](#manual-code-formatting) or [validate](#manual-co
 On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this :
 ```bash
 #!/bin/bash
-/usr/share/apache-maven-3.5.0/bin/mvn git-code-format:on-pre-commit
+"./.git/hooks/${project.artifactId}.maven-git-code-format.pre-commit.sh"
+```
+and `.git/hooks/${project.artifactId}.maven-git-code-format.pre-commit.sh` has the following content:
+```bash
+#!/bin/bash
+set -e
+"${env.M2_HOME}/bin/mvn" -f "${project.basedir}/pom.xml" git-code-format:on-pre-commit
 ```
 
-On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified java files using `google-java-format`. 
+On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified java files using `google-java-format`.
+
+### Advanced pre-commit pipeline hook
+If you wish to modify the output of the pre-commit hook, you can set the `preCommitHookPipeline` configuration.
+
+To completely ignore the hook output, you could use the following configuration:
+```xml
+      <configuration>
+        <preCommitHookPipeline>&gt;/dev/null</preCommitHookPipeline>
+      </configuration>
+```
+
+To display error lines from the maven output and fail build with any errors, you could use the following configuration:
+```xml
+      <configuration>
+        <preCommitHookPipeline>| grep -F '[ERROR]' || exit 0 &amp;&amp; exit 1</preCommitHookPipeline>
+      </configuration>
+```
