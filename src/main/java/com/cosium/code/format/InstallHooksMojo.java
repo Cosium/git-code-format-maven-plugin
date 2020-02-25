@@ -29,7 +29,7 @@ import static java.util.Optional.ofNullable;
 @Mojo(name = "install-hooks", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true)
 public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
-  private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "maven-git-code-format.pre-commit.sh";
+  private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "git-code-format.pre-commit.sh";
   private static final String PRE_COMMIT_HOOK_BASE_SCRIPT = "pre-commit";
 
   private final ExecutableManager executableManager = new ExecutableManager(this::getLog);
