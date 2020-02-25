@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(MavenJUnitTestRunner.class)
 public abstract class AbstractTest {
   private static final String GROUP_ID = "com.cosium.code";
-  private static final String ARTIFACT_ID = "maven-git-code-format";
+  private static final String ARTIFACT_ID = "git-code-format-maven-plugin";
   @Rule public final TestResources resources;
 
   private final MavenRuntime maven;
@@ -50,7 +50,7 @@ public abstract class AbstractTest {
     this.resources =
         new TestResources(
             "src/test/projects",
-            Files.createTempDirectory("maven-git-code-format-test").toString());
+            Files.createTempDirectory(ARTIFACT_ID + "-test").toString());
     this.maven = mavenBuilder.withCliOptions("-B", "-U").build();
     this.projectRootDirectoryName = projectRootDirectoryName;
   }

@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.cosium.code</groupId>
-  <artifactId>maven-git-code-format</artifactId>
+  <artifactId>git-code-format-maven-plugin</artifactId>
   <version>1.40-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
-  <name>maven-git-code-format Maven Plugin</name>
+  <name>Git Code Format Maven Plugin</name>
   <description>A maven plugin that automatically deploys https://github.com/google/google-java-format code formatter
     as a pre-commit git hook
   </description>
@@ -19,7 +19,6 @@
     <org.apache.commons.io.version>2.6</org.apache.commons.io.version>
     <org.apache.commons.lang.version>3.9</org.apache.commons.lang.version>
     <org.apache.commons.exec.version>1.3</org.apache.commons.exec.version>
-    <maven-git-code-format.version>1.25</maven-git-code-format.version>
   </properties>
 
   <dependencies>
