@@ -53,8 +53,8 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private boolean debug;
 
   /** Make the pre-commit hook quiet */
-  @Parameter(property = "quiet", defaultValue = "false")
-  private boolean quiet;
+  @Parameter(property = "preCommitHookPipeline", defaultValue = "")
+  private String preCommitHookPipeline;
 
   public void execute() throws MojoExecutionException {
     if (!isExecutionRoot()) {
@@ -111,8 +111,8 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
             .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
 
     Stream<String> properties = Stream.concat(propagatedProperties, Stream.of(propertiesToAdd));
-    if (quiet) {
-      properties = Stream.concat(properties, Stream.of(">/dev/null"));
+    if (preCommitHookPipeline != null && !preCommitHookPipeline.isEmpty()) {
+      properties = Stream.concat(properties, Stream.of(preCommitHookPipeline));
     }
     return properties.collect(Collectors.joining(" "));
   }

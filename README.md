@@ -3,7 +3,7 @@
 
 # Maven Git Code Format
 
-A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook.  
+A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook.
 On commit, the hook will automatically format staged java files.
 
 ### Automatic code format and validation activation
@@ -18,7 +18,14 @@ Add this to your maven project **root** pom.xml :
       <artifactId>maven-git-code-format</artifactId>
       <version>${maven-git-code-format.version}</version>
       <executions>
-        <!-- On Maven verify phase, fail if any file 
+        <!-- On commit, format the modified java files -->
+        <execution>
+          <id>install-formatter-hook</id>
+          <goals>
+            <goal>install-hooks</goal>
+          </goals>
+        </execution>
+        <!-- On Maven verify phase, fail if any file
         (including unmodified) is badly formatted -->
         <execution>
           <id>validate-code-format</id>
@@ -30,34 +37,6 @@ Add this to your maven project **root** pom.xml :
     </plugin>
   </plugins>
 </build>
-
-<profiles>
-  <profile>
-    <!-- Install pre-commit hook if missing-->
-    <id>install-pre-commit-hook</id>
-    <activation>
-      <file>
-        <missing>.git/hooks/pre-commit</missing>
-      </file>
-    </activation>
-    <build>
-      <plugins>
-        <plugin>
-          <groupId>com.cosium.code</groupId>
-          <artifactId>maven-git-code-format</artifactId>
-          <executions>
-            <execution>
-              <id>install-hook</id>
-              <goals>
-                <goal>install-hooks</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </build>
-  </profile>
-</profiles>
 ```
 
 ### Manual code formatting
@@ -112,6 +91,55 @@ Documentation from the google-java-format CLI tool :
   Do not remove unused imports. Imports will still be sorted.
 ```
 
+### Advanced profile
+If you wish to install the pre-commit hook only if it is missing, you can use the following profile :
+```xml
+<profiles>
+  <profile>
+    <!-- Install pre-commit hook if missing-->
+    <id>install-pre-commit-hook</id>
+    <activation>
+      <file>
+        <missing>.git/hooks/pre-commit</missing>
+      </file>
+    </activation>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>com.cosium.code</groupId>
+          <artifactId>maven-git-code-format</artifactId>
+          <executions>
+            <execution>
+              <id>install-hook</id>
+              <goals>
+                <goal>install-hooks</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
+</profiles>
+```
+
+### Advanced pre-commit pipeline hook
+If you wish to modify the output of the pre-commit hook, you can set the `preCommitHookPipeline` configuration.
+
+To completely ignore the hook output, you could use the following configuration:
+```xml
+      <configuration>
+        <preCommitHookPipeline>&gt;/dev/null</preCommitHookPipeline>
+      </configuration>
+```
+
+To display error lines from the maven output and fail build with any errors, you could use the following configuration:
+```xml
+      <configuration>
+        <preCommitHookPipeline>| grep -F '[ERROR]' || exit 0 &amp;&amp; exit 1</preCommitHookPipeline>
+      </configuration>
+```
+
 ### Frequently asked questions
 
 #### If I have a multi-module project, do I need to install anything in the sub-projects?
@@ -121,7 +149,7 @@ You only need to put the plugin in your *root* project pom.xml. By default all s
 `initialize` is the first phase of the Maven lifecycle. Any goal that you perform (e.g. `compile` or `test`) will automatically trigger `initialize` and thus trigger the git pre-commit hook installation.
 
 #### I'm not noticing anything happening.
-If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your `.git/hooks` directory. To trigger the automatic formatting, you have to perform a commit of a modified java file.  
+If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your `.git/hooks` directory. To trigger the automatic formatting, you have to perform a commit of a modified java file.
 You can also manually [format](#manual-code-formatting) or [validate](#manual-code-format-validation) any file.
 
 ### How the hook works
@@ -135,7 +163,7 @@ and `.git/hooks/${project.artifactId}.maven-git-code-format.pre-commit.sh` has t
 ```bash
 #!/bin/bash
 set -e
-"${env.M2_HOME} /bin/mvn" -f "${project.basedir}/pom.xml" git-code-format:on-pre-commit
+"${env.M2_HOME}/bin/mvn" -f "${project.basedir}/pom.xml" git-code-format:on-pre-commit
 ```
 
-On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified java files using `google-java-format`. 
+On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified java files using `google-java-format`.
