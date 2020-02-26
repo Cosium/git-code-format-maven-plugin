@@ -16,7 +16,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 public abstract class AbstractModulMavenGitCodeFormatMojo extends AbstractMavenGitCodeFormatMojo {
 
   /** Skip execution of this goal */
-  @Parameter(property = "fmt.skip", defaultValue = "false")
+  @Parameter(property = "gcf.skip", defaultValue = "false")
   private boolean skip;
 
   @Parameter(property = "includedModules")

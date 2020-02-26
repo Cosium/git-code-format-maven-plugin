@@ -105,7 +105,7 @@ You can also manually [format](#manual-code-formatting) or [validate](#manual-co
 
 #### I'd like to skip code formatting in a child project 
 I inherit an enterprise parent pom, which I cannot modify, with formatting plugin specified, and I need to turn off formatting for my group's project.
-Either use add a ```<skip>true</skip>``` configuration in the inheriting project or set the ```fmt.skip``` property to true.
+Either use add a ```<skip>true</skip>``` configuration in the inheriting project or set the ```gcf.skip``` property to true.
 
 ### How the hook works
 

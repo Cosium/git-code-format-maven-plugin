@@ -36,7 +36,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private final MavenEnvironment mavenEnvironment = new MavenEnvironment(this::getLog);
 
   /** Skip execution of this goal */
-  @Parameter(property = "fmt.skip", defaultValue = "false")
+  @Parameter(property = "gcf.skip", defaultValue = "false")
   private boolean skip;
 
   /**
