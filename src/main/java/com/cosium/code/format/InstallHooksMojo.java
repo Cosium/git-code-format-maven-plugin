@@ -43,22 +43,22 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
    * True to truncate hooks base scripts before each install. <br>
    * Do not use this option if any other system or human manipulate the hooks
    */
-  @Parameter(property = "truncateHooksBaseScripts", defaultValue = "false")
+  @Parameter(property = "gcf.truncateHooksBaseScripts", defaultValue = "false")
   private boolean truncateHooksBaseScripts;
 
   /** The list of properties to propagate to the hooks */
-  @Parameter(property = "propertiesToPropagate")
+  @Parameter(property = "gcf.propertiesToPropagate")
   private String[] propertiesToPropagate;
 
   /** The list of properties to add to the hooks */
-  @Parameter(property = "propertiesToAdd")
+  @Parameter(property = "gcf.propertiesToAdd")
   private String[] propertiesToAdd;
 
-  @Parameter(property = "debug", defaultValue = "false")
+  @Parameter(property = "gcf.debug", defaultValue = "false")
   private boolean debug;
 
   /** Add pipeline to process the results of the pre-commit hook.  Exit non-zero to prevent the commit */
-  @Parameter(property = "preCommitHookPipeline", defaultValue = "")
+  @Parameter(property = "gcf.preCommitHookPipeline", defaultValue = "")
   private String preCommitHookPipeline;
 
   public void execute() throws MojoExecutionException {

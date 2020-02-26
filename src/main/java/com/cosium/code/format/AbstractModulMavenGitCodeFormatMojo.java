@@ -19,10 +19,10 @@ public abstract class AbstractModulMavenGitCodeFormatMojo extends AbstractMavenG
   @Parameter(property = "gcf.skip", defaultValue = "false")
   private boolean skip;
 
-  @Parameter(property = "includedModules")
+  @Parameter(property = "gcf.includedModules")
   private List<String> includedModules;
 
-  @Parameter(property = "excludedModules")
+  @Parameter(property = "gcf.excludedModules")
   private List<String> excludedModules;
 
   /** @return True if the goal is enabled for the current module */

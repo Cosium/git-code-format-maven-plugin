@@ -42,13 +42,13 @@ Add this to your maven project **root** pom.xml :
 ### Manual code formatting
 
 ```console
-mvn git-code-format:format-code -DglobPattern=**/*
+mvn git-code-format:format-code -Dgcf.globPattern=**/*
 ```
 
 ### Manual code format validation
 
 ```console
-mvn git-code-format:validate-code-format -DglobPattern=**/*
+mvn git-code-format:validate-code-format -Dgcf.globPattern=**/*
 ```
 
 ### Google Java Format options
