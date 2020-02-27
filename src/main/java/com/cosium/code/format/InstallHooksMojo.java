@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -33,6 +34,10 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private final ExecutableManager executableManager = new ExecutableManager(this::getLog);
   private final MavenEnvironment mavenEnvironment = new MavenEnvironment(this::getLog);
+
+  /** Skip execution of this goal */
+  @Parameter(property = "gcf.skip", defaultValue = "false")
+  private boolean skip;
 
   /**
    * True to truncate hooks base scripts before each install. <br>
@@ -60,6 +65,12 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     if (!isExecutionRoot()) {
       getLog().debug("Not in execution root. Do not execute.");
       return;
+    }
+    if (skip) {
+      Log log = getLog();
+      if (log.isInfoEnabled()) {
+        log.info("skipped");
+      }
     }
 
     try {
