@@ -6,6 +6,16 @@
 A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook.
 On commit, the hook will automatically format staged java files.
 
+### Breaking changes between 1.x and 2.x
+
+* (https://github.com/Cosium/maven-git-code-format/issues/37) To prevent conflicts with other plugins all keys are now 
+prefixed with `gcf`. e.g. `-DglobPattern=**/*` becomes `-Dgcf.globPattern=**/*`
+* (https://github.com/Cosium/maven-git-code-format/issues/38) To avoid infringement to Apache Maven Trademark, 
+the plugin was renamed to `git-code-format-maven-plugin`. Its new coordinates are 
+`com.cosium.code:git-code-format-maven-plugin`.
+
+`1.x` documentation can be found at https://github.com/Cosium/maven-git-code-format/blob/1.39/README.md
+
 ### Automatic code format and validation activation
 
 Add this to your maven project **root** pom.xml :
@@ -15,8 +25,8 @@ Add this to your maven project **root** pom.xml :
   <plugins>
     <plugin>
       <groupId>com.cosium.code</groupId>
-      <artifactId>maven-git-code-format</artifactId>
-      <version>${maven-git-code-format.version}</version>
+      <artifactId>git-code-format-maven-plugin</artifactId>
+      <version>${git-code-format-maven-plugin.version}</version>
       <executions>
         <!-- On commit, format the modified java files -->
         <execution>
@@ -60,8 +70,8 @@ The plugin allows you to tweak Google Java Format options :
   <plugins>
     <plugin>
       <groupId>com.cosium.code</groupId>
-      <artifactId>maven-git-code-format</artifactId>
-      <version>${maven-git-code-format.version}</version>
+      <artifactId>git-code-format-maven-plugin</artifactId>
+      <version>${git-code-format-maven-plugin.version}</version>
       <executions>
         <!-- ... -->
       </executions>
@@ -112,9 +122,9 @@ Either use add a ```<skip>true</skip>``` configuration in the inheriting project
 On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this :
 ```bash
 #!/bin/bash
-"./.git/hooks/${project.artifactId}.maven-git-code-format.pre-commit.sh"
+"./.git/hooks/${project.artifactId}.git-code-format.pre-commit.sh"
 ```
-and `.git/hooks/${project.artifactId}.maven-git-code-format.pre-commit.sh` has the following content:
+and `.git/hooks/${project.artifactId}.git-code-format.pre-commit.sh` has the following content:
 ```bash
 #!/bin/bash
 set -e
