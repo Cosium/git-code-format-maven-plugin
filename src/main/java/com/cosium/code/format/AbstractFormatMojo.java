@@ -19,7 +19,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  */
 public abstract class AbstractFormatMojo extends AbstractModulMavenGitCodeFormatMojo {
 
-  @Parameter(property = "globPattern", required = true, defaultValue = "**/*")
+  @Parameter(property = "gcf.globPattern", required = true, defaultValue = "**/*")
   private String globPattern;
 
   @Override
