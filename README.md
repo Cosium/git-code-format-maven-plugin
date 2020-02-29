@@ -1,4 +1,4 @@
-[![Maven Central Latest](https://img.shields.io/maven-central/v/com.cosium.code/maven-git-code-format.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cosium.code%22%20AND%20a%3A%22maven-git-code-format%22)
+[![Maven Central Latest](https://img.shields.io/maven-central/v/com.cosium.code/git-code-format-maven-plugin.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cosium.code%22%20AND%20a%3A%22git-code-format-maven-plugin%22)
 [![Build Status](https://travis-ci.org/Cosium/maven-git-code-format.svg?branch=master)](https://travis-ci.org/Cosium/maven-git-code-format)
 
 # Maven Git Code Format
@@ -8,13 +8,13 @@ On commit, the hook will automatically format staged java files.
 
 ### Breaking changes between 1.x and 2.x
 
-* (https://github.com/Cosium/maven-git-code-format/issues/37) To prevent conflicts with other plugins all keys are now 
+* [#37](https://github.com/Cosium/git-code-format-maven-plugin/issues/37) To prevent conflicts with other plugins all keys are now 
 prefixed with `gcf`. e.g. `-DglobPattern=**/*` becomes `-Dgcf.globPattern=**/*`
-* (https://github.com/Cosium/maven-git-code-format/issues/38) To avoid infringement to Apache Maven Trademark, 
+* [#38](https://github.com/Cosium/git-code-format-maven-plugin/issues/38) To avoid infringement to Apache Maven Trademark, 
 the plugin was renamed to `git-code-format-maven-plugin`. Its new coordinates are 
 `com.cosium.code:git-code-format-maven-plugin`.
 
-`1.x` documentation can be found at https://github.com/Cosium/maven-git-code-format/blob/1.39/README.md
+`1.x` documentation can be found [here](https://github.com/Cosium/git-code-format-maven-plugin/blob/1.39/README.md)
 
 ### Automatic code format and validation activation
 
