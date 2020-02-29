@@ -9,8 +9,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -90,6 +92,17 @@ class DefaulExecutable implements Executable {
       Files.write(file, Collections.singletonList(unixCommandCall), StandardOpenOption.APPEND);
       log.get().debug("Appended the command call to " + file);
     }
+    return this;
+  }
+
+  @Override
+  public Executable removeCommandCall(String commandCall) throws IOException {
+    String unixCommandCall = unixifyPath(commandCall, true);
+    List<String> linesToKeep =
+        Files.readAllLines(file).stream()
+            .filter(line -> !unixCommandCall.equals(line))
+            .collect(Collectors.toList());
+    Files.write(file, linesToKeep, StandardOpenOption.TRUNCATE_EXISTING);
     return this;
   }
 

@@ -7,6 +7,7 @@ import com.cosium.code.format.executable.ExecutableManager;
 import com.cosium.code.format.maven.MavenEnvironment;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,7 +20,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * Installs git hooks on each initialization. Hooks are always overriden in case changes in:
+ * Installs git hooks on each initialization. Hooks are always overriden in case of changes in:
  *
  * <ul>
  *   <li>maven installation
@@ -28,6 +29,10 @@ import org.apache.maven.plugins.annotations.Parameter;
  */
 @Mojo(name = "install-hooks", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true)
 public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
+
+  /** Name of 1.x plugin pre-commit hook */
+  private static final String LEGACY_BASE_PLUGIN_PRE_COMMIT_HOOK =
+      "maven-git-code-format.pre-commit.sh";
 
   private static final String BASE_PLUGIN_PRE_COMMIT_HOOK = "git-code-format.pre-commit.sh";
   private static final String PRE_COMMIT_HOOK_BASE_SCRIPT = "pre-commit";
@@ -57,7 +62,9 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   @Parameter(property = "gcf.debug", defaultValue = "false")
   private boolean debug;
 
-  /** Add pipeline to process the results of the pre-commit hook.  Exit non-zero to prevent the commit */
+  /**
+   * Add pipeline to process the results of the pre-commit hook. Exit non-zero to prevent the commit
+   */
   @Parameter(property = "gcf.preCommitHookPipeline", defaultValue = "")
   private String preCommitHookPipeline;
 
@@ -91,6 +98,10 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private void writePluginHooks(Path hooksDirectory) throws IOException {
+    getLog().debug("Removing legacy pre commit hook file");
+    Files.deleteIfExists(hooksDirectory.resolve(legacyPluginPreCommitHookFileName()));
+    getLog().debug("Rmeoved legacy pre commit hook file");
+
     getLog().debug("Writing plugin pre commit hook file");
     executableManager
         .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
@@ -110,6 +121,8 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     getLog().debug("Configuring '" + basePreCommitHook + "'");
     if (truncateHooksBaseScripts) {
       basePreCommitHook.truncate();
+    } else {
+      basePreCommitHook.removeCommandCall(legacyPreCommitHookBaseScriptCall());
     }
     basePreCommitHook.appendCommandCall(preCommitHookBaseScriptCall());
   }
@@ -143,7 +156,18 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         + pluginPreCommitHookFileName();
   }
 
+  private String legacyPreCommitHookBaseScriptCall() {
+    return "./"
+        + gitBaseDir().relativize(getOrCreateHooksDirectory())
+        + "/"
+        + legacyPluginPreCommitHookFileName();
+  }
+
   private String pluginPreCommitHookFileName() {
     return artifactId() + "." + BASE_PLUGIN_PRE_COMMIT_HOOK;
+  }
+
+  private String legacyPluginPreCommitHookFileName() {
+    return artifactId() + "." + LEGACY_BASE_PLUGIN_PRE_COMMIT_HOOK;
   }
 }
