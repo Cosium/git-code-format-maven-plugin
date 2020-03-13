@@ -1,6 +1,12 @@
 package com.cosium.code.format.git;
 
+import static java.util.Objects.requireNonNull;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CountingInputStream;
 import org.eclipse.jgit.errors.LargeObjectException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
@@ -8,17 +14,12 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectStream;
 import org.eclipse.jgit.util.io.EolStreamTypeUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import static java.util.Objects.requireNonNull;
-
 /** @author Réda Housni Alaoui */
 public class AutoCRLFObjectLoader extends ObjectLoader {
 
   private final ObjectLoader delegate;
   private final EolStreamType eolStreamType;
+  private Long cachedSize;
 
   public AutoCRLFObjectLoader(ObjectLoader delegate, EolStreamType eolStreamType) {
     this.delegate = requireNonNull(delegate);
@@ -32,7 +33,21 @@ public class AutoCRLFObjectLoader extends ObjectLoader {
 
   @Override
   public long getSize() {
-    return delegate.getSize();
+    // https://github.com/Cosium/git-code-format-maven-plugin/issues/42: It is very important to
+    // return the exact transformed content size
+    if (cachedSize != null) {
+      return cachedSize;
+    }
+    try (CountingInputStream countingInputStream = new CountingInputStream(openStream())) {
+      while (countingInputStream.read() != -1) {
+        // Do nothing in the while, we are just moving bytes through CountingInputstream to retrieve
+        // the total stream size
+      }
+      cachedSize = countingInputStream.getByteCount();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return cachedSize;
   }
 
   @Override
