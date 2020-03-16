@@ -1,7 +1,7 @@
 [![Maven Central Latest](https://img.shields.io/maven-central/v/com.cosium.code/git-code-format-maven-plugin.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cosium.code%22%20AND%20a%3A%22git-code-format-maven-plugin%22)
 [![Build Status](https://travis-ci.org/Cosium/git-code-format-maven-plugin.svg?branch=master)](https://travis-ci.org/Cosium/git-code-format-maven-plugin)
 
-# Maven Git Code Format
+# Git Code Format Maven Plugin
 
 A maven plugin that automatically deploys [google-java-format](https://github.com/google/google-java-format) code formatter as a `pre-commit` git hook.
 On commit, the hook will automatically format staged java files.
