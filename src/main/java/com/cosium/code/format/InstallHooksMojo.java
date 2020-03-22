@@ -150,10 +150,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private String preCommitHookBaseScriptCall() {
-    return "./"
-        + gitBaseDir().relativize(getOrCreateHooksDirectory())
-        + "/"
-        + pluginPreCommitHookFileName();
+    return "$(git rev-parse --git-dir)/" + HOOKS_DIR + "/" + pluginPreCommitHookFileName();
   }
 
   private String legacyPreCommitHookBaseScriptCall() {

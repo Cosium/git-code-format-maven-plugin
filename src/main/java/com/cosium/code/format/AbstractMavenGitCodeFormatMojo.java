@@ -31,7 +31,7 @@ import static java.util.Optional.ofNullable;
  */
 public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
-  private static final String HOOKS_DIR = "hooks";
+  protected static final String HOOKS_DIR = "hooks";
 
   private final Supplier<List<CodeFormatter>> codeFormatters;
 
