@@ -1,5 +1,8 @@
 package com.cosium.code.format.git;
 
+import static java.util.Objects.requireNonNull;
+import static org.eclipse.jgit.lib.Constants.OBJ_BLOB;
+
 import com.cosium.code.format.FileExtension;
 import com.cosium.code.format.MavenGitCodeFormatException;
 import com.cosium.code.format.TemporaryFile;
@@ -7,6 +10,13 @@ import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CodeFormatters;
 import com.cosium.code.format.formatter.LineRanges;
 import com.google.common.collect.Range;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.eclipse.jgit.api.Git;
@@ -24,16 +34,6 @@ import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.Objects.requireNonNull;
-import static org.eclipse.jgit.lib.Constants.OBJ_BLOB;
 
 /** @author Réda Housni Alaoui */
 class GitIndexEntry {
@@ -172,22 +172,15 @@ class GitIndexEntry {
     }
 
     private LineRanges computeLineRanges(HunkHeader hunkHeader) {
-      HunkHeader.OldImage oldImage = hunkHeader.getOldImage();
-
-      Range<Integer> oldRange =
-          Range.closedOpen(
-              oldImage.getStartLine(), oldImage.getStartLine() + oldImage.getLineCount());
-
-      Range<Integer> newRange =
-          Range.closedOpen(
-              hunkHeader.getNewStartLine(),
-              hunkHeader.getNewStartLine() + hunkHeader.getNewLineCount());
-
       Set<Range<Integer>> ranges =
-          Stream.of(oldRange, newRange)
-              .filter(range -> !range.isEmpty())
+          hunkHeader.toEditList().stream()
+              .flatMap(
+                  edit ->
+                      Stream.of(
+                          Range.closedOpen(edit.getBeginA(), edit.getEndA()),
+                          Range.closedOpen(edit.getBeginB(), edit.getEndB())))
+              .filter(((Predicate<Range<Integer>>) Range::isEmpty).negate())
               .collect(Collectors.toSet());
-
       return LineRanges.of(ranges);
     }
   }
