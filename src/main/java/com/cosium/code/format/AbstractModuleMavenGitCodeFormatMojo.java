@@ -13,7 +13,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  *
  * @author Reda.Housni-Alaoui
  */
-public abstract class AbstractModulMavenGitCodeFormatMojo extends AbstractMavenGitCodeFormatMojo {
+public abstract class AbstractModuleMavenGitCodeFormatMojo extends AbstractMavenGitCodeFormatMojo {
 
   /** Skip execution of this goal */
   @Parameter(property = "gcf.skip", defaultValue = "false")

@@ -17,7 +17,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  *
  * @author Reda.Housni-Alaoui
  */
-public abstract class AbstractFormatMojo extends AbstractModulMavenGitCodeFormatMojo {
+public abstract class AbstractFormatMojo extends AbstractModuleMavenGitCodeFormatMojo {
 
   @Parameter(property = "gcf.globPattern", required = true, defaultValue = "**/*")
   private String globPattern;

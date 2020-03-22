@@ -1,15 +1,10 @@
 package com.cosium.code.format;
 
+import static java.util.Optional.ofNullable;
+
 import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CodeFormatters;
 import com.cosium.code.format.formatter.GoogleJavaFormatter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,8 +16,12 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.Optional.ofNullable;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.project.MavenProject;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 /**
  * Created on 01/11/17.
@@ -69,10 +68,6 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
           "Could not find the git repository. Run 'git init' if you did not.", e);
     }
     return gitRepository;
-  }
-
-  protected final Path baseDir() {
-    return currentProject.getBasedir().toPath();
   }
 
   protected final Path pomFile() {
