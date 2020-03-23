@@ -2,6 +2,7 @@ package com.cosium.code.format.executable;
 
 import static java.util.Objects.requireNonNull;
 
+import com.cosium.code.format.MavenGitCodeFormatException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -96,13 +97,17 @@ class DefaulExecutable implements Executable {
   }
 
   @Override
-  public Executable removeCommandCall(String commandCall) throws IOException {
+  public Executable removeCommandCall(String commandCall) {
     String unixCommandCall = unixifyPath(commandCall, true);
-    List<String> linesToKeep =
-        Files.readAllLines(file).stream()
-            .filter(line -> !unixCommandCall.equals(line))
-            .collect(Collectors.toList());
-    Files.write(file, linesToKeep, StandardOpenOption.TRUNCATE_EXISTING);
+    try {
+      List<String> linesToKeep =
+          Files.readAllLines(file).stream()
+              .filter(line -> !unixCommandCall.equals(line))
+              .collect(Collectors.toList());
+      Files.write(file, linesToKeep, StandardOpenOption.TRUNCATE_EXISTING);
+    } catch (IOException e) {
+      throw new MavenGitCodeFormatException(e);
+    }
     return this;
   }
 

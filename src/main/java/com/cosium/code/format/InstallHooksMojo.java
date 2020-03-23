@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -122,7 +124,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     if (truncateHooksBaseScripts) {
       basePreCommitHook.truncate();
     } else {
-      basePreCommitHook.removeCommandCall(legacyPreCommitHookBaseScriptCall());
+      legacyPreCommitHookBaseScriptCalls().forEach(basePreCommitHook::removeCommandCall);
     }
     basePreCommitHook.appendCommandCall(preCommitHookBaseScriptCall());
   }
@@ -153,11 +155,19 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     return "$(git rev-parse --git-dir)/" + HOOKS_DIR + "/" + pluginPreCommitHookFileName();
   }
 
-  private String legacyPreCommitHookBaseScriptCall() {
-    return "./"
-        + gitBaseDir().relativize(getOrCreateHooksDirectory())
-        + "/"
-        + legacyPluginPreCommitHookFileName();
+  private List<String> legacyPreCommitHookBaseScriptCalls() {
+    List<String> calls = new ArrayList<>();
+    calls.add(
+        "./"
+            + gitBaseDir().relativize(getOrCreateHooksDirectory())
+            + "/"
+            + legacyPluginPreCommitHookFileName());
+    calls.add(
+        "./"
+            + gitBaseDir().relativize(getOrCreateHooksDirectory())
+            + "/"
+            + pluginPreCommitHookFileName());
+    return calls;
   }
 
   private String pluginPreCommitHookFileName() {

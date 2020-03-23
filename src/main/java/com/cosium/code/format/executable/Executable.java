@@ -34,5 +34,5 @@ public interface Executable {
    *
    * @param commandCall The command call to remove
    */
-  Executable removeCommandCall(String commandCall) throws IOException;
+  Executable removeCommandCall(String commandCall);
 }
