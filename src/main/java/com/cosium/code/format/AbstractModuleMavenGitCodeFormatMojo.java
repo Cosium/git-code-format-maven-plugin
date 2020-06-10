@@ -59,6 +59,7 @@ public abstract class AbstractModuleMavenGitCodeFormatMojo extends AbstractMaven
       if (log.isInfoEnabled()) {
         log.info("skipped");
       }
+      return;
     }
     if (!isEnabled()) {
       return;

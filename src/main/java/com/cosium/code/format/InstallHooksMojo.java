@@ -80,6 +80,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
       if (log.isInfoEnabled()) {
         log.info("skipped");
       }
+      return;
     }
 
     try {
