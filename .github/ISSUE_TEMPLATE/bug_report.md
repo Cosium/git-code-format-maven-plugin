@@ -17,13 +17,13 @@ Steps to reproduce the behavior:
 
 **What happens instead?**
 
-**Environment (please complete the following information):**
+**Environment:**
  - OS: [e.g. Windows 10]
  - Git version: [e.g. 2.17.1]
  - git-code-format-maven-plugin version: [e.g. 2.5]
 
 **Link to a git repository that can be cloned to reproduce the problem:**
-This is critical. The absence of such repository will greatly reduce the chances of seeing this issue resolved.
+This is critical. The absence of such repository will greatly reduce the chances of seeing the issue resolved.
 
 **Additional context**
 Add any other context about the problem here.
