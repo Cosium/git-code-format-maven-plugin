@@ -21,6 +21,7 @@ Steps to reproduce the behavior:
  - OS: [e.g. Windows 10]
  - Git version: [e.g. 2.17.1]
  - git-code-format-maven-plugin version: [e.g. 2.5]
+ - Maven version: [e.g. 3.5.4]
 
 **Link to a git repository that can be cloned to reproduce the problem:**
 This is critical. The absence of such repository will greatly reduce the chances of seeing the issue resolved.
