@@ -1,18 +1,20 @@
 package com.cosium.code.format.maven;
 
+import static java.util.Objects.requireNonNull;
+
 import com.cosium.code.format.MavenGitCodeFormatException;
-import com.cosium.code.format.executable.CommandRunException;
 import com.cosium.code.format.executable.CommandRunner;
 import com.cosium.code.format.executable.DefaultCommandRunner;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.commons.exec.OS;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-
-import static java.util.Objects.requireNonNull;
+import org.apache.commons.exec.OS;
+import org.apache.maven.plugin.logging.Log;
 
 /**
  * Created on 02/11/17.
@@ -42,41 +44,70 @@ public class MavenEnvironment {
   public Path getMavenExecutable(boolean debug) {
     Path mavenHome = Paths.get(systemProperties.apply(MAVEN_HOME_PROP));
     log.get().debug("maven.home=" + mavenHome);
-    Path bin = mavenHome.resolve("bin");
-    Path executable;
-    String extension = OS.isFamilyWindows() ? ".cmd" : "";
-    if (!debug) {
-      executable = bin.resolve("mvn" + extension);
-    } else {
-      executable = bin.resolve("mvnDebug" + extension);
+    Path mavenBinDirectory = mavenHome.resolve("bin");
+
+    List<List<Executable>> executableCandidates =
+        Arrays.asList(
+            Arrays.asList(
+                new Executable(debug, mavenBinDirectory, Extension.NONE),
+                new Executable(debug, null, Extension.NONE)),
+            Arrays.asList(
+                new Executable(debug, mavenBinDirectory, Extension.CMD),
+                new Executable(debug, null, Extension.CMD)));
+
+    if (OS.isFamilyWindows()) {
+      Collections.reverse(executableCandidates);
     }
 
-    try {
-      commandRunner.run(null, executable.toString(), "--version");
-      return executable;
-    } catch (CommandRunException e) {
-      log.get().debug(e.getMessage());
+    return executableCandidates.stream()
+        .flatMap(Collection::stream)
+        .filter(Executable::isValid)
+        .findFirst()
+        .map(Executable::path)
+        .orElseThrow(() -> new MavenGitCodeFormatException("No valid maven executable found !"));
+  }
+
+  private class Executable {
+
+    private final Path path;
+
+    private Executable(boolean debug, Path prefix, Extension extension) {
+      String name = "mvn";
+      if (debug) {
+        name += "Debug";
+      }
+      if (extension != Extension.NONE) {
+        name += "." + extension.value;
+      }
+      if (prefix != null) {
+        path = prefix.resolve(name);
+      } else {
+        path = Paths.get(name);
+      }
     }
 
-    Path fallbackExecutable;
-    if (!debug) {
-      fallbackExecutable = Paths.get("mvn" + extension);
-    } else {
-      fallbackExecutable = Paths.get("mvnDebug" + extension);
+    Path path() {
+      return path;
     }
 
-    log.get()
-        .info(
-            "Could not execute '"
-                + executable
-                + "'. Falling back to '"
-                + fallbackExecutable
-                + "'.");
-    try {
-      commandRunner.run(null, fallbackExecutable.toString(), "--version");
-      return fallbackExecutable;
-    } catch (CommandRunException e) {
-      throw new MavenGitCodeFormatException(e.getMessage(), e);
+    boolean isValid() {
+      try {
+        commandRunner.run(null, path.toString(), "--version");
+        return true;
+      } catch (Exception e) {
+        log.get().debug(e.getMessage());
+      }
+      return false;
+    }
+  }
+
+  private enum Extension {
+    NONE(null),
+    CMD("cmd");
+    private final String value;
+
+    Extension(String value) {
+      this.value = value;
     }
   }
 }
