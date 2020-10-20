@@ -46,6 +46,10 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   @Parameter(property = "gcf.skip", defaultValue = "false")
   private boolean skip;
 
+  /** Skip execution of this specific goal */
+  @Parameter(property = "gcf.skipInstallHooks", defaultValue = "false")
+  private boolean skipInstallHooks;
+
   /**
    * True to truncate hooks base scripts before each install. <br>
    * Do not use this option if any other system or human manipulate the hooks
@@ -75,7 +79,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
       getLog().debug("Not in execution root. Do not execute.");
       return;
     }
-    if (skip) {
+    if (skip || skipInstallHooks) {
       Log log = getLog();
       if (log.isInfoEnabled()) {
         log.info("skipped");
