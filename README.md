@@ -9,7 +9,7 @@ On commit, the hook will automatically format staged java files.
 ### Breaking changes between 2.x and 3.x
 
 * [#64](https://github.com/Cosium/git-code-format-maven-plugin/issues/64) `google-java-format 1.8` [dropped support for java 8](https://github.com/google/google-java-format/releases/tag/google-java-format-1.8).
-  The minimum supported runtime version for the plugin is JDK 11.
+  The minimum supported runtime version for the plugin is JDK 11. i.e. Maven must run on JDK 11+ while the target project can still be built and run using JDK 8.
 
 ### Breaking changes between 1.x and 2.x
 
