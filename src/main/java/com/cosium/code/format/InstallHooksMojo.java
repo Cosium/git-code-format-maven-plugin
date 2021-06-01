@@ -2,7 +2,6 @@ package com.cosium.code.format;
 
 import static java.util.Optional.ofNullable;
 
-
 import com.cosium.code.format.executable.Executable;
 import com.cosium.code.format.executable.ExecutableManager;
 import com.cosium.code.format.maven.MavenEnvironment;
@@ -144,9 +143,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private String mavenCliArguments() {
     Stream<String> propagatedProperties =
-        ofNullable(propertiesToPropagate)
-            .map(Arrays::asList)
-            .orElse(Collections.emptyList())
+        ofNullable(propertiesToPropagate).map(Arrays::asList).orElse(Collections.emptyList())
             .stream()
             .filter(prop -> System.getProperty(prop) != null)
             .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
