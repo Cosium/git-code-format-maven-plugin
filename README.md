@@ -108,7 +108,7 @@ Documentation from the google-java-format CLI tool :
 
 ### JDK 16+ peculiarities
 
-Since google-java-forma uses JDK internal apis, if you need to run the plugin with JDK 16+, you must pass some additional arguments to the JVM.
+Since google-java-format uses JDK internal apis, if you need to run the plugin with JDK 16+, you must pass some additional arguments to the JVM.
 Those are described at https://github.com/google/google-java-format/releases/tag/v1.10.0.  
 
 Thanks to https://maven.apache.org/configure.html#mvn-jvm-config-file, you should be able to pass them to `.mvn/jvm.config` as follow:
