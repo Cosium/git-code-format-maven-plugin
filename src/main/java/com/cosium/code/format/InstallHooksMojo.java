@@ -1,10 +1,6 @@
 package com.cosium.code.format;
 
 import static java.util.Optional.ofNullable;
-
-import com.cosium.code.format.executable.Executable;
-import com.cosium.code.format.executable.ExecutableManager;
-import com.cosium.code.format.maven.MavenEnvironment;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -13,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -20,6 +17,9 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import com.cosium.code.format.executable.Executable;
+import com.cosium.code.format.executable.ExecutableManager;
+import com.cosium.code.format.maven.MavenEnvironment;
 
 /**
  * Installs git hooks on each initialization. Hooks are always overriden in case of changes in:
@@ -74,13 +74,17 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   @Parameter(property = "gcf.preCommitHookPipeline", defaultValue = "")
   private String preCommitHookPipeline;
 
+  @Parameter(property = "gcf.hookScriptName")
+  private String hookScriptName;
+
+  @Override
   public void execute() throws MojoExecutionException {
     if (!isExecutionRoot()) {
       getLog().debug("Not in execution root. Do not execute.");
       return;
     }
-    if (skip || skipInstallHooks) {
-      Log log = getLog();
+    if (this.skip || this.skipInstallHooks) {
+      final Log log = getLog();
       if (log.isInfoEnabled()) {
         log.info("skipped");
       }
@@ -91,42 +95,42 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
       getLog().info("Installing git hooks");
       doExecute();
       getLog().info("Installed git hooks");
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new MojoExecutionException(e.getMessage(), e);
     }
   }
 
   private void doExecute() throws IOException {
-    Path hooksDirectory = prepareHooksDirectory();
+    final Path hooksDirectory = prepareHooksDirectory();
 
     writePluginHooks(hooksDirectory);
 
     configureHookBaseScripts(hooksDirectory);
   }
 
-  private void writePluginHooks(Path hooksDirectory) throws IOException {
+  private void writePluginHooks(final Path hooksDirectory) throws IOException {
     getLog().debug("Removing legacy pre commit hook file");
     Files.deleteIfExists(hooksDirectory.resolve(legacyPluginPreCommitHookFileName()));
     getLog().debug("Rmeoved legacy pre commit hook file");
 
     getLog().debug("Writing plugin pre commit hook file");
-    executableManager
-        .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
-        .truncateWithTemplate(
-            () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
-            StandardCharsets.UTF_8.toString(),
-            mavenEnvironment.getMavenExecutable(debug).toAbsolutePath(),
-            pomFile().toAbsolutePath(),
-            mavenCliArguments());
+    this.executableManager
+    .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
+    .truncateWithTemplate(
+        () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
+        StandardCharsets.UTF_8.toString(),
+        this.mavenEnvironment.getMavenExecutable(this.debug).toAbsolutePath(),
+        pomFile().toAbsolutePath(),
+        mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
   }
 
-  private void configureHookBaseScripts(Path hooksDirectory) throws IOException {
-    Executable basePreCommitHook =
-        executableManager.getOrCreateExecutableScript(
+  private void configureHookBaseScripts(final Path hooksDirectory) throws IOException {
+    final Executable basePreCommitHook =
+        this.executableManager.getOrCreateExecutableScript(
             hooksDirectory.resolve(PRE_COMMIT_HOOK_BASE_SCRIPT));
     getLog().debug("Configuring '" + basePreCommitHook + "'");
-    if (truncateHooksBaseScripts) {
+    if (this.truncateHooksBaseScripts) {
       basePreCommitHook.truncate();
     } else {
       legacyPreCommitHookBaseScriptCalls().forEach(basePreCommitHook::removeCommandCall);
@@ -135,15 +139,15 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private String mavenCliArguments() {
-    Stream<String> propagatedProperties =
-        ofNullable(propertiesToPropagate).map(Arrays::asList).orElse(Collections.emptyList())
-            .stream()
-            .filter(prop -> System.getProperty(prop) != null)
-            .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
+    final Stream<String> propagatedProperties =
+        ofNullable(this.propertiesToPropagate).map(Arrays::asList).orElse(Collections.emptyList())
+        .stream()
+        .filter(prop -> System.getProperty(prop) != null)
+        .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
 
-    Stream<String> properties = Stream.concat(propagatedProperties, Stream.of(propertiesToAdd));
-    if (preCommitHookPipeline != null && !preCommitHookPipeline.isEmpty()) {
-      properties = Stream.concat(properties, Stream.of(preCommitHookPipeline));
+    Stream<String> properties = Stream.concat(propagatedProperties, Stream.of(this.propertiesToAdd));
+    if (this.preCommitHookPipeline != null && !this.preCommitHookPipeline.isEmpty()) {
+      properties = Stream.concat(properties, Stream.of(this.preCommitHookPipeline));
     }
     return properties.collect(Collectors.joining(" "));
   }
@@ -161,7 +165,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   }
 
   private List<String> legacyPreCommitHookBaseScriptCalls() {
-    List<String> calls = new ArrayList<>();
+    final List<String> calls = new ArrayList<>();
     calls.add(
         "./"
             + gitBaseDir().relativize(getOrCreateHooksDirectory())
@@ -175,11 +179,15 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     return calls;
   }
 
+  private String getHookScriptName() {
+    return Optional.ofNullable(this.hookScriptName).orElseGet(this::artifactId);
+  }
+
   private String pluginPreCommitHookFileName() {
-    return artifactId() + "." + BASE_PLUGIN_PRE_COMMIT_HOOK;
+    return getHookScriptName() + "." + BASE_PLUGIN_PRE_COMMIT_HOOK;
   }
 
   private String legacyPluginPreCommitHookFileName() {
-    return artifactId() + "." + LEGACY_BASE_PLUGIN_PRE_COMMIT_HOOK;
+    return getHookScriptName() + "." + LEGACY_BASE_PLUGIN_PRE_COMMIT_HOOK;
   }
 }
