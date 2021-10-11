@@ -1,12 +1,11 @@
 package com.cosium.code.format.git;
 
+import java.io.IOException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEditor;
 import org.eclipse.jgit.dircache.DirCacheIterator;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
-
-import java.io.IOException;
 
 /** @author Réda Housni Alaoui */
 public class Index implements AutoCloseable {

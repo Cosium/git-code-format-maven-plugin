@@ -1,13 +1,12 @@
 package com.cosium.code.format.git;
 
-import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
-import org.eclipse.jgit.lib.ObjectStream;
-import org.eclipse.jgit.util.io.EolStreamTypeUtil;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import static java.util.Objects.requireNonNull;
+import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
+import org.eclipse.jgit.lib.ObjectStream;
+import org.eclipse.jgit.util.io.EolStreamTypeUtil;
 
 /** @author Réda Housni Alaoui */
 public class AutoCRLFObjectStream extends ObjectStream {

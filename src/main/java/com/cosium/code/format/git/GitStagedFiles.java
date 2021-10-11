@@ -1,8 +1,19 @@
 package com.cosium.code.format.git;
 
+import static java.util.Objects.requireNonNull;
+
 import com.cosium.code.format.MavenGitCodeFormatException;
 import com.cosium.code.format.TemporaryFile;
 import com.cosium.code.format.formatter.CodeFormatters;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.maven.plugin.logging.Log;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
@@ -15,18 +26,6 @@ import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.WorkingTreeOptions;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.Objects.requireNonNull;
 
 /** @author Réda Housni Alaoui */
 public class GitStagedFiles {

@@ -1,13 +1,12 @@
 package com.cosium.code.format.git;
 
-import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
-import org.eclipse.jgit.lib.ObjectReader;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
-
-import static java.util.Objects.requireNonNull;
+import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
+import org.eclipse.jgit.lib.ObjectReader;
 
 /** @author Réda Housni Alaoui */
 public class AutoCRLFRepository extends FileRepository {

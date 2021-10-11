@@ -1,6 +1,10 @@
 package com.cosium.code.format;
 
 import static java.util.Optional.ofNullable;
+
+import com.cosium.code.format.executable.Executable;
+import com.cosium.code.format.executable.ExecutableManager;
+import com.cosium.code.format.maven.MavenEnvironment;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,9 +21,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import com.cosium.code.format.executable.Executable;
-import com.cosium.code.format.executable.ExecutableManager;
-import com.cosium.code.format.maven.MavenEnvironment;
 
 /**
  * Installs git hooks on each initialization. Hooks are always overriden in case of changes in:
@@ -115,13 +116,13 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
     getLog().debug("Writing plugin pre commit hook file");
     this.executableManager
-    .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
-    .truncateWithTemplate(
-        () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
-        StandardCharsets.UTF_8.toString(),
-        this.mavenEnvironment.getMavenExecutable(this.debug).toAbsolutePath(),
-        pomFile().toAbsolutePath(),
-        mavenCliArguments());
+        .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
+        .truncateWithTemplate(
+            () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
+            StandardCharsets.UTF_8.toString(),
+            this.mavenEnvironment.getMavenExecutable(this.debug).toAbsolutePath(),
+            pomFile().toAbsolutePath(),
+            mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
   }
 
@@ -140,12 +141,15 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private String mavenCliArguments() {
     final Stream<String> propagatedProperties =
-        ofNullable(this.propertiesToPropagate).map(Arrays::asList).orElse(Collections.emptyList())
-        .stream()
-        .filter(prop -> System.getProperty(prop) != null)
-        .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
+        ofNullable(this.propertiesToPropagate)
+            .map(Arrays::asList)
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter(prop -> System.getProperty(prop) != null)
+            .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
 
-    Stream<String> properties = Stream.concat(propagatedProperties, Stream.of(this.propertiesToAdd));
+    Stream<String> properties =
+        Stream.concat(propagatedProperties, Stream.of(this.propertiesToAdd));
     if (this.preCommitHookPipeline != null && !this.preCommitHookPipeline.isEmpty()) {
       properties = Stream.concat(properties, Stream.of(this.preCommitHookPipeline));
     }

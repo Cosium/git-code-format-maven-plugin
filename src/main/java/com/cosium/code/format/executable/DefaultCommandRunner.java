@@ -1,14 +1,13 @@
 package com.cosium.code.format.executable;
 
 import com.cosium.code.format.MavenGitCodeFormatException;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.plugin.logging.Log;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.function.Supplier;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.plugin.logging.Log;
 
 /** @author Réda Housni Alaoui */
 public class DefaultCommandRunner implements CommandRunner {
