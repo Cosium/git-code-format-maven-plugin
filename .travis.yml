@@ -1,6 +1,0 @@
-language: java
-jdk:
-  - openjdk11
-os:
-  - linux
-  - osx
