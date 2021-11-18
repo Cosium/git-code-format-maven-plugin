@@ -1,18 +1,12 @@
 package com.cosium.code.format;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.takari.maven.testing.TestResources;
 import io.takari.maven.testing.executor.MavenExecution;
 import io.takari.maven.testing.executor.MavenRuntime;
 import io.takari.maven.testing.executor.MavenVersions;
 import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
-import org.eclipse.jgit.api.Git;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,8 +16,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.PersonIdent;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.runner.RunWith;
 
 /**
  * Created on 16/01/18.
@@ -35,6 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class AbstractTest {
   private static final String GROUP_ID = "com.cosium.code";
   private static final String ARTIFACT_ID = "git-code-format-maven-plugin";
+  private static final PersonIdent gitIdentity =
+      new PersonIdent("John Doe", "john.doe@example.org");
   @Rule public final TestResources resources;
 
   private final MavenRuntime maven;
@@ -42,15 +44,13 @@ public abstract class AbstractTest {
   private Path projectDestination;
   private Path projectRoot;
   private Git jGit;
-  private GitCLI gitCLI;
 
   public AbstractTest(
       MavenRuntime.MavenRuntimeBuilder mavenBuilder, String projectRootDirectoryName)
       throws Exception {
     this.resources =
         new TestResources(
-            "src/test/projects",
-            Files.createTempDirectory(ARTIFACT_ID + "-test").toString());
+            "src/test/projects", Files.createTempDirectory(ARTIFACT_ID + "-test").toString());
     this.maven = mavenBuilder.withCliOptions("-B", "-U").build();
     this.projectRootDirectoryName = projectRootDirectoryName;
   }
@@ -59,11 +59,14 @@ public abstract class AbstractTest {
   public final void before() throws Exception {
     projectRoot = resources.getBasedir(projectRootDirectoryName).toPath();
 
-    gitCLI = new GitCLI(projectRoot);
-
     jGit = Git.init().setDirectory(projectRoot.toFile()).call();
     jGit.add().addFilepattern(".").call();
-    jGit.commit().setAll(true).setMessage("First commit").call();
+    jGit.commit()
+        .setCommitter(gitIdentity)
+        .setAuthor(gitIdentity)
+        .setAll(true)
+        .setMessage("First commit")
+        .call();
 
     projectDestination =
         Files.createDirectories(Paths.get("target/test-projects"))
@@ -94,18 +97,18 @@ public abstract class AbstractTest {
     return jGit;
   }
 
-  protected final GitCLI gitCLI() {
-    return gitCLI;
+  protected final PersonIdent gitIdentity() {
+    return gitIdentity;
   }
 
   protected void touch(String sourceName) throws IOException {
     Path sourceFile = resolveRelativelyToProjectRoot(sourceName);
     String content;
     try (InputStream inputStream = Files.newInputStream(sourceFile)) {
-      content = IOUtils.toString(inputStream) + "\n";
+      content = IOUtils.toString(inputStream, StandardCharsets.UTF_8) + "\n";
     }
     try (OutputStream outputStream = Files.newOutputStream(sourceFile)) {
-      IOUtils.write(content, outputStream);
+      IOUtils.write(content, outputStream, StandardCharsets.UTF_8);
     }
   }
 

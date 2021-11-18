@@ -1,13 +1,11 @@
 package com.cosium.code.format;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.takari.maven.testing.executor.MavenExecution;
 import io.takari.maven.testing.executor.MavenRuntime;
-import org.junit.Test;
-
 import java.nio.file.Paths;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.junit.Test;
 
 /** @author Réda Housni Alaoui */
 public abstract class AbstractMavenModuleTest extends AbstractTest {
@@ -58,7 +56,12 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
     touch(badFormatJava);
 
     jGit().add().addFilepattern(".").call();
-    jGit().commit().setMessage("Trying to commit badly formatted file").call();
+    jGit()
+        .commit()
+        .setCommitter(gitIdentity())
+        .setAuthor(gitIdentity())
+        .setMessage("Trying to commit badly formatted file")
+        .call();
 
     mavenExecution()
         .withCliOptions(goalCliOption("validate-code-format"))
@@ -110,9 +113,8 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
   }
 
   @Test
-  public void
-      GIVEN_bad_formatted_file_WHEN_committing_all_THEN_it_should_have_correct_format()
-          throws Exception {
+  public void GIVEN_bad_formatted_file_WHEN_committing_all_THEN_it_should_have_correct_format()
+      throws Exception {
     mavenExecution()
         .withCliOptions(goalCliOption("validate-code-format"))
         .execute()
@@ -122,12 +124,21 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
 
     touch(badFormatJava);
 
-    gitCLI().commit(true, "Trying to commit badly formatted file");
+    // When using CommitCommand 'all' option, JGit trigger the precommit hooks before adding the files to staging.
+    // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=577333
+    // Until it is fixed, we perform 'all' option staging operation before calling commit manually.
+    jGit().add().addFilepattern(".").setUpdate(true).call();
+    jGit()
+        .commit()
+        .setCommitter(gitIdentity())
+        .setAuthor(gitIdentity())
+        .setMessage("Trying to commit badly formatted file")
+        .call();
 
     mavenExecution()
-            .withCliOptions(goalCliOption("validate-code-format"))
-            .execute()
-            .assertErrorFreeLog();
+        .withCliOptions(goalCliOption("validate-code-format"))
+        .execute()
+        .assertErrorFreeLog();
 
     assertMatchExpected(badFormatJava);
   }
