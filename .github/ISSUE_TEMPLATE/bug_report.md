@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- Issue not following this template will be systematically rejected -->
+<!-- Issues not following this template will be systematically rejected -->
 
 **What steps will reproduce the problem?**
 Steps to reproduce the behavior:
