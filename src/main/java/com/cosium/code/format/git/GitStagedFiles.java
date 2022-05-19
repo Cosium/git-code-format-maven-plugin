@@ -52,20 +52,22 @@ public class GitStagedFiles {
 
   public static GitStagedFiles read(Log log, Repository repository, Predicate<Path> fileFilter)
       throws GitAPIException {
-    Status gitStatus = new Git(repository).status().call();
-    Path workTree = repository.getWorkTree().toPath();
-    Set<String> filePaths =
-        Stream.concat(gitStatus.getChanged().stream(), gitStatus.getAdded().stream())
-            .filter(relativePath -> fileFilter.test(workTree.resolve(relativePath)))
-            .collect(Collectors.toSet());
-    log.debug("Staged files: " + filePaths.toString());
-    return new GitStagedFiles(log, repository, filePaths);
+    try (Git git = new Git(repository)) {
+      Status gitStatus = git.status().call();
+      Path workTree = repository.getWorkTree().toPath();
+      Set<String> filePaths =
+          Stream.concat(gitStatus.getChanged().stream(), gitStatus.getAdded().stream())
+              .filter(relativePath -> fileFilter.test(workTree.resolve(relativePath)))
+              .collect(Collectors.toSet());
+      log.debug("Staged files: " + filePaths.toString());
+      return new GitStagedFiles(log, repository, filePaths);
+    }
   }
 
   public void format(CodeFormatters formatters) throws IOException {
-    Git git = new Git(repository);
 
-    try (Index index = Index.lock(repository);
+    try (Git git = new Git(repository);
+        Index index = Index.lock(repository);
         TemporaryFile temporaryDiffFile =
             TemporaryFile.create(log, "diff-between-unformatted-and-formatted-files")) {
       DirCacheEditor dirCacheEditor = index.editor();
@@ -79,8 +81,9 @@ public class GitStagedFiles {
 
       try (Repository autoCRLFRepository =
               new AutoCRLFRepository(git.getRepository().getDirectory(), eolStreamType);
+          Git gitForAutoCRLFRepository = new Git(autoCRLFRepository);
           OutputStream diffOutput = temporaryDiffFile.newOutputStream()) {
-        new Git(autoCRLFRepository)
+        gitForAutoCRLFRepository
             .diff()
             .setOutputStream(diffOutput)
             .setOldTree(treeIterator(repository.readDirCache()))

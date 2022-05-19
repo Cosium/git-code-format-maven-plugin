@@ -130,36 +130,36 @@ class GitIndexEntry {
     }
 
     private LineRanges computeLineRanges(DirCacheEntry dirCacheEntry) {
-      Git git = new Git(repository);
-      boolean partiallyStaged;
-      try {
-        partiallyStaged =
-            !git.status().addPath(dirCacheEntry.getPathString()).call().getModified().isEmpty();
-      } catch (GitAPIException e) {
-        throw new MavenGitCodeFormatException(e);
-      }
+      try (Git git = new Git(repository)) {
+        boolean partiallyStaged;
+        try {
+          partiallyStaged =
+              !git.status().addPath(dirCacheEntry.getPathString()).call().getModified().isEmpty();
+        } catch (GitAPIException e) {
+          throw new MavenGitCodeFormatException(e);
+        }
 
-      if (!partiallyStaged) {
-        return LineRanges.all();
-      }
+        if (!partiallyStaged) {
+          return LineRanges.all();
+        }
 
-      try {
-        return git.diff().setPathFilter(PathFilter.create(dirCacheEntry.getPathString()))
-            .setCached(true).call().stream()
-            .map(this::computeLineRanges)
-            .reduce(LineRanges::concat)
-            .orElse(LineRanges.all());
+        try {
+          return git.diff().setPathFilter(PathFilter.create(dirCacheEntry.getPathString()))
+              .setCached(true).call().stream()
+              .map(this::computeLineRanges)
+              .reduce(LineRanges::concat)
+              .orElse(LineRanges.all());
 
-      } catch (GitAPIException e) {
-        throw new MavenGitCodeFormatException(e);
+        } catch (GitAPIException e) {
+          throw new MavenGitCodeFormatException(e);
+        }
       }
     }
 
     private LineRanges computeLineRanges(DiffEntry diffEntry) {
-      DiffFormatter diffFormatter = new DiffFormatter(NullOutputStream.INSTANCE);
-      diffFormatter.setRepository(repository);
+      try (DiffFormatter diffFormatter = new DiffFormatter(NullOutputStream.INSTANCE)) {
+        diffFormatter.setRepository(repository);
 
-      try {
         FileHeader fileHeader = diffFormatter.toFileHeader(diffEntry);
         return fileHeader.getHunks().stream()
             .map(HunkHeader.class::cast)
