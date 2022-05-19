@@ -87,7 +87,8 @@ public class GoogleJavaFormatter implements CodeFormatter {
       formattedContent = RemoveUnusedImports.removeUnusedImports(formattedContent);
     }
     if (!options.isSkipSortingImports()) {
-      formattedContent = ImportOrderer.reorderImports(formattedContent);
+      formattedContent =
+          ImportOrderer.reorderImports(formattedContent, options.javaFormatterOptions().style());
     }
     return formattedContent;
   }
