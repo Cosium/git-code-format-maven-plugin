@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.eclipse.jgit.errors.LargeObjectException;
@@ -45,7 +46,7 @@ public class AutoCRLFObjectLoader extends ObjectLoader {
       }
       cachedSize = countingInputStream.getByteCount();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
     return cachedSize;
   }
@@ -71,7 +72,7 @@ public class AutoCRLFObjectLoader extends ObjectLoader {
       return IOUtils.toByteArray(
           EolStreamTypeUtil.wrapInputStream(new ByteArrayInputStream(bytes), eolStreamType));
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new UncheckedIOException(e);
     }
   }
 
