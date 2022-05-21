@@ -14,7 +14,7 @@ public class CommandRunException extends RuntimeException {
   public CommandRunException(int exitCode, String output, String... command) {
     super(
         String.format(
-            "'%s' failed with code %s: \n\n %s",
+            "'%s' failed with code %s: %n%n %s",
             StringUtils.join(command, StringUtils.SPACE), exitCode, output));
     this.exitCode = exitCode;
   }
