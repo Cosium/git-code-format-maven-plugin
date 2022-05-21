@@ -42,7 +42,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   @Parameter(defaultValue = "${project.build.sourceEncoding}")
   private String sourceEncoding;
 
-  public AbstractMavenGitCodeFormatMojo() {
+  protected AbstractMavenGitCodeFormatMojo() {
     codeFormatters =
         () ->
             Collections.singletonList(
