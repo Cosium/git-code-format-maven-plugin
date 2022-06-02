@@ -144,8 +144,12 @@ class GitIndexEntry {
       }
 
       try {
-        return git.diff().setPathFilter(PathFilter.create(dirCacheEntry.getPathString()))
-            .setCached(true).call().stream()
+        return git
+            .diff()
+            .setPathFilter(PathFilter.create(dirCacheEntry.getPathString()))
+            .setCached(true)
+            .call()
+            .stream()
             .map(this::computeLineRanges)
             .reduce(LineRanges::concat)
             .orElse(LineRanges.all());

@@ -44,7 +44,8 @@ public abstract class AbstractModuleMavenGitCodeFormatMojo extends AbstractMaven
     if ((!includedModules.isEmpty() || !excludedModules.isEmpty()) && isExecutionRoot()) {
       getLog()
           .info(
-              "Explicit included or excluded modules defined and the current module the execution root. Goal disabled.");
+              "Explicit included or excluded modules defined and the current module the execution"
+                  + " root. Goal disabled.");
       return false;
     }
 
