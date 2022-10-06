@@ -68,7 +68,7 @@ public class MavenEnvironmentTest {
     final Set<String> validExecutables = new HashSet<>();
 
     @Override
-    public String run(Path workingDir, String... command) {
+    public String run(Path workingDir, Map<String, String> environment, String... command) {
       if (validExecutables.contains(command[0])) {
         return null;
       }

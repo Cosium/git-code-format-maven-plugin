@@ -92,7 +92,8 @@ public class MavenEnvironment {
 
     boolean isValid() {
       try {
-        commandRunner.run(null, path.toString(), "--version");
+        commandRunner.run(
+            null, Collections.singletonMap("MAVEN_DEBUG_OPTS", ""), path.toString(), "--version");
         return true;
       } catch (Exception e) {
         log.get().debug(e.getMessage());
