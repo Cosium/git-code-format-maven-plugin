@@ -74,6 +74,13 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   @Parameter(property = "gcf.preCommitHookPipeline", defaultValue = "")
   private String preCommitHookPipeline;
 
+  /**
+   * Set to `true` to use the global `mvn` executable in the hooks script otherwise will default to
+   * the complete path for `mvn` found via `maven.home` variable
+   */
+  @Parameter(property = "gcf.useGlobalMavenExecutable", defaultValue = "false")
+  private boolean useGlobalMavenExecutable;
+
   public void execute() throws MojoExecutionException {
     if (!isExecutionRoot()) {
       getLog().debug("Not in execution root. Do not execute.");
@@ -107,7 +114,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private void writePluginHooks(Path hooksDirectory) throws IOException {
     getLog().debug("Removing legacy pre commit hook file");
     Files.deleteIfExists(hooksDirectory.resolve(legacyPluginPreCommitHookFileName()));
-    getLog().debug("Rmeoved legacy pre commit hook file");
+    getLog().debug("Removed legacy pre commit hook file");
 
     getLog().debug("Writing plugin pre commit hook file");
     executableManager
@@ -115,7 +122,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         .truncateWithTemplate(
             () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
             StandardCharsets.UTF_8.toString(),
-            mavenEnvironment.getMavenExecutable(debug).toAbsolutePath(),
+            useGlobalMavenExecutable ? "mvn" : mavenEnvironment.getMavenExecutable(debug).toAbsolutePath(),
             pomFile().toAbsolutePath(),
             mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");

@@ -149,6 +149,21 @@ set -e
 
 On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified java files using `google-java-format`.
 
+### Configuring Maven Executable Path
+By default, the plugin will generate the following maven path
+
+```shell
+"${env.M2_HOME}/bin/mvn"
+```
+
+If you want to use the global `mvn` variable, you can configure it using the `useGlobalMavenExecutable` property.
+
+```xml
+      <configuration>
+        <useGlobalMavenExecutable>true</useGlobalMavenExecutable>
+      </configuration>
+```
+
 ### Advanced pre-commit pipeline hook
 If you wish to modify the output of the pre-commit hook, you can set the `preCommitHookPipeline` configuration.
 
