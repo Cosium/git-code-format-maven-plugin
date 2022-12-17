@@ -3,15 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.cosium.code</groupId>
-  <artifactId>git-code-format-maven-plugin</artifactId>
+  <artifactId>git-code-format-maven-plugin-parent</artifactId>
   <version>3.6-SNAPSHOT</version>
-  <packaging>maven-plugin</packaging>
+  <packaging>pom</packaging>
 
   <name>Git Code Format Maven Plugin</name>
-  <description>A maven plugin that automatically deploys https://github.com/google/google-java-format code formatter
-    as a pre-commit git hook
+  <description>A maven plugin that automatically deploys code formatters
+    as pre-commit git hook
   </description>
-  <url>https://github.com/cosium/maven-git-code-format</url>
+  <url>https://github.com/Cosium/git-code-format-maven-plugin</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,6 +25,11 @@
     <google-java-format.version>1.15.0</google-java-format.version>
   </properties>
 
+  <modules>
+    <module>core</module>
+  </modules>	  
+
+  <dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>commons-io</groupId>
@@ -65,7 +70,6 @@
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
       <version>3.3</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -76,40 +80,35 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.1</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>3.8.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.takari.maven.plugins</groupId>
       <artifactId>takari-plugin-testing</artifactId>
       <version>${takari-plugin-testing.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.takari.maven.plugins</groupId>
       <artifactId>takari-plugin-integration-testing</artifactId>
       <version>${takari-plugin-testing.version}</version>
       <type>pom</type>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>1.2.3</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
       <version>1.13</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
+  </dependencyManagement>
 
   <build>
     <plugins>
@@ -158,38 +157,6 @@
         <version>2.8.2</version>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.2</version>
-        <configuration>
-          <trimStackTrace>false</trimStackTrace>
-          <argLine>@{argLine} --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</argLine>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.6.0</version>
-        <configuration>
-          <goalPrefix>git-code-format</goalPrefix>
-          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-        </configuration>
-        <executions>
-          <execution>
-            <id>mojo-descriptor</id>
-            <goals>
-              <goal>descriptor</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>help-goal</id>
-            <goals>
-              <goal>helpmojo</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${jacoco.version}</version>
@@ -204,21 +171,6 @@
             <phase>test</phase>
             <goals>
               <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>io.takari.maven.plugins</groupId>
-        <artifactId>takari-lifecycle-plugin</artifactId>
-        <version>1.13.9</version>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <id>testProperties</id>
-            <phase>process-test-resources</phase>
-            <goals>
-              <goal>testProperties</goal>
             </goals>
           </execution>
         </executions>
@@ -279,9 +231,9 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:git:https://github.com/Cosium/maven-git-code-format</connection>
-    <developerConnection>scm:git:https://github.com/Cosium/maven-git-code-format</developerConnection>
-    <url>https://github.com/Cosium/maven-git-code-format</url>
+    <connection>scm:git:https://github.com/Cosium/git-code-format-maven-plugin</connection>
+    <developerConnection>scm:git:https://github.com/Cosium/git-code-format-maven-plugin</developerConnection>
+    <url>https://github.com/Cosium/git-code-format-maven-plugin</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -294,7 +246,7 @@
     <developer>
       <id>reda-alaoui</id>
       <name>Réda Housni Alaoui</name>
-      <email>reda.housnialaoui@cosium.com</email>
+      <email>reda-alaoui@hey.com</email>
       <url>https://github.com/reda-alaoui</url>
     </developer>
   </developers>
