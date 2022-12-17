@@ -14,7 +14,9 @@ import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectStream;
 import org.eclipse.jgit.util.io.EolStreamTypeUtil;
 
-/** @author Réda Housni Alaoui */
+/**
+ * @author Réda Housni Alaoui
+ */
 public class AutoCRLFObjectLoader extends ObjectLoader {
 
   private final ObjectLoader delegate;

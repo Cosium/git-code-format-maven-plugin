@@ -2,7 +2,9 @@ package com.cosium.code.format;
 
 import org.apache.maven.plugin.logging.Log;
 
-/** @author Réda Housni Alaoui */
+/**
+ * @author Réda Housni Alaoui
+ */
 public class TestingLog implements Log {
 
   @Override

@@ -3,12 +3,12 @@ package com.cosium.code.format.git;
 import static java.util.Objects.requireNonNull;
 import static org.eclipse.jgit.lib.Constants.OBJ_BLOB;
 
-import com.cosium.code.format.FileExtension;
 import com.cosium.code.format.MavenGitCodeFormatException;
 import com.cosium.code.format.TemporaryFile;
-import com.cosium.code.format.formatter.CodeFormatter;
 import com.cosium.code.format.formatter.CodeFormatters;
-import com.cosium.code.format.formatter.LineRanges;
+import com.cosium.code.format_spi.CodeFormatter;
+import com.cosium.code.format_spi.FileExtension;
+import com.cosium.code.format_spi.LineRanges;
 import com.google.common.collect.Range;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,9 @@ import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.NullOutputStream;
 
-/** @author Réda Housni Alaoui */
+/**
+ * @author Réda Housni Alaoui
+ */
 class GitIndexEntry {
 
   private final Log log;
@@ -144,8 +146,12 @@ class GitIndexEntry {
       }
 
       try {
-        return git.diff().setPathFilter(PathFilter.create(dirCacheEntry.getPathString()))
-            .setCached(true).call().stream()
+        return git
+            .diff()
+            .setPathFilter(PathFilter.create(dirCacheEntry.getPathString()))
+            .setCached(true)
+            .call()
+            .stream()
             .map(this::computeLineRanges)
             .reduce(LineRanges::concat)
             .orElse(LineRanges.all());

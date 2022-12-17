@@ -20,9 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.logging.Log;
 
 /**
- * Created on 08/11/17.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 class DefaulExecutable implements Executable {
 

@@ -7,7 +7,9 @@ import io.takari.maven.testing.executor.MavenRuntime;
 import java.nio.file.Paths;
 import org.junit.Test;
 
-/** @author Réda Housni Alaoui */
+/**
+ * @author Réda Housni Alaoui
+ */
 public abstract class AbstractMavenModuleTest extends AbstractTest {
 
   private final String badFormatJava;
@@ -124,7 +126,8 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
 
     touch(badFormatJava);
 
-    // When using CommitCommand 'all' option, JGit trigger the precommit hooks before adding the files to staging.
+    // When using CommitCommand 'all' option, JGit trigger the precommit hooks before adding the
+    // files to staging.
     // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=577333
     // Until it is fixed, we perform 'all' option staging operation before calling commit manually.
     jGit().add().addFilepattern(".").setUpdate(true).call();

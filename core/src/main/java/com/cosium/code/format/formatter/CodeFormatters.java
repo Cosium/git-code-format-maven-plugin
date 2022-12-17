@@ -2,11 +2,14 @@ package com.cosium.code.format.formatter;
 
 import static java.util.Objects.requireNonNull;
 
-import com.cosium.code.format.FileExtension;
+import com.cosium.code.format_spi.CodeFormatter;
+import com.cosium.code.format_spi.FileExtension;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** @author Réda Housni Alaoui */
+/**
+ * @author Réda Housni Alaoui
+ */
 public class CodeFormatters {
 
   private final List<CodeFormatter> formatters;

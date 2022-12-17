@@ -1,15 +1,16 @@
 package com.cosium.code.format.git;
 
+import static java.util.Objects.requireNonNull;
+
+import java.io.IOException;
+import java.io.InputStream;
 import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
 import org.eclipse.jgit.lib.ObjectStream;
 import org.eclipse.jgit.util.io.EolStreamTypeUtil;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import static java.util.Objects.requireNonNull;
-
-/** @author Réda Housni Alaoui */
+/**
+ * @author Réda Housni Alaoui
+ */
 public class AutoCRLFObjectStream extends ObjectStream {
 
   private final ObjectStream delegate;

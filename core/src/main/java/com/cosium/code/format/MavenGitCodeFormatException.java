@@ -1,6 +1,8 @@
 package com.cosium.code.format;
 
-/** @author Réda Housni Alaoui */
+/**
+ * @author Réda Housni Alaoui
+ */
 public class MavenGitCodeFormatException extends RuntimeException {
 
   public MavenGitCodeFormatException(Throwable cause) {

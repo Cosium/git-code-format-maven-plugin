@@ -8,9 +8,7 @@ import java.util.function.Supplier;
 import org.apache.maven.plugin.logging.Log;
 
 /**
- * Created on 02/11/17.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 public class ExecutableManager {
 

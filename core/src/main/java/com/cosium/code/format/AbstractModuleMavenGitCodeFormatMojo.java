@@ -9,9 +9,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * Created on 17/11/17.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 public abstract class AbstractModuleMavenGitCodeFormatMojo extends AbstractMavenGitCodeFormatMojo {
 
@@ -25,7 +23,9 @@ public abstract class AbstractModuleMavenGitCodeFormatMojo extends AbstractMaven
   @Parameter(property = "gcf.excludedModules")
   private List<String> excludedModules;
 
-  /** @return True if the goal is enabled for the current module */
+  /**
+   * @return True if the goal is enabled for the current module
+   */
   private boolean isEnabled() {
     List<String> excludedModules =
         Optional.ofNullable(this.excludedModules).orElse(Collections.emptyList());

@@ -3,9 +3,7 @@ package com.cosium.code.format.executable;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Created on 20/02/18.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 public class CommandRunException extends RuntimeException {
 

@@ -1,21 +1,22 @@
 package com.cosium.code.format.maven;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.cosium.code.format.TestingLog;
 import com.cosium.code.format.executable.CommandRunException;
 import com.cosium.code.format.executable.CommandRunner;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-/** @author Réda Housni Alaoui */
+/**
+ * @author Réda Housni Alaoui
+ */
 public class MavenEnvironmentTest {
 
   private Map<String, String> systemProperties;

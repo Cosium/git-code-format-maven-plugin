@@ -1,6 +1,7 @@
 package com.cosium.code.format;
 
-import com.cosium.code.format.formatter.CodeFormatter;
+import com.cosium.code.format_spi.CodeFormatter;
+import com.cosium.code.format_spi.FileExtension;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -10,9 +11,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 
 /**
- * Created on 16/01/18.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 @Mojo(name = "validate-code-format", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true)
 public class ValidateCodeFormat extends AbstractFormatMojo {

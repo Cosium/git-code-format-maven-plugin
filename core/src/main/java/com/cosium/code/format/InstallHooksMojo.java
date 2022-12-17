@@ -136,7 +136,9 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   private String mavenCliArguments() {
     Stream<String> propagatedProperties =
-        ofNullable(propertiesToPropagate).map(Arrays::asList).orElse(Collections.emptyList())
+        ofNullable(propertiesToPropagate)
+            .map(Arrays::asList)
+            .orElse(Collections.emptyList())
             .stream()
             .filter(prop -> System.getProperty(prop) != null)
             .map(prop -> "-D" + prop + "=" + System.getProperty(prop));

@@ -1,31 +1,37 @@
-package com.cosium.code.format.formatter;
+package com.cosium.code.format_gjf;
 
 import static com.google.googlejavaformat.java.JavaFormatterOptions.Style.AOSP;
 import static com.google.googlejavaformat.java.JavaFormatterOptions.Style.GOOGLE;
 
+import com.cosium.code.format_spi.CodeFormatterConfiguration;
 import com.google.googlejavaformat.java.JavaFormatterOptions;
 
-/** @author Réda Housni Alaoui */
-public class GoogleJavaFormatterOptions {
+/**
+ * @author Réda Housni Alaoui
+ */
+class GoogleJavaFormatterOptions {
 
   private final JavaFormatterOptions.Style style;
   private final boolean fixImportsOnly;
   private final boolean skipSortingImports;
   private final boolean skipRemovingUnusedImports;
 
-  public GoogleJavaFormatterOptions(
-      boolean aosp,
-      boolean fixImportsOnly,
-      boolean skipSortingImports,
-      boolean skipRemovingUnusedImports) {
+  public GoogleJavaFormatterOptions(CodeFormatterConfiguration configuration) {
+    boolean aosp = configuration.getValue("aosp").map(Boolean::parseBoolean).orElse(false);
     if (aosp) {
       style = AOSP;
     } else {
       style = GOOGLE;
     }
-    this.fixImportsOnly = fixImportsOnly;
-    this.skipSortingImports = skipSortingImports;
-    this.skipRemovingUnusedImports = skipRemovingUnusedImports;
+    fixImportsOnly =
+        configuration.getValue("fixImportsOnly").map(Boolean::parseBoolean).orElse(false);
+    skipSortingImports =
+        configuration.getValue("skipSortingImports").map(Boolean::parseBoolean).orElse(false);
+    skipRemovingUnusedImports =
+        configuration
+            .getValue("skipRemovingUnusedImports")
+            .map(Boolean::parseBoolean)
+            .orElse(false);
   }
 
   public JavaFormatterOptions javaFormatterOptions() {

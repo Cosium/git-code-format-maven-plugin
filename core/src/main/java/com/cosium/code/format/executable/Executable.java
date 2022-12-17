@@ -5,9 +5,7 @@ import java.io.InputStream;
 import java.util.function.Supplier;
 
 /**
- * Created on 08/11/17.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 public interface Executable {
 

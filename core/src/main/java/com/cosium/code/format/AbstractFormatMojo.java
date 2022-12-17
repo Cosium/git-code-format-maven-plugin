@@ -13,9 +13,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * Created on 16/01/18.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 public abstract class AbstractFormatMojo extends AbstractModuleMavenGitCodeFormatMojo {
 

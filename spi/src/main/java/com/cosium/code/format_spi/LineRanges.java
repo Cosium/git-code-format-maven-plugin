@@ -1,4 +1,4 @@
-package com.cosium.code.format.formatter;
+package com.cosium.code.format_spi;
 
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
@@ -6,8 +6,10 @@ import com.google.common.collect.TreeRangeSet;
 import java.util.Collections;
 import java.util.Set;
 
-/** @author Réda Housni Alaoui */
-public class LineRanges {
+/**
+ * @author Réda Housni Alaoui
+ */
+public final class LineRanges {
 
   private static final LineRanges ALL =
       new LineRanges(TreeRangeSet.create(Collections.singleton(Range.all())));

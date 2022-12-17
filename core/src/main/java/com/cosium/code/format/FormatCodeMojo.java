@@ -1,21 +1,19 @@
 package com.cosium.code.format;
 
-import com.cosium.code.format.formatter.CodeFormatter;
-import com.cosium.code.format.formatter.LineRanges;
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-
+import com.cosium.code.format_spi.CodeFormatter;
+import com.cosium.code.format_spi.FileExtension;
+import com.cosium.code.format_spi.LineRanges;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.apache.commons.io.IOUtils;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 
 /**
- * Created on 07/11/17.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 @Mojo(name = "format-code", defaultPhase = LifecyclePhase.NONE, threadSafe = true)
 public class FormatCodeMojo extends AbstractFormatMojo {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extensions>
-    <extension>
-        <groupId>io.takari.m2e.workspace</groupId>
-        <artifactId>org.eclipse.m2e.workspace.cli</artifactId>
-        <version>0.4.0</version>
-    </extension>
+  <extension>
+    <groupId>io.takari.m2e.workspace</groupId>
+    <artifactId>org.eclipse.m2e.workspace.cli</artifactId>
+    <version>0.4.0</version>
+  </extension>
 </extensions>

@@ -1,19 +1,19 @@
 package com.cosium.code.format;
 
-import static java.util.Optional.ofNullable;
-
-import com.cosium.code.format.formatter.CodeFormatter;
+import com.cosium.code.format.formatter.CodeFormatterConfigurationFactory;
 import com.cosium.code.format.formatter.CodeFormatters;
-import com.cosium.code.format.formatter.GoogleJavaFormatter;
+import com.cosium.code.format_spi.CodeFormatter;
+import com.cosium.code.format_spi.CodeFormatterFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
@@ -24,34 +24,19 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 /**
- * Created on 01/11/17.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
   protected static final String HOOKS_DIR = "hooks";
 
-  private final Supplier<List<CodeFormatter>> codeFormatters;
-
   @Parameter(readonly = true, defaultValue = "${project}")
   private MavenProject currentProject;
-
-  @Parameter private MavenGoogleJavaFormatOptions googleJavaFormatOptions;
 
   @Parameter(defaultValue = "${project.build.sourceEncoding}")
   private String sourceEncoding;
 
-  public AbstractMavenGitCodeFormatMojo() {
-    codeFormatters =
-        () ->
-            Collections.singletonList(
-                new GoogleJavaFormatter(
-                    ofNullable(googleJavaFormatOptions)
-                        .orElseGet(MavenGoogleJavaFormatOptions::new)
-                        .toFormatterOptions(),
-                    sourceEncoding));
-  }
+  @Parameter private Map<String, String> formatterOptions;
 
   protected final Repository gitRepository() {
     Repository gitRepository;
@@ -91,7 +76,24 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   }
 
   protected final CodeFormatters codeFormatters() {
-    return new CodeFormatters(codeFormatters.get());
+    return new CodeFormatters(createCodeFormatters());
+  }
+
+  private List<CodeFormatter> createCodeFormatters() {
+
+    List<CodeFormatterFactory> formatterFactories = new ArrayList<>();
+    ServiceLoader.load(CodeFormatterFactory.class).forEach(formatterFactories::add);
+
+    CodeFormatterConfigurationFactory formatterConfigurationFactory =
+        new CodeFormatterConfigurationFactory(formatterOptions);
+
+    return formatterFactories.stream()
+        .map(
+            codeFormatterFactory ->
+                codeFormatterFactory.build(
+                    formatterConfigurationFactory.build(codeFormatterFactory.configurationId()),
+                    sourceEncoding))
+        .collect(Collectors.toList());
   }
 
   protected final boolean isExecutionRoot() {

@@ -1,15 +1,16 @@
 package com.cosium.code.format;
 
-import org.apache.maven.plugin.logging.Log;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.apache.maven.plugin.logging.Log;
 
-/** @author Réda Housni Alaoui */
+/**
+ * @author Réda Housni Alaoui
+ */
 public class TemporaryFile implements Closeable {
   private final Log log;
 

@@ -9,9 +9,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 /**
- * Created on 01/11/17.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 @Mojo(name = "on-pre-commit", defaultPhase = LifecyclePhase.NONE, threadSafe = true)
 public class OnPreCommitMojo extends AbstractModuleMavenGitCodeFormatMojo {

@@ -1,9 +1,10 @@
-package com.cosium.code.format.formatter;
+package com.cosium.code.format_gjf;
 
 import static java.util.Objects.requireNonNull;
 
-import com.cosium.code.format.FileExtension;
-import com.cosium.code.format.MavenGitCodeFormatException;
+import com.cosium.code.format_spi.CodeFormatter;
+import com.cosium.code.format_spi.FileExtension;
+import com.cosium.code.format_spi.LineRanges;
 import com.google.common.collect.RangeSet;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
@@ -15,11 +16,9 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 
 /**
- * Created on 07/11/17.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
-public class GoogleJavaFormatter implements CodeFormatter {
+class GoogleJavaFormatter implements CodeFormatter {
 
   private final GoogleJavaFormatterOptions options;
   private final Formatter formatter;
@@ -43,13 +42,13 @@ public class GoogleJavaFormatter implements CodeFormatter {
       String unformattedContent = IOUtils.toString(content, sourceEncoding);
       formattedContentToWrite = doFormat(unformattedContent, lineRanges);
     } catch (IOException | FormatterException e) {
-      throw new MavenGitCodeFormatException(e);
+      throw new GoogleJavaFormatException(e);
     }
 
     try {
       IOUtils.write(formattedContentToWrite, formattedContent, sourceEncoding);
     } catch (IOException e) {
-      throw new MavenGitCodeFormatException(e);
+      throw new GoogleJavaFormatException(e);
     }
   }
 
@@ -60,7 +59,7 @@ public class GoogleJavaFormatter implements CodeFormatter {
       String formattedContent = doFormat(unformattedContent, LineRanges.all());
       return unformattedContent.equals(formattedContent);
     } catch (IOException | FormatterException e) {
-      throw new MavenGitCodeFormatException(e);
+      throw new GoogleJavaFormatException(e);
     }
   }
 

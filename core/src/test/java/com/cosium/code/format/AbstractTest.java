@@ -26,9 +26,7 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 /**
- * Created on 16/01/18.
- *
- * @author Reda.Housni-Alaoui
+ * @author Réda Housni Alaoui
  */
 @MavenVersions({"3.5.0"})
 @RunWith(MavenJUnitTestRunner.class)

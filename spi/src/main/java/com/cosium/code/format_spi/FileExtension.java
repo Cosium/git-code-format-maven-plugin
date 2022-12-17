@@ -1,11 +1,13 @@
-package com.cosium.code.format;
+package com.cosium.code.format_spi;
 
 import com.google.common.io.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-/** @author Réda Housni Alaoui */
-public class FileExtension {
+/**
+ * @author Réda Housni Alaoui
+ */
+public final class FileExtension {
 
   private final String value;
 
