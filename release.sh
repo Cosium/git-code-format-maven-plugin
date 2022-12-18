@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 set -e
 
-mvn clean test
+./mvnw clean test
 
-mvn versions:set -DremoveSnapshot=true
-mvn versions:commit 
+./mvnw versions:set -DremoveSnapshot=true
+./mvnw versions:commit
 git add pom.xml
 
-RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 git commit -m "Release $RELEASE_VERSION" 
-mvn clean deploy -DperformRelease=true -DskipTests
+./mvnw clean deploy -DperformRelease=true -DskipTests
 git tag ${RELEASE_VERSION}
 
-mvn versions:set -DnextSnapshot=true
-mvn versions:commit 
+./mvnw versions:set -DnextSnapshot=true
+./mvnw versions:commit
 git add pom.xml
 
-NEW_SNAPSHOT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+NEW_SNAPSHOT_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
 git commit -m "Setup $NEW_SNAPSHOT_VERSION"
 
 git push
