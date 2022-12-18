@@ -11,8 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,7 +87,8 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
     ServiceLoader.load(CodeFormatterFactory.class).forEach(formatterFactories::add);
 
     CodeFormatterConfigurationFactory formatterConfigurationFactory =
-        new CodeFormatterConfigurationFactory(formatterOptions);
+        new CodeFormatterConfigurationFactory(
+            Optional.ofNullable(formatterOptions).orElseGet(Collections::emptyMap));
 
     return formatterFactories.stream()
         .map(
