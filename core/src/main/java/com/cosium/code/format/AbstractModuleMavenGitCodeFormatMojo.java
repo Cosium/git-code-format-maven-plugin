@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
@@ -27,21 +26,21 @@ public abstract class AbstractModuleMavenGitCodeFormatMojo extends AbstractMaven
    * @return True if the goal is enabled for the current module
    */
   private boolean isEnabled() {
-    List<String> excludedModules =
+    List<String> modulesToExclude =
         Optional.ofNullable(this.excludedModules).orElse(Collections.emptyList());
-    if (excludedModules.contains(artifactId())) {
+    if (modulesToExclude.contains(artifactId())) {
       getLog().info(artifactId() + " is part of the excluded modules. Goal disabled.");
       return false;
     }
 
-    List<String> includedModules =
+    List<String> modulesToInclude =
         Optional.ofNullable(this.includedModules).orElse(Collections.emptyList());
-    if (!includedModules.isEmpty() && !includedModules.contains(artifactId())) {
+    if (!modulesToInclude.isEmpty() && !modulesToInclude.contains(artifactId())) {
       getLog().info(artifactId() + " is not part of defined included modules. Goal disabled.");
       return false;
     }
 
-    if ((!includedModules.isEmpty() || !excludedModules.isEmpty()) && isExecutionRoot()) {
+    if ((!modulesToInclude.isEmpty() || !modulesToExclude.isEmpty()) && isExecutionRoot()) {
       getLog()
           .info(
               "Explicit included or excluded modules defined and the current module the execution root. Goal disabled.");
@@ -55,10 +54,7 @@ public abstract class AbstractModuleMavenGitCodeFormatMojo extends AbstractMaven
   @Override
   public final void execute() throws MojoExecutionException, MojoFailureException {
     if (skip) {
-      Log log = getLog();
-      if (log.isInfoEnabled()) {
-        log.info("skipped");
-      }
+      getLog().info("skipped");
       return;
     }
     if (!isEnabled()) {
