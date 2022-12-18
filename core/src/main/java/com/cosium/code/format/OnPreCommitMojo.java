@@ -25,7 +25,7 @@ public class OnPreCommitMojo extends AbstractModuleMavenGitCodeFormatMojo {
   }
 
   private void onPreCommit() throws IOException, GitAPIException {
-    GitStagedFiles.read(getLog(), gitRepository(), this::isFormattable).format(codeFormatters());
+    GitStagedFiles.read(getLog(), gitRepository(), this::isFormattable).format(collectCodeFormatters());
   }
 
   private boolean isFormattable(Path path) {

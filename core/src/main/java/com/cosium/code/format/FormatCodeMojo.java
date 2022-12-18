@@ -1,5 +1,6 @@
 package com.cosium.code.format;
 
+import com.cosium.code.format.formatter.CodeFormatters;
 import com.cosium.code.format_spi.CodeFormatter;
 import com.cosium.code.format_spi.FileExtension;
 import com.cosium.code.format_spi.LineRanges;
@@ -19,8 +20,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 public class FormatCodeMojo extends AbstractFormatMojo {
 
   @Override
-  protected void process(Path path) {
-    codeFormatters()
+  protected void process(CodeFormatters codeFormatters, Path path) {
+    codeFormatters
         .forFileExtension(FileExtension.parse(path))
         .forEach(formatter -> format(path, formatter));
   }

@@ -1,5 +1,6 @@
 package com.cosium.code.format;
 
+import com.cosium.code.format.formatter.CodeFormatters;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
@@ -26,12 +27,13 @@ public abstract class AbstractFormatMojo extends AbstractModuleMavenGitCodeForma
     getLog().debug("Using pattern '" + pattern + "'");
     PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + globPattern);
 
+    CodeFormatters codeFormatters = collectCodeFormatters();
     for (Path sourceDir : sourceDirs()) {
-      walk(sourceDir, pathMatcher);
+      walk(codeFormatters, sourceDir, pathMatcher);
     }
   }
 
-  private void walk(Path directoryToWalk, PathMatcher pathMatcher)
+  private void walk(CodeFormatters codeFormatters, Path directoryToWalk, PathMatcher pathMatcher)
       throws MojoExecutionException, MojoFailureException {
     Path targetDir = targetDir();
     try {
@@ -48,7 +50,7 @@ public abstract class AbstractFormatMojo extends AbstractModuleMavenGitCodeForma
                 return FileVisitResult.CONTINUE;
               }
               try {
-                process(path);
+                process(codeFormatters, path);
               } catch (MojoExecutionException | MojoFailureException e) {
                 throw new MavenGitCodeFormatException(e);
               }
@@ -75,5 +77,5 @@ public abstract class AbstractFormatMojo extends AbstractModuleMavenGitCodeForma
     }
   }
 
-  protected abstract void process(Path path) throws MojoExecutionException, MojoFailureException;
+  protected abstract void process(CodeFormatters codeFormatters, Path path) throws MojoExecutionException, MojoFailureException;
 }

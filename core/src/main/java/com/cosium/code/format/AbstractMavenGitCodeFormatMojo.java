@@ -77,7 +77,7 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
     return currentProject.getArtifactId();
   }
 
-  protected final CodeFormatters codeFormatters() {
+  protected final CodeFormatters collectCodeFormatters() {
     return new CodeFormatters(createCodeFormatters());
   }
 
