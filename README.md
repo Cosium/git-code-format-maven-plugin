@@ -100,28 +100,21 @@ The plugin allows you to tweak Google Java Format options :
       </dependencies>        
       <configuration>
         <formatterOptions>
+          <!-- Use AOSP style instead of Google Style (4-space indentation). -->
           <googleJavaFormat.aosp>false</googleJavaFormat.aosp>
+          <!-- Format the javadoc -->
+          <googleJavaFormat.formatJavadoc>true</googleJavaFormat.formatJavadoc>
+          <!-- Fix import order and remove any unused imports, but do no other formatting. -->
           <googleJavaFormat.fixImportsOnly>false</googleJavaFormat.fixImportsOnly>
+          <!-- Do not fix the import order. Unused imports will still be removed. -->
           <googleJavaFormat.skipSortingImports>false</googleJavaFormat.skipSortingImports>
+          <!-- Do not remove unused imports. Imports will still be sorted. -->
           <googleJavaFormat.skipRemovingUnusedImports>false</googleJavaFormat.skipRemovingUnusedImports>
         </formatterOptions>
       </configuration>
     </plugin>
   </plugins>
 </build>
-```
-
-Documentation from the google-java-format CLI tool :
-
-```
---aosp, -aosp, -a
-  Use AOSP style instead of Google Style (4-space indentation).
---fix-imports-only
-  Fix import order and remove any unused imports, but do no other formatting.
---skip-sorting-imports
-  Do not fix the import order. Unused imports will still be removed.
---skip-removing-unused-imports
-  Do not remove unused imports. Imports will still be sorted.
 ```
 
 ## JDK 16+ peculiarities

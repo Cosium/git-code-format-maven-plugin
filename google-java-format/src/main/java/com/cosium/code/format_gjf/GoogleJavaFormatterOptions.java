@@ -12,6 +12,7 @@ import com.google.googlejavaformat.java.JavaFormatterOptions;
 class GoogleJavaFormatterOptions {
 
   private final JavaFormatterOptions.Style style;
+  private final boolean formatJavadoc;
   private final boolean fixImportsOnly;
   private final boolean skipSortingImports;
   private final boolean skipRemovingUnusedImports;
@@ -23,6 +24,7 @@ class GoogleJavaFormatterOptions {
     } else {
       style = GOOGLE;
     }
+    formatJavadoc = configuration.getValue("formatJavadoc").map(Boolean::parseBoolean).orElse(true);
     fixImportsOnly =
         configuration.getValue("fixImportsOnly").map(Boolean::parseBoolean).orElse(false);
     skipSortingImports =
@@ -35,7 +37,7 @@ class GoogleJavaFormatterOptions {
   }
 
   public JavaFormatterOptions javaFormatterOptions() {
-    return JavaFormatterOptions.builder().style(style).build();
+    return JavaFormatterOptions.builder().style(style).formatJavadoc(formatJavadoc).build();
   }
 
   public boolean isFixImportsOnly() {
