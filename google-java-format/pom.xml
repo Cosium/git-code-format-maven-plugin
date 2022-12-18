@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.cosium.code</groupId>
     <artifactId>git-code-format-maven-plugin-parent</artifactId>
-    <version>4.2</version>
+    <version>4.3-SNAPSHOT</version>
   </parent>
 
   <artifactId>google-java-format</artifactId>
