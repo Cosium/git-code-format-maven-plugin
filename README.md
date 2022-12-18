@@ -4,7 +4,7 @@
 # Git Code Format Maven Plugin
 
 A maven plugin that automatically deploys code formatters as `pre-commit` git hook.
-On commit, the hook will automatically format staged java files.
+On commit, the hook will automatically format staged files.
 
 # Breaking changes between 3.x and 4.x
 
@@ -38,7 +38,7 @@ Add this to your maven project **root** pom.xml :
       <artifactId>git-code-format-maven-plugin</artifactId>
       <version>${git-code-format-maven-plugin.version}</version>
       <executions>
-        <!-- On commit, format the modified java files -->
+        <!-- On commit, format the modified files -->
         <execution>
           <id>install-formatter-hook</id>
           <goals>
@@ -185,7 +185,7 @@ You only need to put the plugin in your *root* project pom.xml. By default all s
 `initialize` is the first phase of the Maven lifecycle. Any goal that you perform (e.g. `compile` or `test`) will automatically trigger `initialize` and thus trigger the git pre-commit hook installation.
 
 ## I'm not noticing anything happening.
-If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your `.git/hooks` directory. To trigger the automatic formatting, you have to perform a commit of a modified java file.
+If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your `.git/hooks` directory. To trigger the automatic formatting, you have to perform a commit of a modified file.
 You can also manually [format](#manual-code-formatting) or [validate](#manual-code-format-validation) any file.
 
 ## I'd like to skip code formatting in a child project 
@@ -206,7 +206,7 @@ set -e
 "${env.M2_HOME}/bin/mvn" -f "${project.basedir}/pom.xml" git-code-format:on-pre-commit
 ```
 
-On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified java files.
+On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified files.
 
 # Advanced pre-commit pipeline hook
 If you wish to modify the output of the pre-commit hook, you can set the `preCommitHookPipeline` configuration.
