@@ -117,7 +117,7 @@ public abstract class AbstractTest {
   protected String sha1(String sourceName) {
     try (InputStream inputStream =
         Files.newInputStream(resolveRelativelyToProjectRoot(sourceName))) {
-      return DigestUtils.shaHex(inputStream);
+      return DigestUtils.sha1Hex(inputStream);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
