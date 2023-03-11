@@ -2,6 +2,7 @@ package com.cosium.code.format.git;
 
 import static java.util.Objects.requireNonNull;
 
+import com.cosium.code.format.MavenGitCodeFormatException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -47,7 +48,7 @@ public class AutoCRLFObjectLoader extends ObjectLoader {
       }
       cachedSize = countingInputStream.getByteCount();
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new MavenGitCodeFormatException(e);
     }
     return cachedSize;
   }
@@ -73,7 +74,7 @@ public class AutoCRLFObjectLoader extends ObjectLoader {
       return IOUtils.toByteArray(
           EolStreamTypeUtil.wrapInputStream(new ByteArrayInputStream(bytes), eolStreamType));
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new MavenGitCodeFormatException(e);
     }
   }
 

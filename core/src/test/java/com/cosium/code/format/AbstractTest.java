@@ -81,7 +81,7 @@ public abstract class AbstractTest {
               try {
                 Files.deleteIfExists(path);
               } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new MavenGitCodeFormatException(e);
               }
             });
     Files.deleteIfExists(projectDestination);
@@ -119,7 +119,7 @@ public abstract class AbstractTest {
         Files.newInputStream(resolveRelativelyToProjectRoot(sourceName))) {
       return DigestUtils.sha1Hex(inputStream);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new MavenGitCodeFormatException(e);
     }
   }
 
@@ -131,7 +131,7 @@ public abstract class AbstractTest {
       assertThat(IOUtils.toString(actual, StandardCharsets.UTF_8))
           .isEqualTo(IOUtils.toString(expected, StandardCharsets.UTF_8));
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new MavenGitCodeFormatException(e);
     }
   }
 
