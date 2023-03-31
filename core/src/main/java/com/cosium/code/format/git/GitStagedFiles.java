@@ -79,9 +79,8 @@ public class GitStagedFiles {
 
       index.write();
 
-      try (Repository autoCRLFRepository =
-              new AutoCRLFRepository(git.getRepository().getDirectory(), eolStreamType);
-          Git gitForAutoCRLFRepository = new Git(autoCRLFRepository);
+      try (Git gitForAutoCRLFRepository =
+              new Git(new AutoCRLFRepository(git.getRepository().getDirectory(), eolStreamType));
           OutputStream diffOutput = temporaryDiffFile.newOutputStream()) {
         gitForAutoCRLFRepository
             .diff()
