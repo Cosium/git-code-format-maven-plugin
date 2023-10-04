@@ -6,6 +6,10 @@
 A maven plugin that automatically deploys code formatters as `pre-commit` git hook.
 On commit, the hook will automatically format staged files.
 
+# Breaking changes between 4.x and 5.x
+
+* If the plugin runs without any formatter dependency, it will fail. This is done to prevent silent misconfiguration from happening.
+
 # Breaking changes between 3.x and 4.x
 
 * `Google Java Format` is not enabled by default anymore. `com.cosium.code:google-java-format` must be added as a dependency to the plugin to keep using it.

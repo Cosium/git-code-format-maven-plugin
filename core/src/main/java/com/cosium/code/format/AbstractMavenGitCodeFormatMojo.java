@@ -85,6 +85,12 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
 
     List<CodeFormatterFactory> formatterFactories = new ArrayList<>();
     ServiceLoader.load(CodeFormatterFactory.class).forEach(formatterFactories::add);
+    if (formatterFactories.isEmpty()) {
+      throw new IllegalStateException(
+          "No "
+              + CodeFormatter.class
+              + " instance found. You probably forgot to declare a code formatter as a plugin's dependency. You can use https://github.com/Cosium/git-code-format-maven-plugin#automatic-code-format-and-validation-activation as an example.");
+    }
 
     CodeFormatterConfigurationFactory formatterConfigurationFactory =
         new CodeFormatterConfigurationFactory(
