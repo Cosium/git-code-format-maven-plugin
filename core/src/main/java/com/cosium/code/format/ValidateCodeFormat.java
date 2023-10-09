@@ -33,11 +33,13 @@ public class ValidateCodeFormat extends AbstractFormatMojo {
   }
 
   private boolean doValidate(Path path, CodeFormatter formatter) {
-    getLog().debug("Validating '" + gitBaseDir().relativize(path) + "'");
+    Path relativePath = gitBaseDir().relativize(path);
+    getLog().debug("Validating '" + relativePath + "'");
     try (InputStream content = Files.newInputStream(path)) {
       return formatter.validate(content);
-    } catch (IOException e) {
-      throw new MavenGitCodeFormatException(e);
+    } catch (IOException | RuntimeException e) {
+      throw new MavenGitCodeFormatException(
+          String.format("Failed to validate '%s': %s", relativePath, e.getMessage()), e);
     }
   }
 }
