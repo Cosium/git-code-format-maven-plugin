@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.cosium.code</groupId>
     <artifactId>git-code-format-maven-plugin-parent</artifactId>
-    <version>4.3-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>git-code-format-maven-plugin</artifactId>
@@ -115,7 +115,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.8.2</version>
+        <version>3.9.0</version>
         <configuration>
           <goalPrefix>git-code-format</goalPrefix>
           <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
