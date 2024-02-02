@@ -59,11 +59,16 @@ public class GitStagedFiles {
         Stream.concat(gitStatus.getChanged().stream(), gitStatus.getAdded().stream())
             .filter(relativePath -> fileFilter.test(workTree.resolve(relativePath)))
             .collect(Collectors.toSet());
-    log.debug("Staged files: " + filePaths.toString());
+    log.debug("Staged files: " + filePaths);
     return new GitStagedFiles(log, repository, filePaths);
   }
 
   public void format(CodeFormatters formatters) throws IOException {
+    if (filePaths.isEmpty()) {
+      log.debug("No staged files to format");
+      return;
+    }
+
     Git git = new Git(repository);
 
     try (Index index = Index.lock(repository);
