@@ -34,6 +34,7 @@
           </dependency>
         </dependencies>
         <configuration>
+          <hookMavenThreadCount>1C</hookMavenThreadCount>
           <propertiesToAdd>
             <prop>-X</prop>
           </propertiesToAdd>
