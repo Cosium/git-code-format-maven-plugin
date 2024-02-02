@@ -74,6 +74,13 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   @Parameter(property = "gcf.preCommitHookPipeline", defaultValue = "")
   private String preCommitHookPipeline;
 
+  /**
+   * If present, this value will be passed to '-T, --threads Thread count, for instance 2.0C where C
+   * is core multiplied'
+   */
+  @Parameter(property = "gcf.hookMavenThreadCount")
+  private String hookMavenThreadCount;
+
   public void execute() throws MojoExecutionException {
     if (!isExecutionRoot()) {
       getLog().debug("Not in execution root. Do not execute.");
@@ -143,11 +150,14 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
             .filter(prop -> System.getProperty(prop) != null)
             .map(prop -> "-D" + prop + "=" + System.getProperty(prop));
 
-    Stream<String> properties = Stream.concat(propagatedProperties, Stream.of(propertiesToAdd));
+    Stream<String> arguments = Stream.concat(propagatedProperties, Stream.of(propertiesToAdd));
     if (preCommitHookPipeline != null && !preCommitHookPipeline.isEmpty()) {
-      properties = Stream.concat(properties, Stream.of(preCommitHookPipeline));
+      arguments = Stream.concat(arguments, Stream.of(preCommitHookPipeline));
     }
-    return properties.collect(Collectors.joining(" "));
+    if (hookMavenThreadCount != null && !hookMavenThreadCount.isEmpty()) {
+      arguments = Stream.concat(arguments, Stream.of("-T " + hookMavenThreadCount));
+    }
+    return arguments.collect(Collectors.joining(" "));
   }
 
   private Path prepareHooksDirectory() {
