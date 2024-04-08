@@ -19,7 +19,7 @@
     <org.apache.commons.lang.version>3.14.0</org.apache.commons.lang.version>
     <org.apache.commons.exec.version>1.4.0</org.apache.commons.exec.version>
     <jgit.version>5.13.1.202206130422-r</jgit.version>
-    <jacoco.version>0.8.11</jacoco.version>
+    <jacoco.version>0.8.12</jacoco.version>
     <takari-plugin-testing.version>3.0.2</takari-plugin-testing.version>
     <google-java-format.version>1.21.0</google-java-format.version>
   </properties>
