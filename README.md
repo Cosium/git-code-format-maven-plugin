@@ -69,6 +69,10 @@ Add this to your maven project **root** pom.xml :
     </plugin>
   </plugins>
 </build>
+...
+<properies>
+  <git-code-format-maven-plugin.version>DESIRED VERSION </git-code-format-maven-plugin.version>
+</properties>
 ```
 
 # Manual code formatting
