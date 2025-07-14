@@ -21,7 +21,7 @@
     <jgit.version>5.13.1.202206130422-r</jgit.version>
     <jacoco.version>0.8.13</jacoco.version>
     <takari-plugin-testing.version>3.1.1</takari-plugin-testing.version>
-    <google-java-format.version>1.27.0</google-java-format.version>
+    <google-java-format.version>1.28.0</google-java-format.version>
   </properties>
 
   <modules>
