@@ -42,10 +42,12 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
@@ -97,7 +99,7 @@
         <version>3.5.4</version>
         <configuration>
           <trimStackTrace>false</trimStackTrace>
-          <argLine>@{argLine} --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports
+          <argLine>--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports
             jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports
             jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports
             jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports
