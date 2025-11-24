@@ -23,7 +23,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <org.apache.commons.io.version>2.21.0</org.apache.commons.io.version>
-    <org.apache.commons.lang.version>3.19.0</org.apache.commons.lang.version>
+    <org.apache.commons.lang.version>3.20.0</org.apache.commons.lang.version>
     <org.apache.commons.exec.version>1.5.0</org.apache.commons.exec.version>
     <jgit.version>5.13.1.202206130422-r</jgit.version>
     <jacoco.version>0.8.13</jacoco.version>
