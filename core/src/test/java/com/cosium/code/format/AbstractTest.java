@@ -48,7 +48,10 @@ public abstract class AbstractTest {
       throws Exception {
     this.resources =
         new TestResources(
-            "src/test/projects", Files.createTempDirectory(ARTIFACT_ID + "-test").toString());
+            "src/test/projects",
+            Files.createTempDirectory(
+                    Files.createDirectories(Paths.get("target")), ARTIFACT_ID + "-test")
+                .toString());
     this.maven = mavenBuilder.withCliOptions("-B", "-U").build();
     this.projectRootDirectoryName = projectRootDirectoryName;
   }
