@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -145,6 +146,6 @@ public abstract class AbstractTest {
 
   @After
   public final void moveFiles() throws Exception {
-    Files.move(projectRoot, projectDestination);
+    FileUtils.moveDirectory(projectRoot.toFile(), projectDestination.toFile());
   }
 }
