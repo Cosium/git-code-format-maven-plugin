@@ -6,30 +6,6 @@
 A maven plugin that automatically deploys code formatters as `pre-commit` git hook.
 On commit, the hook will automatically format staged files.
 
-# Breaking changes between 4.x and 5.x
-
-* If the plugin runs without any formatter dependency, it will fail. This is done to prevent silent misconfiguration from happening.
-
-# Breaking changes between 3.x and 4.x
-
-* `Google Java Format` is not enabled by default anymore. `com.cosium.code:google-java-format` must be added as a dependency to the plugin to keep using it.
-* `Google Java Format` options declaration structure has changed. You will need to migrate any eventual existing declaration to the new structure described by [the google-java-format-options chapter](#google-java-format-options) .
-
-# Breaking changes between 2.x and 3.x
-
-* [#64](https://github.com/Cosium/git-code-format-maven-plugin/issues/64) `google-java-format 1.8` [dropped support for java 8](https://github.com/google/google-java-format/releases/tag/google-java-format-1.8).
-  The minimum supported runtime version for the plugin is JDK 11. i.e. Maven must run on JDK 11+ while the target project can still be built and run using JDK 8.
-
-# Breaking changes between 1.x and 2.x
-
-* [#37](https://github.com/Cosium/git-code-format-maven-plugin/issues/37) To prevent conflicts with other plugins all keys are now 
-prefixed with `gcf`. e.g. `-DglobPattern=**/*` becomes `-Dgcf.globPattern=**/*`
-* [#38](https://github.com/Cosium/git-code-format-maven-plugin/issues/38) To avoid infringement to Apache Maven Trademark, 
-the plugin was renamed to `git-code-format-maven-plugin`. Its new coordinates are 
-`com.cosium.code:git-code-format-maven-plugin`.
-
-`1.x` documentation can be found [here](https://github.com/Cosium/git-code-format-maven-plugin/blob/1.39/README.md)
-
 # Automatic code format and validation activation
 
 Add this to your maven project **root** pom.xml :
