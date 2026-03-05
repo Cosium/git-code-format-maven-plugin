@@ -6,6 +6,10 @@
 A maven plugin that automatically deploys code formatters as `pre-commit` git hook.
 On commit, the hook will automatically format staged files.
 
+# Prerequisites
+
+* Maven must run on JDK 21+
+
 # Automatic code format and validation activation
 
 Add this to your maven project **root** pom.xml :
@@ -45,6 +49,11 @@ Add this to your maven project **root** pom.xml :
     </plugin>
   </plugins>
 </build>
+```
+
+Add this to `.mvn/jvm.config`:
+```
+--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
 ```
 
 # Manual code formatting
@@ -95,17 +104,6 @@ The plugin allows you to tweak Google Java Format options :
     </plugin>
   </plugins>
 </build>
-```
-
-## JDK 16+ peculiarities
-
-Since google-java-format uses JDK internal apis, if you need to run the plugin with JDK 16+, you must pass some additional arguments to the JVM.
-Those are described at https://github.com/google/google-java-format/releases/tag/v1.10.0.  
-
-Thanks to https://maven.apache.org/configure.html#mvn-jvm-config-file, you should be able to pass them to `.mvn/jvm.config` as follow:
-
-```
---add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
 ```
 
 # Custom code formatter
