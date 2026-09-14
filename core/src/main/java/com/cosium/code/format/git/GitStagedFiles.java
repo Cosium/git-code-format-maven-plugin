@@ -2,14 +2,12 @@ package com.cosium.code.format.git;
 
 import static java.util.Objects.requireNonNull;
 
-import com.cosium.code.format.MavenGitCodeFormatException;
-import com.cosium.code.format.TemporaryFile;
 import com.cosium.code.format.formatter.CodeFormatters;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,14 +16,8 @@ import org.apache.maven.plugin.logging.Log;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEditor;
-import org.eclipse.jgit.dircache.DirCacheIterator;
-import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
-import org.eclipse.jgit.lib.CoreConfig.EolStreamType;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.treewalk.AbstractTreeIterator;
-import org.eclipse.jgit.treewalk.WorkingTreeOptions;
 
 /**
  * @author Réda Housni Alaoui
@@ -35,20 +27,11 @@ public class GitStagedFiles {
   private final Log log;
   private final Repository repository;
   private final Set<String> filePaths;
-  private final EolStreamType eolStreamType;
 
   private GitStagedFiles(Log log, Repository repository, Set<String> filePaths) {
     this.log = requireNonNull(log);
     this.repository = requireNonNull(repository);
     this.filePaths = Collections.unmodifiableSet(filePaths);
-
-    WorkingTreeOptions workingTreeOptions = repository.getConfig().get(WorkingTreeOptions.KEY);
-    if (workingTreeOptions.getAutoCRLF() == AutoCRLF.TRUE) {
-      eolStreamType = EolStreamType.AUTO_CRLF;
-    } else {
-      eolStreamType = EolStreamType.DIRECT;
-    }
-    log.debug("eolStreamType is '" + eolStreamType + "'");
   }
 
   public static GitStagedFiles read(Log log, Repository repository, Predicate<Path> fileFilter)
@@ -69,42 +52,24 @@ public class GitStagedFiles {
       return;
     }
 
-    Git git = new Git(repository);
+    List<FormattedFile> formattedFiles = new ArrayList<>();
 
-    try (Index index = Index.lock(repository);
-        TemporaryFile temporaryDiffFile =
-            TemporaryFile.create(log, "diff-between-unformatted-and-formatted-files")) {
+    try (Index index = Index.lock(repository)) {
       DirCacheEditor dirCacheEditor = index.editor();
       filePaths.stream()
           .map(path -> new GitIndexEntry(log, repository, path))
-          .map(indexEntry -> indexEntry.entryFormatter(formatters))
+          .map(indexEntry -> indexEntry.entryFormatter(formatters, formattedFiles::add))
           .forEach(dirCacheEditor::add);
       dirCacheEditor.finish();
 
       index.write();
 
-      try (Repository autoCRLFRepository =
-              new AutoCRLFRepository(git.getRepository().getDirectory(), eolStreamType);
-          OutputStream diffOutput = temporaryDiffFile.newOutputStream()) {
-        new Git(autoCRLFRepository)
-            .diff()
-            .setOutputStream(diffOutput)
-            .setOldTree(treeIterator(repository.readDirCache()))
-            .setNewTree(index.treeIterator())
-            .call();
-      }
-
-      try (InputStream diffInput = temporaryDiffFile.newInputStream()) {
-        git.apply().setPatch(diffInput).call();
+      WorkingTree workingTree = new WorkingTree(log, repository);
+      for (FormattedFile formattedFile : formattedFiles) {
+        workingTree.applyFormatting(index.treeIterator(), formattedFile);
       }
 
       index.commit();
-    } catch (GitAPIException e) {
-      throw new MavenGitCodeFormatException(e);
     }
-  }
-
-  private AbstractTreeIterator treeIterator(DirCache dirCache) {
-    return new DirCacheIterator(dirCache);
   }
 }

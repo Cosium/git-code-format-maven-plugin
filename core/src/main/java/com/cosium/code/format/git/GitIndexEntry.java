@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,8 +51,8 @@ class GitIndexEntry {
     this.path = requireNonNull(path);
   }
 
-  PathEdit entryFormatter(CodeFormatters formatters) {
-    return new EntryFormatter(log, repository, formatters, path);
+  PathEdit entryFormatter(CodeFormatters formatters, Consumer<FormattedFile> onFormatted) {
+    return new EntryFormatter(log, repository, formatters, path, onFormatted);
   }
 
   private static class EntryFormatter extends PathEdit {
@@ -59,19 +60,34 @@ class GitIndexEntry {
     private final Log log;
     private final Repository repository;
     private final CodeFormatters formatters;
+    private final Consumer<FormattedFile> onFormatted;
 
-    EntryFormatter(Log log, Repository repository, CodeFormatters formatters, String entryPath) {
+    EntryFormatter(
+        Log log,
+        Repository repository,
+        CodeFormatters formatters,
+        String entryPath,
+        Consumer<FormattedFile> onFormatted) {
       super(entryPath);
       this.log = log;
       this.repository = requireNonNull(repository);
       this.formatters = requireNonNull(formatters);
+      this.onFormatted = requireNonNull(onFormatted);
     }
 
     @Override
     public void apply(DirCacheEntry dirCacheEntry) {
+      ObjectId unformattedObjectId = dirCacheEntry.getObjectId();
       formatters
           .forFileExtension(FileExtension.parse(dirCacheEntry.getPathString()))
           .forEach(formatter -> doFormat(dirCacheEntry, formatter));
+      ObjectId formattedObjectId = dirCacheEntry.getObjectId();
+      if (unformattedObjectId.equals(formattedObjectId)) {
+        return;
+      }
+      onFormatted.accept(
+          new FormattedFile(
+              dirCacheEntry.getPathString(), unformattedObjectId, formattedObjectId));
     }
 
     private void doFormat(DirCacheEntry dirCacheEntry, CodeFormatter formatter) {

@@ -10,7 +10,6 @@ import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEditor;
 import org.eclipse.jgit.dircache.DirCacheIterator;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 
 /**
  * @author Réda Housni Alaoui
@@ -52,7 +51,7 @@ public class Index implements AutoCloseable {
     dirCache.commit();
   }
 
-  public AbstractTreeIterator treeIterator() {
+  public DirCacheIterator treeIterator() {
     return new DirCacheIterator(dirCache);
   }
 
