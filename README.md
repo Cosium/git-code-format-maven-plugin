@@ -202,6 +202,24 @@ set -e
 
 On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified files.
 
+# Maven wrapper
+
+When the repository holds a [maven wrapper](https://maven.apache.org/wrapper/), the hook runs that
+wrapper rather than the maven installation which installed the hook. A commit is then formatted by
+the very maven version the repository pins. The wrapper is looked up in the project base directory,
+then in each parent directory up to the git repository root.
+
+Set `preferMavenWrapper` to false to run the maven installation first, leaving the wrapper as the
+last resort:
+```xml
+      <configuration>
+        <preferMavenWrapper>false</preferMavenWrapper>
+      </configuration>
+```
+
+The maven installation is also used when no wrapper is found, and when the `gcf.debug` property is
+enabled since the wrapper holds no debug flavour.
+
 # Advanced pre-commit pipeline hook
 If you wish to modify the output of the pre-commit hook, you can set the `preCommitHookPipeline` configuration.
 
