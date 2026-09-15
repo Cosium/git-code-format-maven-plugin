@@ -38,6 +38,7 @@
             <prop>-X</prop>
           </propertiesToAdd>
           <propertiesToPropagate>
+            <prop>gcf.failOnEmptyCommit</prop>
             <prop>maven.repo.local</prop>
             <prop>it-project.version</prop>
             <prop>m2e.workspace.state</prop>

@@ -27,25 +27,41 @@ public class GitStagedFiles {
   private final Log log;
   private final Repository repository;
   private final Set<String> filePaths;
+  private final Set<String> deletedFilePaths;
 
-  private GitStagedFiles(Log log, Repository repository, Set<String> filePaths) {
+  private GitStagedFiles(
+      Log log, Repository repository, Set<String> filePaths, Set<String> deletedFilePaths) {
     this.log = requireNonNull(log);
     this.repository = requireNonNull(repository);
     this.filePaths = Collections.unmodifiableSet(filePaths);
+    this.deletedFilePaths = Collections.unmodifiableSet(deletedFilePaths);
   }
 
   public static GitStagedFiles read(Log log, Repository repository, Predicate<Path> fileFilter)
       throws GitAPIException {
     Status gitStatus = new Git(repository).status().call();
     Path workTree = repository.getWorkTree().toPath();
+    Predicate<String> filter = relativePath -> fileFilter.test(workTree.resolve(relativePath));
     Set<String> filePaths =
         Stream.concat(gitStatus.getChanged().stream(), gitStatus.getAdded().stream())
-            .filter(relativePath -> fileFilter.test(workTree.resolve(relativePath)))
+            .filter(filter)
             .collect(Collectors.toSet());
+    Set<String> deletedFilePaths =
+        gitStatus.getRemoved().stream().filter(filter).collect(Collectors.toSet());
     log.debug("Staged files: " + filePaths);
-    return new GitStagedFiles(log, repository, filePaths);
+    log.debug("Staged deleted files: " + deletedFilePaths);
+    return new GitStagedFiles(log, repository, filePaths, deletedFilePaths);
   }
 
+  /**
+   * @return true if nothing is staged, in other words if committing now would record a commit
+   *     holding no change
+   */
+  public boolean isEmpty() {
+    return filePaths.isEmpty() && deletedFilePaths.isEmpty();
+  }
+
+  /** Formats the staged files, the deleted ones aside as they hold nothing left to format. */
   public void format(CodeFormatters formatters) throws IOException {
     if (filePaths.isEmpty()) {
       log.debug("No staged files to format");

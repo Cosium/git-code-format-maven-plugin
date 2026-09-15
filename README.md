@@ -166,6 +166,22 @@ You only need to put the plugin in your *root* project pom.xml. By default all s
 If after setting up the plugin in your pom, you just executed a maven goal, the only expected output is a pre-commit hook installed in your `.git/hooks` directory. To trigger the automatic formatting, you have to perform a commit of a modified file.
 You can also manually [format](#manual-code-formatting) or [validate](#manual-code-format-validation) any file.
 
+## The plugin created an empty commit
+When the formatting reverts everything you staged, nothing is left to commit, yet git still records
+a commit holding no change. Git checks that a commit holds something before it runs the pre-commit
+hook and never performs that check again, so it cannot notice what the hook did. See
+[issue 96](https://github.com/Cosium/git-code-format-maven-plugin/issues/96).
+
+Failing the commit is the only thing a hook can do about it, so it is opt-in:
+```xml
+      <configuration>
+        <failOnEmptyCommit>true</failOnEmptyCommit>
+      </configuration>
+```
+The commit then fails whenever the formatting reverts all the staged changes. Note that
+`git commit --allow-empty` fails as well: a pre-commit hook receives no argument, and the
+environment git gives it is the same whether or not the option was passed.
+
 ## I'd like to skip code formatting in a child project 
 I inherit an enterprise parent pom, which I cannot modify, with formatting plugin specified, and I need to turn off formatting for my group's project.
 Either use add a ```<skip>true</skip>``` configuration in the inheriting project or set the ```gcf.skip``` property to true.
