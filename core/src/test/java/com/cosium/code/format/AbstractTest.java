@@ -2,11 +2,9 @@ package com.cosium.code.format;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.takari.maven.testing.TestResources;
+import io.takari.maven.testing.TestResources5;
 import io.takari.maven.testing.executor.MavenExecution;
 import io.takari.maven.testing.executor.MavenRuntime;
-import io.takari.maven.testing.executor.MavenVersions;
-import io.takari.maven.testing.executor.junit.MavenJUnitTestRunner;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,22 +19,19 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 /**
  * @author Réda Housni Alaoui
  */
-@MavenVersions({"3.5.0"})
-@RunWith(MavenJUnitTestRunner.class)
 public abstract class AbstractTest {
   private static final String GROUP_ID = "com.cosium.code";
   private static final String ARTIFACT_ID = "git-code-format-maven-plugin";
   private static final PersonIdent gitIdentity =
       new PersonIdent("John Doe", "john.doe@example.org");
-  @Rule public final TestResources resources;
+  @RegisterExtension public final TestResources5 resources;
 
   private final MavenRuntime maven;
   private final String projectRootDirectoryName;
@@ -48,14 +43,14 @@ public abstract class AbstractTest {
       MavenRuntime.MavenRuntimeBuilder mavenBuilder, String projectRootDirectoryName)
       throws Exception {
     this.resources =
-        new TestResources(
+        new TestResources5(
             "src/test/projects", Files.createTempDirectory(ARTIFACT_ID + "-test").toString());
     this.maven = mavenBuilder.withCliOptions("-B", "-U").build();
     this.projectRootDirectoryName = projectRootDirectoryName;
   }
 
-  @Before
-  public final void before() throws Exception {
+  @BeforeEach
+  public final void beforeEach() throws Exception {
     projectRoot = resources.getBasedir(projectRootDirectoryName).toPath();
 
     jGit = Git.init().setDirectory(projectRoot.toFile()).call();
@@ -144,8 +139,8 @@ public abstract class AbstractTest {
     return GROUP_ID + ":" + ARTIFACT_ID + ":" + goal;
   }
 
-  @After
-  public final void moveFiles() throws Exception {
+  @AfterEach
+  public final void afterEach() throws Exception {
     FileUtils.moveDirectory(projectRoot.toFile(), projectDestination.toFile());
   }
 }
