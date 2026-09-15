@@ -58,19 +58,21 @@ class WorkingTree {
   /**
    * @param dirCacheIterator an iterator over the freshly formatted index. A new one is required for
    *     each call as it is consumed by the underlying tree walk.
+   * @return true if the working tree file holds, once this method returns, the content which has
+   *     just been staged
    */
-  void applyFormatting(DirCacheIterator dirCacheIterator, FormattedFile formattedFile)
+  boolean applyFormatting(DirCacheIterator dirCacheIterator, FormattedFile formattedFile)
       throws IOException {
     String path = formattedFile.path();
     Path file = repository.getWorkTree().toPath().resolve(path);
     if (!Files.isRegularFile(file)) {
       log.debug("'" + path + "' has no working tree file to update");
-      return;
+      return false;
     }
 
     Conversion conversion = detectConversion(dirCacheIterator, path);
     if (conversion == null) {
-      return;
+      return false;
     }
     log.debug("'" + path + "' conversion is " + conversion);
 
@@ -80,7 +82,7 @@ class WorkingTree {
       // The file is fully staged: the working tree holds exactly what has just been formatted.
       // Stream the formatted blob into it instead of loading it, as nothing has to be merged.
       copyBlob(formattedFile.formattedObjectId(), file, conversion.checkOut);
-      return;
+      return true;
     }
 
     // Only a partially staged file needs the three contents in memory at once: MergeAlgorithm
@@ -92,14 +94,16 @@ class WorkingTree {
             workingTreeContent,
             readBlob(formattedFile.formattedObjectId()));
     if (merged == null) {
-      return;
+      return false;
     }
     if (Arrays.equals(merged, workingTreeContent)) {
       log.debug("Working tree content of '" + path + "' is already up to date");
-      return;
+    } else {
+      write(file, conversion.checkOut, merged);
     }
 
-    write(file, conversion.checkOut, merged);
+    // A file which still holds unstaged changes does not match what has just been staged.
+    return isBlob(merged, formattedFile.formattedObjectId());
   }
 
   /**

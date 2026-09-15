@@ -13,6 +13,9 @@ import com.google.common.collect.Range;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -55,6 +58,14 @@ class GitIndexEntry {
     return new EntryFormatter(log, repository, formatters, path, onFormatted);
   }
 
+  /**
+   * @return an edit copying the stat data of the working tree file to the index entry. Git relies
+   *     on it to tell, without reading the file, that the working tree is up to date.
+   */
+  PathEdit workingTreeStatRecorder() {
+    return new WorkingTreeStatRecorder(repository, path);
+  }
+
   private static class EntryFormatter extends PathEdit {
 
     private final Log log;
@@ -85,6 +96,13 @@ class GitIndexEntry {
       if (unformattedObjectId.equals(formattedObjectId)) {
         return;
       }
+      // The stat data cached in the entry still describes the file as it was before the
+      // formatting. Mark it unknown, so that the content is compared instead of a size which does
+      // not necessarily match the one of the working tree file. When 'core.autocrlf' is enabled,
+      // the blob holds LF where the file holds CRLF: a stale size makes git and jgit report the
+      // freshly committed file as modified without even reading it. The stat data is recorded
+      // again by WorkingTreeStatRecorder once the formatting has reached the working tree.
+      dirCacheEntry.smudgeRacilyClean();
       onFormatted.accept(
           new FormattedFile(
               dirCacheEntry.getPathString(), unformattedObjectId, formattedObjectId));
@@ -121,7 +139,6 @@ class GitIndexEntry {
         }
 
         log.debug("Formatted size is " + formattedSize);
-        dirCacheEntry.setLength(formattedSize);
         log.debug("Formatted object id is '" + formattedObjectId + "'");
         dirCacheEntry.setObjectId(formattedObjectId);
       } catch (IOException e) {
@@ -204,6 +221,28 @@ class GitIndexEntry {
               .filter(((Predicate<Range<Integer>>) Range::isEmpty).negate())
               .collect(Collectors.toSet());
       return LineRanges.of(ranges);
+    }
+  }
+
+  private static class WorkingTreeStatRecorder extends PathEdit {
+
+    private final Path file;
+
+    WorkingTreeStatRecorder(Repository repository, String entryPath) {
+      super(entryPath);
+      this.file = repository.getWorkTree().toPath().resolve(entryPath);
+    }
+
+    @Override
+    public void apply(DirCacheEntry dirCacheEntry) {
+      BasicFileAttributes attributes;
+      try {
+        attributes = Files.readAttributes(file, BasicFileAttributes.class);
+      } catch (IOException e) {
+        throw new MavenGitCodeFormatException(e);
+      }
+      dirCacheEntry.setLength(attributes.size());
+      dirCacheEntry.setLastModified(attributes.lastModifiedTime().toInstant());
     }
   }
 }
