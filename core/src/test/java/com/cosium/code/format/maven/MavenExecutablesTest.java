@@ -13,21 +13,27 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * @author Réda Housni Alaoui
  */
-public class MavenEnvironmentTest {
+public class MavenExecutablesTest {
+
+  /** Holds no maven wrapper, leaving the maven installation as the only candidate. */
+  @TempDir private Path repository;
 
   private Map<String, String> systemProperties;
   private TestingCommandRunner commandRunner;
-  private MavenEnvironment tested;
+  private MavenExecutables tested;
 
   @BeforeEach
   public void beforeEach() {
     systemProperties = new HashMap<>();
     commandRunner = new TestingCommandRunner();
-    tested = new MavenEnvironment(TestingLog::new, systemProperties::get, commandRunner);
+    tested =
+        new MavenExecutables(
+            TestingLog::new, repository, repository, systemProperties::get, commandRunner);
   }
 
   @Test
@@ -35,7 +41,7 @@ public class MavenEnvironmentTest {
     systemProperties.put("maven.home", "/opt/maven");
     Path expectedPath = Paths.get("/opt/maven/bin/mvn");
     commandRunner.validExecutables.add(expectedPath.toString());
-    Path path = tested.getMavenExecutable(false);
+    Path path = tested.select(false, false);
     assertThat(path).isEqualTo(expectedPath);
   }
 
@@ -44,7 +50,7 @@ public class MavenEnvironmentTest {
     systemProperties.put("maven.home", "/opt/maven");
     Path expectedPath = Paths.get("/opt/maven/bin/mvnDebug");
     commandRunner.validExecutables.add(expectedPath.toString());
-    Path path = tested.getMavenExecutable(true);
+    Path path = tested.select(true, false);
     assertThat(path).isEqualTo(expectedPath);
   }
 
@@ -52,7 +58,7 @@ public class MavenEnvironmentTest {
   public void testMavenPathExecutableFallback() {
     systemProperties.put("maven.home", "/opt/maven");
     commandRunner.validExecutables.add("mvn");
-    Path path = tested.getMavenExecutable(false);
+    Path path = tested.select(false, false);
     assertThat(path).isEqualTo(Paths.get("mvn"));
   }
 
@@ -60,7 +66,7 @@ public class MavenEnvironmentTest {
   public void testMavenPathDebugExecutableFallback() {
     systemProperties.put("maven.home", "/opt/maven");
     commandRunner.validExecutables.add("mvnDebug");
-    Path path = tested.getMavenExecutable(true);
+    Path path = tested.select(true, false);
     assertThat(path).isEqualTo(Paths.get("mvnDebug"));
   }
 

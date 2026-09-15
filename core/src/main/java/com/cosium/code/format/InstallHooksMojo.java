@@ -4,7 +4,7 @@ import static java.util.Optional.ofNullable;
 
 import com.cosium.code.format.executable.Executable;
 import com.cosium.code.format.executable.ExecutableManager;
-import com.cosium.code.format.maven.MavenEnvironment;
+import com.cosium.code.format.maven.MavenExecutables;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,7 +40,6 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   private static final String PRE_COMMIT_HOOK_BASE_SCRIPT = "pre-commit";
 
   private final ExecutableManager executableManager = new ExecutableManager(this::getLog);
-  private final MavenEnvironment mavenEnvironment = new MavenEnvironment(this::getLog);
 
   /** Skip execution of this goal */
   @Parameter(property = "gcf.skip", defaultValue = "false")
@@ -67,6 +66,16 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
 
   @Parameter(property = "gcf.debug", defaultValue = "false")
   private boolean debug;
+
+  /**
+   * True to run the hook with the maven wrapper of the repository rather than with the maven
+   * installation. False leaves the wrapper as the last resort, for when no maven installation can
+   * be found. The wrapper is looked up in the project base directory, then in each parent directory
+   * up to the git repository root. It is never a candidate when <code>debug</code> is enabled,
+   * since it holds no debug flavour.
+   */
+  @Parameter(property = "gcf.preferMavenWrapper", defaultValue = "true")
+  private boolean preferMavenWrapper;
 
   /**
    * Add pipeline to process the results of the pre-commit hook. Exit non-zero to prevent the commit
@@ -116,13 +125,15 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     Files.deleteIfExists(hooksDirectory.resolve(legacyPluginPreCommitHookFileName()));
     getLog().debug("Rmeoved legacy pre commit hook file");
 
+    MavenExecutables mavenExecutables = new MavenExecutables(this::getLog, baseDir(), gitBaseDir());
+
     getLog().debug("Writing plugin pre commit hook file");
     executableManager
         .getOrCreateExecutableScript(hooksDirectory.resolve(pluginPreCommitHookFileName()))
         .truncateWithTemplate(
             () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
             StandardCharsets.UTF_8.toString(),
-            mavenEnvironment.getMavenExecutable(debug).toAbsolutePath(),
+            mavenExecutables.select(debug, preferMavenWrapper).toAbsolutePath(),
             pomFile().toAbsolutePath(),
             mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
