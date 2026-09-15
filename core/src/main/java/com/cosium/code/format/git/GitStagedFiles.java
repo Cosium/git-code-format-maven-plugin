@@ -62,13 +62,20 @@ public class GitStagedFiles {
           .forEach(dirCacheEditor::add);
       dirCacheEditor.finish();
 
-      index.write();
-
       WorkingTree workingTree = new WorkingTree(log, repository);
+      DirCacheEditor statDirCacheEditor = index.editor();
       for (FormattedFile formattedFile : formattedFiles) {
-        workingTree.applyFormatting(index.treeIterator(), formattedFile);
+        if (!workingTree.applyFormatting(index.treeIterator(), formattedFile)) {
+          continue;
+        }
+        // The working tree file holds the content which is now staged. Record its stat data, so
+        // that git can tell the file is up to date without having to read it back.
+        statDirCacheEditor.add(
+            new GitIndexEntry(log, repository, formattedFile.path()).workingTreeStatRecorder());
       }
+      statDirCacheEditor.finish();
 
+      index.write();
       index.commit();
     }
   }
