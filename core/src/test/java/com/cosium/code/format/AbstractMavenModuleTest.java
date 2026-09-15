@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.takari.maven.testing.executor.MavenExecution;
 import io.takari.maven.testing.executor.MavenRuntime;
+import io.takari.maven.testing.executor.junit.MavenPluginTest;
 import java.nio.file.Paths;
-import org.junit.Test;
 
 /**
  * @author Réda Housni Alaoui
@@ -26,7 +26,7 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
         Paths.get(mavenModuleDirectory).resolve("src/main/java/BadFormat.java").toString();
   }
 
-  @Test
+  @MavenPluginTest
   public void GIVEN_bad_formatted_files_WHEN_format_code_THEN_all_files_should_have_correct_format()
       throws Exception {
     mavenExecution()
@@ -44,7 +44,7 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
     assertMatchExpected(badFormatJava);
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_bad_formatted_file_WHEN_adding_and_committing_it_THEN_it_should_have_correct_format()
           throws Exception {
@@ -73,7 +73,7 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
     assertMatchExpected(badFormatJava);
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_bad_formatted_generated_file_WHEN_formatting_THEN_generated_file_should_be_skipped()
           throws Exception {
@@ -89,7 +89,7 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
     assertThat(newChecksum).isEqualTo(oldChecksum);
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_bad_formatted_files_WHEN_format_code_with_aosp_enabled_THEN_all_files_should_be_formatted_according_to_aosp()
           throws Exception {
@@ -114,7 +114,7 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
         .assertLogText("is not correctly formatted");
   }
 
-  @Test
+  @MavenPluginTest
   public void GIVEN_bad_formatted_file_WHEN_committing_all_THEN_it_should_have_correct_format()
       throws Exception {
     mavenExecution()

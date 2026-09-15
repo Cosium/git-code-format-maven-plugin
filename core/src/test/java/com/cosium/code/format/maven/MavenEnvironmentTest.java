@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Réda Housni Alaoui
@@ -23,8 +23,8 @@ public class MavenEnvironmentTest {
   private TestingCommandRunner commandRunner;
   private MavenEnvironment tested;
 
-  @Before
-  public void before() {
+  @BeforeEach
+  public void beforeEach() {
     systemProperties = new HashMap<>();
     commandRunner = new TestingCommandRunner();
     tested = new MavenEnvironment(TestingLog::new, systemProperties::get, commandRunner);

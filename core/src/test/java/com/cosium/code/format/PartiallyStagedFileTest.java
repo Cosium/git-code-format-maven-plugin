@@ -3,6 +3,8 @@ package com.cosium.code.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.takari.maven.testing.executor.MavenRuntime;
+import io.takari.maven.testing.executor.MavenVersions;
+import io.takari.maven.testing.executor.junit.MavenPluginTest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -10,7 +12,6 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.junit.Test;
 
 /**
  * Covers <a href="https://github.com/Cosium/git-code-format-maven-plugin/issues/49">issue 49</a>,
@@ -22,6 +23,7 @@ import org.junit.Test;
  *
  * @author Réda Housni Alaoui
  */
+@MavenVersions({"3.5.0"})
 public class PartiallyStagedFileTest extends AbstractTest {
 
   private static final String BAD_FORMAT_JAVA = "src/main/java/BadFormat.java";
@@ -30,7 +32,7 @@ public class PartiallyStagedFileTest extends AbstractTest {
     super(mavenBuilder, "single-module");
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_partially_staged_file_WHEN_committing_THEN_staged_lines_are_formatted_and_unstaged_changes_survive()
           throws Exception {
@@ -74,7 +76,7 @@ public class PartiallyStagedFileTest extends AbstractTest {
     assertThat(workingTree).contains("  void unstagedTop(  ){}");
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_formatting_conflicting_with_unstaged_changes_WHEN_committing_THEN_the_commit_still_succeeds()
           throws Exception {

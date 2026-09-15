@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.takari.maven.testing.executor.MavenRuntime;
+import io.takari.maven.testing.executor.MavenVersions;
+import io.takari.maven.testing.executor.junit.MavenPluginTest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,7 +13,6 @@ import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.lib.ObjectId;
-import org.junit.Test;
 
 /**
  * Covers <a href="https://github.com/Cosium/git-code-format-maven-plugin/issues/96">issue 96</a>.
@@ -23,6 +24,7 @@ import org.junit.Test;
  *
  * @author Réda Housni Alaoui
  */
+@MavenVersions({"3.5.0"})
 public class EmptyCommitTest extends AbstractTest {
 
   private static final boolean FAIL_ON_EMPTY_COMMIT = true;
@@ -45,7 +47,7 @@ public class EmptyCommitTest extends AbstractTest {
     super(mavenBuilder, "single-module");
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_default_options_WHEN_the_formatting_reverts_the_staged_change_THEN_git_creates_an_empty_commit()
           throws Exception {
@@ -60,7 +62,7 @@ public class EmptyCommitTest extends AbstractTest {
     assertThat(headTree()).isEqualTo(parentTree());
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_fail_on_empty_commit_WHEN_the_formatting_reverts_the_staged_change_THEN_the_commit_is_refused()
           throws Exception {
@@ -78,7 +80,7 @@ public class EmptyCommitTest extends AbstractTest {
     assertThat(read(BAD_FORMAT_JAVA)).isEqualTo(BASELINE);
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_fail_on_empty_commit_WHEN_the_staged_change_survives_the_formatting_THEN_the_commit_succeeds()
           throws Exception {
@@ -106,7 +108,7 @@ public class EmptyCommitTest extends AbstractTest {
             "public class BadFormat {\n" + "\n" + "  void a() {}\n" + "\n  void b() {}\n}\n");
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_fail_on_empty_commit_WHEN_only_a_deletion_survives_the_formatting_THEN_the_commit_succeeds()
           throws Exception {
@@ -128,7 +130,7 @@ public class EmptyCommitTest extends AbstractTest {
     assertThat(jGit().getRepository().resolve("HEAD:" + OTHER_JAVA)).isNull();
   }
 
-  @Test
+  @MavenPluginTest
   public void
       GIVEN_fail_on_empty_commit_WHEN_the_formatting_reverts_the_merge_resolution_THEN_the_merge_commit_is_created()
           throws Exception {

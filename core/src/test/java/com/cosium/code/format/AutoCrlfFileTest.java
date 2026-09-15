@@ -3,6 +3,8 @@ package com.cosium.code.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.takari.maven.testing.executor.MavenRuntime;
+import io.takari.maven.testing.executor.MavenVersions;
+import io.takari.maven.testing.executor.junit.MavenPluginTest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,7 +13,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.junit.Test;
 
 /**
  * Covers <a href="https://github.com/Cosium/git-code-format-maven-plugin/issues/227">issue 227</a>.
@@ -24,6 +25,7 @@ import org.junit.Test;
  *
  * @author Réda Housni Alaoui
  */
+@MavenVersions({"3.5.0"})
 public class AutoCrlfFileTest extends AbstractTest {
 
   private static final String BAD_FORMAT_JAVA = "src/main/java/BadFormat.java";
@@ -35,7 +37,7 @@ public class AutoCrlfFileTest extends AbstractTest {
     super(mavenBuilder, "single-module");
   }
 
-  @Test
+  @MavenPluginTest
   public void GIVEN_auto_crlf_WHEN_committing_a_badly_formatted_file_THEN_it_is_not_left_modified()
       throws Exception {
     enableAutoCrlf();
