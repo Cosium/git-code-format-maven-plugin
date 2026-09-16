@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Covers <a href="https://github.com/Cosium/git-code-format-maven-plugin/issues/90">issue 90</a>.
@@ -23,6 +24,9 @@ import java.nio.file.Path;
 public class MavenWrapperTest extends AbstractTest {
 
   private static final String MAVEN_WRAPPER = "mvnw";
+  private static final String BAD_FORMAT_JAVA = "src/main/java/BadFormat.java";
+  private static final Path MAVEN_WRAPPER_PROPERTIES =
+      Paths.get(".mvn/wrapper/maven-wrapper.properties");
 
   public MavenWrapperTest(MavenRuntime.MavenRuntimeBuilder mavenBuilder) throws Exception {
     super(mavenBuilder, "single-module");
@@ -31,7 +35,7 @@ public class MavenWrapperTest extends AbstractTest {
   @MavenPluginTest
   public void GIVEN_a_maven_wrapper_WHEN_installing_the_hooks_THEN_the_hook_runs_the_wrapper()
       throws Exception {
-    Path wrapper = createMavenWrapper(projectRoot());
+    Path wrapper = installMavenWrapper(projectRoot());
 
     installHooks();
 
@@ -43,7 +47,7 @@ public class MavenWrapperTest extends AbstractTest {
       GIVEN_a_maven_wrapper_in_a_parent_directory_WHEN_installing_the_hooks_THEN_the_hook_runs_the_wrapper()
           throws Exception {
     // The build is run from the module, while the wrapper sits at the root of the repository.
-    Path wrapper = createMavenWrapper(projectRoot());
+    Path wrapper = installMavenWrapper(projectRoot());
     Path module = Files.createDirectories(projectRoot().resolve("module"));
     Files.copy(projectRoot().resolve("pom.xml"), module.resolve("pom.xml"));
 
@@ -65,7 +69,7 @@ public class MavenWrapperTest extends AbstractTest {
   public void
       GIVEN_the_maven_wrapper_is_not_preferred_WHEN_installing_the_hooks_THEN_the_hook_runs_the_maven_installation()
           throws Exception {
-    createMavenWrapper(projectRoot());
+    installMavenWrapper(projectRoot());
 
     buildMavenExecution(projectRoot())
         .withCliOption("-Dgcf.preferMavenWrapper=false")
@@ -75,18 +79,61 @@ public class MavenWrapperTest extends AbstractTest {
     assertThat(readHookScript()).doesNotContain(MAVEN_WRAPPER);
   }
 
+  /**
+   * The hook holding the path of the wrapper only tells that it was selected. This one tells that
+   * the selected wrapper is something git can actually run.
+   */
+  @MavenPluginTest
+  public void GIVEN_a_maven_wrapper_WHEN_committing_THEN_the_wrapper_formats_the_staged_file()
+      throws Exception {
+    installMavenWrapper(projectRoot());
+
+    installHooks();
+
+    write(BAD_FORMAT_JAVA, "public class BadFormat {\n" + "\n" + "  void a(  ){}\n" + "}\n");
+    jGit().add().addFilepattern(BAD_FORMAT_JAVA).call();
+
+    jGit()
+        .commit()
+        .setCommitter(gitIdentity())
+        .setAuthor(gitIdentity())
+        .setMessage("Committing a badly formatted file")
+        .call();
+
+    assertThat(read(BAD_FORMAT_JAVA))
+        .isEqualTo("public class BadFormat {\n" + "\n" + "  void a() {}\n" + "}\n");
+  }
+
+  private void write(String sourceName, String content) throws IOException {
+    Files.write(
+        resolveRelativelyToProjectRoot(sourceName), content.getBytes(StandardCharsets.UTF_8));
+  }
+
+  private String read(String sourceName) throws IOException {
+    return new String(
+        Files.readAllBytes(resolveRelativelyToProjectRoot(sourceName)), StandardCharsets.UTF_8);
+  }
+
   private void installHooks() throws Exception {
     buildMavenExecution(projectRoot()).execute("initialize").assertErrorFreeLog();
   }
 
   /**
-   * The wrapper is never run by these tests, so its content does not matter. Only its presence and
-   * its executable bit do.
+   * Installs the very maven wrapper this repository holds, so that the hook runs a real one. It
+   * pins the maven version the build already runs with, hence no distribution left to download. The
+   * executable bit has to be set back, as a plain copy drops it.
    */
-  private Path createMavenWrapper(Path directory) throws IOException {
+  private Path installMavenWrapper(Path directory) throws IOException {
+    Path repositoryRoot = Paths.get("..");
+
     Path wrapper = directory.resolve(MAVEN_WRAPPER);
-    Files.write(wrapper, "#!/bin/bash\n".getBytes(StandardCharsets.UTF_8));
+    Files.copy(repositoryRoot.resolve(MAVEN_WRAPPER), wrapper);
     assertThat(wrapper.toFile().setExecutable(true)).isTrue();
+
+    Path properties = directory.resolve(MAVEN_WRAPPER_PROPERTIES);
+    Files.createDirectories(properties.getParent());
+    Files.copy(repositoryRoot.resolve(MAVEN_WRAPPER_PROPERTIES), properties);
+
     return wrapper;
   }
 
