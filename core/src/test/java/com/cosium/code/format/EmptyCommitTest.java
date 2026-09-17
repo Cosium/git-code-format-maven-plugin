@@ -13,6 +13,7 @@ import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.MergeResult.MergeStatus;
 import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * Covers <a href="https://github.com/Cosium/git-code-format-maven-plugin/issues/96">issue 96</a>.
@@ -48,9 +49,10 @@ public class EmptyCommitTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_default_options_WHEN_the_formatting_reverts_the_staged_change_THEN_git_creates_an_empty_commit()
-          throws Exception {
+  @DisplayName(
+      "GIVEN default options WHEN the formatting reverts the staged change THEN git creates an"
+          + " empty commit")
+  public void test1() throws Exception {
     commitBaseline();
 
     installHooks(DO_NOT_FAIL_ON_EMPTY_COMMIT);
@@ -63,9 +65,10 @@ public class EmptyCommitTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_fail_on_empty_commit_WHEN_the_formatting_reverts_the_staged_change_THEN_the_commit_is_refused()
-          throws Exception {
+  @DisplayName(
+      "GIVEN fail on empty commit WHEN the formatting reverts the staged change THEN the commit is"
+          + " refused")
+  public void test2() throws Exception {
     commitBaseline();
 
     installHooks(FAIL_ON_EMPTY_COMMIT);
@@ -81,9 +84,10 @@ public class EmptyCommitTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_fail_on_empty_commit_WHEN_the_staged_change_survives_the_formatting_THEN_the_commit_succeeds()
-          throws Exception {
+  @DisplayName(
+      "GIVEN fail on empty commit WHEN the staged change survives the formatting THEN the commit"
+          + " succeeds")
+  public void test3() throws Exception {
     commitBaseline();
 
     installHooks(FAIL_ON_EMPTY_COMMIT);
@@ -109,9 +113,10 @@ public class EmptyCommitTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_fail_on_empty_commit_WHEN_only_a_deletion_survives_the_formatting_THEN_the_commit_succeeds()
-          throws Exception {
+  @DisplayName(
+      "GIVEN fail on empty commit WHEN only a deletion survives the formatting THEN the commit"
+          + " succeeds")
+  public void test4() throws Exception {
     write(OTHER_JAVA, OTHER_BASELINE);
     jGit().add().addFilepattern(OTHER_JAVA).call();
     commitBaseline();
@@ -131,9 +136,10 @@ public class EmptyCommitTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_fail_on_empty_commit_WHEN_the_formatting_reverts_the_merge_resolution_THEN_the_merge_commit_is_created()
-          throws Exception {
+  @DisplayName(
+      "GIVEN fail on empty commit WHEN the formatting reverts the merge resolution THEN the merge"
+          + " commit is created")
+  public void test5() throws Exception {
     commitBaseline();
     String mainBranch = jGit().getRepository().getBranch();
 

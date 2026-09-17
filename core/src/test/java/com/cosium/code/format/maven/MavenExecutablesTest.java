@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -37,7 +38,8 @@ public class MavenExecutablesTest {
   }
 
   @Test
-  public void testMavenHomeExecutable() {
+  @DisplayName("Maven home executable")
+  public void test1() {
     systemProperties.put("maven.home", "/opt/maven");
     Path expectedPath = Paths.get("/opt/maven/bin/mvn");
     commandRunner.validExecutables.add(expectedPath.toString());
@@ -46,7 +48,8 @@ public class MavenExecutablesTest {
   }
 
   @Test
-  public void testMavenHomeDebugExecutable() {
+  @DisplayName("Maven home debug executable")
+  public void test2() {
     systemProperties.put("maven.home", "/opt/maven");
     Path expectedPath = Paths.get("/opt/maven/bin/mvnDebug");
     commandRunner.validExecutables.add(expectedPath.toString());
@@ -55,7 +58,8 @@ public class MavenExecutablesTest {
   }
 
   @Test
-  public void testMavenPathExecutableFallback() {
+  @DisplayName("Maven path executable fallback")
+  public void test3() {
     systemProperties.put("maven.home", "/opt/maven");
     commandRunner.validExecutables.add("mvn");
     Path path = tested.select(false, false);
@@ -63,7 +67,8 @@ public class MavenExecutablesTest {
   }
 
   @Test
-  public void testMavenPathDebugExecutableFallback() {
+  @DisplayName("Maven path debug executable fallback")
+  public void test4() {
     systemProperties.put("maven.home", "/opt/maven");
     commandRunner.validExecutables.add("mvnDebug");
     Path path = tested.select(true, false);

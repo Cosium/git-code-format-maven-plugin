@@ -12,6 +12,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * Covers <a href="https://github.com/Cosium/git-code-format-maven-plugin/issues/49">issue 49</a>,
@@ -33,9 +34,10 @@ public class PartiallyStagedFileTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_partially_staged_file_WHEN_committing_THEN_staged_lines_are_formatted_and_unstaged_changes_survive()
-          throws Exception {
+  @DisplayName(
+      "GIVEN partially staged file WHEN committing THEN staged lines are formatted and unstaged"
+          + " changes survive")
+  public void test1() throws Exception {
     String baseline =
         "public class BadFormat {\n"
             + "\n"
@@ -77,9 +79,10 @@ public class PartiallyStagedFileTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_formatting_conflicting_with_unstaged_changes_WHEN_committing_THEN_the_commit_still_succeeds()
-          throws Exception {
+  @DisplayName(
+      "GIVEN formatting conflicting with unstaged changes WHEN committing THEN the commit still"
+          + " succeeds")
+  public void test2() throws Exception {
     String baseline = "public class BadFormat {\n" + "\n" + "  void a() {}\n" + "}\n";
     commitBaseline(baseline);
 
