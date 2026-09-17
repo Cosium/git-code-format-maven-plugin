@@ -13,6 +13,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * Covers <a href="https://github.com/Cosium/git-code-format-maven-plugin/issues/227">issue 227</a>.
@@ -38,8 +39,9 @@ public class AutoCrlfFileTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void GIVEN_auto_crlf_WHEN_committing_a_badly_formatted_file_THEN_it_is_not_left_modified()
-      throws Exception {
+  @DisplayName(
+      "GIVEN auto crlf WHEN committing a badly formatted file THEN it is not left modified")
+  public void test1() throws Exception {
     enableAutoCrlf();
     commitBaseline();
 

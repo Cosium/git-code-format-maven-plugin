@@ -6,6 +6,7 @@ import io.takari.maven.testing.executor.MavenExecution;
 import io.takari.maven.testing.executor.MavenRuntime;
 import io.takari.maven.testing.executor.junit.MavenPluginTest;
 import java.nio.file.Paths;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * @author Réda Housni Alaoui
@@ -27,8 +28,9 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void GIVEN_bad_formatted_files_WHEN_format_code_THEN_all_files_should_have_correct_format()
-      throws Exception {
+  @DisplayName(
+      "GIVEN bad formatted files WHEN format code THEN all files should have correct format")
+  public void test1() throws Exception {
     mavenExecution()
         .withCliOptions(goalCliOption("validate-code-format"))
         .execute()
@@ -45,9 +47,9 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_bad_formatted_file_WHEN_validating_THEN_the_command_formatting_all_files_is_displayed()
-          throws Exception {
+  @DisplayName(
+      "GIVEN bad formatted file WHEN validating THEN the command formatting all files is displayed")
+  public void test2() throws Exception {
     mavenExecution()
         .withCliOptions(goalCliOption("validate-code-format"))
         .execute()
@@ -55,9 +57,9 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_bad_formatted_file_WHEN_adding_and_committing_it_THEN_it_should_have_correct_format()
-          throws Exception {
+  @DisplayName(
+      "GIVEN bad formatted file WHEN adding and committing it THEN it should have correct format")
+  public void test3() throws Exception {
     mavenExecution()
         .withCliOptions(goalCliOption("validate-code-format"))
         .execute()
@@ -84,9 +86,9 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_bad_formatted_generated_file_WHEN_formatting_THEN_generated_file_should_be_skipped()
-          throws Exception {
+  @DisplayName(
+      "GIVEN bad formatted generated file WHEN formatting THEN generated file should be skipped")
+  public void test4() throws Exception {
     String generatedSourceFile =
         Paths.get(mavenModuleDirectory)
             .resolve("target/generated-sources/GeneratedBadFormat.java")
@@ -100,9 +102,10 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_bad_formatted_files_WHEN_format_code_with_aosp_enabled_THEN_all_files_should_be_formatted_according_to_aosp()
-          throws Exception {
+  @DisplayName(
+      "GIVEN bad formatted files WHEN format code with aosp enabled THEN all files should be"
+          + " formatted according to aosp")
+  public void test5() throws Exception {
     mavenExecution()
         .withCliOptions(goalCliOption("validate-code-format"), "-Daosp=true")
         .execute()
@@ -125,8 +128,8 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void GIVEN_bad_formatted_file_WHEN_committing_all_THEN_it_should_have_correct_format()
-      throws Exception {
+  @DisplayName("GIVEN bad formatted file WHEN committing all THEN it should have correct format")
+  public void test6() throws Exception {
     mavenExecution()
         .withCliOptions(goalCliOption("validate-code-format"))
         .execute()

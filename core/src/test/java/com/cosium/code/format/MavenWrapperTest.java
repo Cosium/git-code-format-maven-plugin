@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.junit.jupiter.api.DisplayName;
 
 /**
  * Covers <a href="https://github.com/Cosium/git-code-format-maven-plugin/issues/90">issue 90</a>.
@@ -34,8 +35,8 @@ public class MavenWrapperTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void GIVEN_a_maven_wrapper_WHEN_installing_the_hooks_THEN_the_hook_runs_the_wrapper()
-      throws Exception {
+  @DisplayName("GIVEN a maven wrapper WHEN installing the hooks THEN the hook runs the wrapper")
+  public void test1() throws Exception {
     Path wrapper = installMavenWrapper(projectRoot());
 
     installHooks();
@@ -44,9 +45,10 @@ public class MavenWrapperTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_a_maven_wrapper_in_a_parent_directory_WHEN_installing_the_hooks_THEN_the_hook_runs_the_wrapper()
-          throws Exception {
+  @DisplayName(
+      "GIVEN a maven wrapper in a parent directory WHEN installing the hooks THEN the hook runs the"
+          + " wrapper")
+  public void test2() throws Exception {
     // The build is run from the module, while the wrapper sits at the root of the repository.
     Path wrapper = installMavenWrapper(projectRoot());
     Path module = Files.createDirectories(projectRoot().resolve("module"));
@@ -58,18 +60,19 @@ public class MavenWrapperTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_no_maven_wrapper_WHEN_installing_the_hooks_THEN_the_hook_runs_the_maven_installation()
-          throws Exception {
+  @DisplayName(
+      "GIVEN no maven wrapper WHEN installing the hooks THEN the hook runs the maven installation")
+  public void test3() throws Exception {
     installHooks();
 
     assertThat(readHookScript()).doesNotContain(MAVEN_WRAPPER);
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_the_maven_wrapper_is_not_preferred_WHEN_installing_the_hooks_THEN_the_hook_runs_the_maven_installation()
-          throws Exception {
+  @DisplayName(
+      "GIVEN the maven wrapper is not preferred WHEN installing the hooks THEN the hook runs the"
+          + " maven installation")
+  public void test4() throws Exception {
     installMavenWrapper(projectRoot());
 
     buildMavenExecution(projectRoot())
@@ -85,8 +88,8 @@ public class MavenWrapperTest extends AbstractTest {
    * the selected wrapper is something git can actually run.
    */
   @MavenPluginTest
-  public void GIVEN_a_maven_wrapper_WHEN_committing_THEN_the_wrapper_formats_the_staged_file()
-      throws Exception {
+  @DisplayName("GIVEN a maven wrapper WHEN committing THEN the wrapper formats the staged file")
+  public void test5() throws Exception {
     installMavenWrapper(projectRoot());
 
     installHooks();
@@ -106,9 +109,9 @@ public class MavenWrapperTest extends AbstractTest {
   }
 
   @MavenPluginTest
-  public void
-      GIVEN_a_maven_wrapper_WHEN_the_validation_fails_THEN_the_wrapper_is_the_command_to_run()
-          throws Exception {
+  @DisplayName(
+      "GIVEN a maven wrapper WHEN the validation fails THEN the wrapper is the command to run")
+  public void test6() throws Exception {
     installMavenWrapper(projectRoot());
 
     buildMavenExecution(projectRoot())
