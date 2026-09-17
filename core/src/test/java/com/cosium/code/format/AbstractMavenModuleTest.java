@@ -46,6 +46,16 @@ public abstract class AbstractMavenModuleTest extends AbstractTest {
 
   @MavenPluginTest
   public void
+      GIVEN_bad_formatted_file_WHEN_validating_THEN_the_command_formatting_all_files_is_displayed()
+          throws Exception {
+    mavenExecution()
+        .withCliOptions(goalCliOption("validate-code-format"))
+        .execute()
+        .assertLogText("Run 'mvn git-code-format:format-code' to format all the files.");
+  }
+
+  @MavenPluginTest
+  public void
       GIVEN_bad_formatted_file_WHEN_adding_and_committing_it_THEN_it_should_have_correct_format()
           throws Exception {
     mavenExecution()

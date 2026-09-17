@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.takari.maven.testing.executor.MavenRuntime;
 import io.takari.maven.testing.executor.MavenVersions;
 import io.takari.maven.testing.executor.junit.MavenPluginTest;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -102,6 +103,21 @@ public class MavenWrapperTest extends AbstractTest {
 
     assertThat(read(BAD_FORMAT_JAVA))
         .isEqualTo("public class BadFormat {\n" + "\n" + "  void a() {}\n" + "}\n");
+  }
+
+  @MavenPluginTest
+  public void
+      GIVEN_a_maven_wrapper_WHEN_the_validation_fails_THEN_the_wrapper_is_the_command_to_run()
+          throws Exception {
+    installMavenWrapper(projectRoot());
+
+    buildMavenExecution(projectRoot())
+        .withCliOptions(goalCliOption("validate-code-format"))
+        .execute()
+        .assertLogText(
+            "Run '."
+                + File.separator
+                + "mvnw git-code-format:format-code' to format all the files.");
   }
 
   private void write(String sourceName, String content) throws IOException {
