@@ -204,7 +204,8 @@ On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit`
 
 The hooks live in the directory shared by all the [linked worktrees](https://git-scm.com/docs/git-worktree)
 of the repository, and the paths inside the repository are resolved against the worktree being
-committed. A commit from a linked worktree is therefore formatted like a commit from the main one.
+committed. A commit from a linked worktree therefore formats the staged files of that worktree,
+with the pom and the maven wrapper of that worktree.
 
 # Maven wrapper
 
