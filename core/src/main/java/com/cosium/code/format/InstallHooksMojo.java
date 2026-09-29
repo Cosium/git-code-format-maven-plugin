@@ -64,6 +64,13 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
   @Parameter(property = "gcf.propertiesToAdd")
   private String[] propertiesToAdd;
 
+  /**
+   * The list of preliminary Maven goals to invoke before invoking the main
+   * git-code-format:on-pre-commit goal from the pre-commit script.
+   */
+  @Parameter(property = "gcf.preliminaryGoals")
+  private String[] preliminaryGoals;
+
   @Parameter(property = "gcf.debug", defaultValue = "false")
   private boolean debug;
 
@@ -135,6 +142,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
             StandardCharsets.UTF_8.toString(),
             mavenExecutables.select(debug, preferMavenWrapper).toAbsolutePath(),
             pomFile().toAbsolutePath(),
+            preliminaryMavenGoalsToInvoke(),
             mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
   }
@@ -150,6 +158,10 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
       legacyPreCommitHookBaseScriptCalls().forEach(basePreCommitHook::removeCommandCall);
     }
     basePreCommitHook.appendCommandCall(preCommitHookBaseScriptCall());
+  }
+
+  private String preliminaryMavenGoalsToInvoke() {
+    return Stream.of(preliminaryGoals).collect(Collectors.joining(" "));
   }
 
   private String mavenCliArguments() {
