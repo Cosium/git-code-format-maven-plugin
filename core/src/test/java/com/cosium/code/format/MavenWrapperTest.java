@@ -26,6 +26,8 @@ import org.junit.jupiter.api.DisplayName;
 public class MavenWrapperTest extends AbstractTest {
 
   private static final String MAVEN_WRAPPER = "mvnw";
+  private static final String WORK_TREE_MAVEN_WRAPPER =
+      "\"$(git rev-parse --show-toplevel)/" + MAVEN_WRAPPER + "\"";
   private static final String BAD_FORMAT_JAVA = "src/main/java/BadFormat.java";
   private static final Path MAVEN_WRAPPER_PROPERTIES =
       Paths.get(".mvn/wrapper/maven-wrapper.properties");
@@ -37,11 +39,11 @@ public class MavenWrapperTest extends AbstractTest {
   @MavenPluginTest
   @DisplayName("GIVEN a maven wrapper WHEN installing the hooks THEN the hook runs the wrapper")
   public void test1() throws Exception {
-    Path wrapper = installMavenWrapper(projectRoot());
+    installMavenWrapper(projectRoot());
 
     installHooks();
 
-    assertThat(readHookScript()).contains(wrapper.toAbsolutePath().toString());
+    assertThat(readHookScript()).contains(WORK_TREE_MAVEN_WRAPPER);
   }
 
   @MavenPluginTest
@@ -50,13 +52,13 @@ public class MavenWrapperTest extends AbstractTest {
           + " wrapper")
   public void test2() throws Exception {
     // The build is run from the module, while the wrapper sits at the root of the repository.
-    Path wrapper = installMavenWrapper(projectRoot());
+    installMavenWrapper(projectRoot());
     Path module = Files.createDirectories(projectRoot().resolve("module"));
     Files.copy(projectRoot().resolve("pom.xml"), module.resolve("pom.xml"));
 
     buildMavenExecution(module).execute("initialize").assertErrorFreeLog();
 
-    assertThat(readHookScript()).contains(wrapper.toAbsolutePath().toString());
+    assertThat(readHookScript()).contains(WORK_TREE_MAVEN_WRAPPER);
   }
 
   @MavenPluginTest
@@ -142,7 +144,7 @@ public class MavenWrapperTest extends AbstractTest {
    * pins the maven version the build already runs with, hence no distribution left to download. The
    * executable bit has to be set back, as a plain copy drops it.
    */
-  private Path installMavenWrapper(Path directory) throws IOException {
+  private void installMavenWrapper(Path directory) throws IOException {
     Path repositoryRoot = Paths.get("..");
 
     Path wrapper = directory.resolve(MAVEN_WRAPPER);
@@ -152,8 +154,6 @@ public class MavenWrapperTest extends AbstractTest {
     Path properties = directory.resolve(MAVEN_WRAPPER_PROPERTIES);
     Files.createDirectories(properties.getParent());
     Files.copy(repositoryRoot.resolve(MAVEN_WRAPPER_PROPERTIES), properties);
-
-    return wrapper;
   }
 
   private String readHookScript() throws IOException {
