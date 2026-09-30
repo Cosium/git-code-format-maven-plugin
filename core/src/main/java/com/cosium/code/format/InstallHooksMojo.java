@@ -133,8 +133,8 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
         .truncateWithTemplate(
             () -> getClass().getResourceAsStream(BASE_PLUGIN_PRE_COMMIT_HOOK),
             StandardCharsets.UTF_8.toString(),
-            mavenExecutables.select(debug, preferMavenWrapper).toAbsolutePath(),
-            pomFile().toAbsolutePath(),
+            resolveFromWorkTreeRoot(mavenExecutables.select(debug, preferMavenWrapper)),
+            resolveFromWorkTreeRoot(pomFile()),
             mavenCliArguments());
     getLog().debug("Written plugin pre commit hook file");
   }
@@ -179,8 +179,27 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
     return hooksDirectory;
   }
 
+  /**
+   * The plugin hook is shared by all the worktrees of the repository. A path inside the worktree
+   * that installed it is therefore resolved against the worktree being committed.
+   */
+  private String resolveFromWorkTreeRoot(Path path) {
+    Path absolutePath = path.toAbsolutePath().normalize();
+    Path workTree = gitBaseDir().toAbsolutePath().normalize();
+    if (!absolutePath.startsWith(workTree)) {
+      return "\"" + replaceBackslashes(absolutePath) + "\"";
+    }
+    return "\"$(git rev-parse --show-toplevel)/"
+        + replaceBackslashes(workTree.relativize(absolutePath))
+        + "\"";
+  }
+
+  private String replaceBackslashes(Path path) {
+    return path.toString().replace('\\', '/');
+  }
+
   private String preCommitHookBaseScriptCall() {
-    return "$(git rev-parse --git-dir)/" + HOOKS_DIR + "/" + pluginPreCommitHookFileName();
+    return "$(git rev-parse --git-common-dir)/" + HOOKS_DIR + "/" + pluginPreCommitHookFileName();
   }
 
   private List<String> legacyPreCommitHookBaseScriptCalls() {
@@ -195,6 +214,7 @@ public class InstallHooksMojo extends AbstractMavenGitCodeFormatMojo {
             + gitBaseDir().relativize(getOrCreateHooksDirectory())
             + "/"
             + pluginPreCommitHookFileName());
+    calls.add("$(git rev-parse --git-dir)/" + HOOKS_DIR + "/" + pluginPreCommitHookFileName());
     return calls;
   }
 

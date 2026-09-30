@@ -191,16 +191,21 @@ Either use add a ```<skip>true</skip>``` configuration in the inheriting project
 On the `initialize` maven phase, `git-code-format:install-hooks` installs a git `pre-commit` hook that looks like this :
 ```bash
 #!/bin/bash
-"./.git/hooks/${project.artifactId}.git-code-format.pre-commit.sh"
+"$(git rev-parse --git-common-dir)/hooks/${project.artifactId}.git-code-format.pre-commit.sh"
 ```
 and `.git/hooks/${project.artifactId}.git-code-format.pre-commit.sh` has the following content:
 ```bash
 #!/bin/bash
 set -e
-"${env.M2_HOME}/bin/mvn" -f "${project.basedir}/pom.xml" git-code-format:on-pre-commit
+"${env.M2_HOME}/bin/mvn" -f "$(git rev-parse --show-toplevel)/<pom.xml path relative to the repository root>" git-code-format:on-pre-commit
 ```
 
 On `pre-commit` git phase, the hook triggers the `git-code-format:on-pre-commit` which formats the code of the modified files.
+
+The hooks live in the directory shared by all the [linked worktrees](https://git-scm.com/docs/git-worktree)
+of the repository, and the paths inside the repository are resolved against the worktree being
+committed. A commit from a linked worktree therefore formats the staged files of that worktree,
+with the pom and the maven wrapper of that worktree.
 
 # Maven wrapper
 

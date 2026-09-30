@@ -119,7 +119,8 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
    * @return The git hooks directory
    */
   protected final Path getOrCreateHooksDirectory() {
-    Path hooksDirectory = gitRepository().getDirectory().toPath().resolve(HOOKS_DIR);
+    // Linked worktrees share the hooks of the common directory, which is where git runs them from.
+    Path hooksDirectory = gitRepository().getCommonDirectory().toPath().resolve(HOOKS_DIR);
     if (!Files.exists(hooksDirectory)) {
       getLog().debug("Creating directory " + hooksDirectory);
       try {
@@ -134,6 +135,6 @@ public abstract class AbstractMavenGitCodeFormatMojo extends AbstractMojo {
   }
 
   protected final Path gitBaseDir() {
-    return gitRepository().getDirectory().getParentFile().toPath();
+    return gitRepository().getWorkTree().toPath();
   }
 }
