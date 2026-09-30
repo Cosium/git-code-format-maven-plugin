@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Covers <a href="https://github.com/Cosium/git-code-format-maven-plugin/issues/390">issue 390</a>.
@@ -30,6 +31,7 @@ public class WorktreeTest extends AbstractTest {
   private static final String FORMATTED_CONTENT =
       "public class BadFormat {\n" + "\n" + "  void a() {}\n" + "}\n";
 
+  @TempDir private Path worktreeParent;
   private Path worktree;
 
   public WorktreeTest(MavenRuntime.MavenRuntimeBuilder mavenBuilder) throws Exception {
@@ -38,7 +40,7 @@ public class WorktreeTest extends AbstractTest {
 
   @BeforeEach
   void addWorktree() throws Exception {
-    worktree = Files.createTempDirectory("git-code-format-maven-plugin-worktree").resolve("wt");
+    worktree = worktreeParent.resolve("wt");
     runGit(projectRoot(), "worktree", "add", "-b", "wt", worktree.toString());
   }
 
