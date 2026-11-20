@@ -51,6 +51,14 @@ class GoogleJavaFormatterOptionsTest {
   }
 
   @Test
+  void shouldRejectMaxLineLengthAboveTheSupportedLimit() {
+    assertThatThrownBy(
+            () -> new GoogleJavaFormatterOptions(configuration(Map.of("maxLineLength", "1000"))))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("googleJavaFormat.maxLineLength");
+  }
+
+  @Test
   void shouldRejectNonNumericMaxLineLength() {
     assertThatThrownBy(
             () -> new GoogleJavaFormatterOptions(configuration(Map.of("maxLineLength", "wide"))))
