@@ -14,6 +14,12 @@ class GoogleJavaFormatterOptions {
   /** Sentinel value meaning "use the maximum line length of the selected style". */
   private static final int STYLE_DEFAULT_MAX_LINE_LENGTH = 0;
 
+  /**
+   * Upper bound accepted by google-java-format: {@code Doc.MAX_LINE_WIDTH - 1}. Layout widths
+   * saturate at {@code Doc.MAX_LINE_WIDTH}, which is also how forced breaks are represented.
+   */
+  private static final int MAX_SUPPORTED_MAX_LINE_LENGTH = 999;
+
   private final JavaFormatterOptions.Style style;
   private final int maxLineLength;
   private final boolean formatJavadoc;
@@ -58,9 +64,12 @@ class GoogleJavaFormatterOptions {
       throw new IllegalArgumentException(
           "googleJavaFormat.maxLineLength must be an integer, but was '" + value + "'", e);
     }
-    if (parsed < 1) {
+    if (parsed < 1 || parsed > MAX_SUPPORTED_MAX_LINE_LENGTH) {
       throw new IllegalArgumentException(
-          "googleJavaFormat.maxLineLength must be greater than 0, but was " + parsed);
+          "googleJavaFormat.maxLineLength must be between 1 and "
+              + MAX_SUPPORTED_MAX_LINE_LENGTH
+              + ", but was "
+              + parsed);
     }
     return parsed;
   }
