@@ -11,7 +11,11 @@ import com.google.googlejavaformat.java.JavaFormatterOptions;
  */
 class GoogleJavaFormatterOptions {
 
+  /** Sentinel value meaning "use the maximum line length of the selected style". */
+  private static final int STYLE_DEFAULT_MAX_LINE_LENGTH = 0;
+
   private final JavaFormatterOptions.Style style;
+  private final int maxLineLength;
   private final boolean formatJavadoc;
   private final boolean fixImportsOnly;
   private final boolean skipSortingImports;
@@ -19,10 +23,20 @@ class GoogleJavaFormatterOptions {
 
   public GoogleJavaFormatterOptions(CodeFormatterConfiguration configuration) {
     boolean aosp = configuration.getValue("aosp").map(Boolean::parseBoolean).orElse(false);
-    if (aosp) {
-      style = AOSP;
+    maxLineLength =
+        configuration
+            .getValue("maxLineLength")
+            .map(GoogleJavaFormatterOptions::parseMaxLineLength)
+            .orElse(STYLE_DEFAULT_MAX_LINE_LENGTH);
+    if (maxLineLength == STYLE_DEFAULT_MAX_LINE_LENGTH) {
+      style = aosp ? AOSP : GOOGLE;
     } else {
-      style = GOOGLE;
+      style =
+          (aosp
+                  ? JavaFormatterOptions.Style.builder().aosp()
+                  : JavaFormatterOptions.Style.builder().google())
+              .maxLineLength(maxLineLength)
+              .build();
     }
     formatJavadoc = configuration.getValue("formatJavadoc").map(Boolean::parseBoolean).orElse(true);
     fixImportsOnly =
@@ -34,6 +48,21 @@ class GoogleJavaFormatterOptions {
             .getValue("skipRemovingUnusedImports")
             .map(Boolean::parseBoolean)
             .orElse(false);
+  }
+
+  private static int parseMaxLineLength(String value) {
+    final int parsed;
+    try {
+      parsed = Integer.parseInt(value.trim());
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException(
+          "googleJavaFormat.maxLineLength must be an integer, but was '" + value + "'", e);
+    }
+    if (parsed < 1) {
+      throw new IllegalArgumentException(
+          "googleJavaFormat.maxLineLength must be greater than 0, but was " + parsed);
+    }
+    return parsed;
   }
 
   public JavaFormatterOptions javaFormatterOptions() {
@@ -57,6 +86,8 @@ class GoogleJavaFormatterOptions {
     return "GoogleJavaFormatterOptions{"
         + "style="
         + style
+        + ", maxLineLength="
+        + maxLineLength
         + ", fixImportsOnly="
         + fixImportsOnly
         + ", skipSortingImports="
