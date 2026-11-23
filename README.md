@@ -91,6 +91,9 @@ The plugin allows you to tweak Google Java Format options :
         <formatterOptions>
           <!-- Use AOSP style instead of Google Style (4-space indentation). -->
           <googleJavaFormat.aosp>false</googleJavaFormat.aosp>
+          <!-- Set the maximum line length, between 1 and 999 (google-java-format 2.0.0 or
+               later). Leave unset to keep the style default of 100 columns. -->
+          <!-- <googleJavaFormat.maxLineLength>120</googleJavaFormat.maxLineLength> -->
           <!-- Format the javadoc -->
           <googleJavaFormat.formatJavadoc>true</googleJavaFormat.formatJavadoc>
           <!-- Fix import order and remove any unused imports, but do no other formatting. -->
